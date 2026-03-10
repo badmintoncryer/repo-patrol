@@ -67,14 +67,14 @@ test('RepoPatrol accepts repositories with Schedule class', () => {
     },
     repositories: [
       {
-        repositoryUrl: 'https://github.com/myorg/repo-a',
+        repository: 'myorg/repo-a',
         schedules: {
           review_pull_requests: events.Schedule.cron({ hour: '3', minute: '0' }),
           triage_issues: events.Schedule.rate(cdk.Duration.hours(8)),
         },
       },
       {
-        repositoryUrl: 'https://github.com/myorg/repo-b',
+        repository: 'myorg/repo-b',
       },
     ],
   });

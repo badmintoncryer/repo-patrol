@@ -14,14 +14,14 @@ import { StrandsAgentRuntime } from './strands-agent-runtime';
 
 /**
  * Per-repository schedule configuration.
- * Specifies the repository URL and its schedule for each job type.
+ * Specifies the repository name and its schedule for each job type.
  */
 export interface RepositorySchedule {
   /**
-   * GitHub repository URL.
-   * @example 'https://github.com/myorg/my-repo'
+   * GitHub repository name in 'owner/repo' format.
+   * @example 'myorg/my-repo'
    */
-  readonly repositoryUrl: string;
+  readonly repository: string;
 
   /**
    * Schedule per job type. Keys are JobType enum values (e.g. 'review_pull_requests').
@@ -109,7 +109,7 @@ export class RepoPatrol extends Construct {
     // Convert per-repository schedule configs to expression strings
     const repositorySchedules: { [repo: string]: { [key: string]: string } } = {};
     for (const repoConfig of props.repositories ?? []) {
-      const ownerRepo = this.parseRepositoryUrl(repoConfig.repositoryUrl);
+      const ownerRepo = repoConfig.repository;
       if (repoConfig.schedules) {
         const repoExpressions: { [key: string]: string } = {};
         for (const [key, schedule] of Object.entries(repoConfig.schedules)) {
@@ -151,18 +151,6 @@ export class RepoPatrol extends Construct {
         jobHistoryTable: this.registry.jobHistoryTable,
       });
     }
-  }
-
-  /**
-   * Parse a GitHub repository URL and return 'owner/repo' format.
-   * Supports https://github.com/owner/repo and https://github.com/owner/repo.git
-   */
-  private parseRepositoryUrl(url: string): string {
-    const match = url.match(/github\.com\/([^/]+)\/([^/.]+)/);
-    if (!match) {
-      throw new Error(`Invalid GitHub repository URL: ${url}. Expected format: https://github.com/owner/repo`);
-    }
-    return `${match[1]}/${match[2]}`;
   }
 
   /**
