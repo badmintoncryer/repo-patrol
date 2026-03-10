@@ -106,26 +106,58 @@ test('RepoPatrol with repositories creates seeder custom resource', () => {
   });
 });
 
-test('RepoPatrol supports ScheduleExpression for default schedules', () => {
+test('RepoPatrol uses daily UTC 00:00 as fallback schedule', () => {
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'TestStack');
 
   new RepoPatrol(stack, 'TestPatrol', {
     githubAppSecretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
     enableDashboard: false,
-    defaultSchedules: {
-      [JobType.REVIEW_PULL_REQUESTS]: ScheduleExpression.rate(Duration.hours(12)),
-    },
   });
 
   const template = Template.fromStack(stack);
 
-  // Registry API Lambda should have the overridden schedule in DEFAULT_SCHEDULES env var
+  // Registry API Lambda should have the fallback schedule in FALLBACK_SCHEDULE env var
   template.hasResourceProperties('AWS::Lambda::Function', {
     Environment: {
       Variables: {
-        DEFAULT_SCHEDULES: Match.stringLikeRegexp('rate\\(12 hours\\)'),
+        FALLBACK_SCHEDULE: Match.stringLikeRegexp('cron'),
       },
     },
   });
+});
+
+test('RepoPatrol without per-job schedule uses fallback for all jobs', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'TestStack');
+
+  new RepoPatrol(stack, 'TestPatrol', {
+    githubAppSecretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
+    enableDashboard: false,
+    repositories: [
+      {
+        owner: 'my-org',
+        repo: 'my-app',
+        githubAppInstallationId: 12345,
+      },
+    ],
+  });
+
+  const template = Template.fromStack(stack);
+
+  // All jobs should use the fallback cron schedule (cron(0 0 * * ? *))
+  template.hasResource('AWS::CloudFormation::CustomResource', {
+    Properties: {
+      Repositories: Match.stringLikeRegexp('cron\\(0 0'),
+    },
+  });
+
+  // No rate() expressions should appear since no per-job schedules are set
+  const resources = template.findResources('AWS::CloudFormation::CustomResource');
+  for (const [, resource] of Object.entries(resources)) {
+    const repos = (resource as any).Properties?.Repositories;
+    if (repos && typeof repos === 'string' && repos.includes('my-org')) {
+      expect(repos).not.toContain('rate(');
+    }
+  }
 });

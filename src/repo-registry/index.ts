@@ -11,8 +11,8 @@ export interface RepoRegistryProps {
   readonly dispatcherFunctionArn: string;
   /** ARN of the IAM Role for EventBridge Scheduler */
   readonly schedulerRoleArn: string;
-  /** Default schedule expressions per job type */
-  readonly defaultSchedules: { [key: string]: string };
+  /** Fallback schedule expression when no schedule is configured */
+  readonly fallbackSchedule: string;
 }
 
 export class RepoRegistry extends Construct {
@@ -71,7 +71,7 @@ export class RepoRegistry extends Construct {
           REPOS_TABLE_NAME: this.reposTable.tableName,
           DISPATCHER_FUNCTION_ARN: props.dispatcherFunctionArn,
           SCHEDULER_ROLE_ARN: props.schedulerRoleArn,
-          DEFAULT_SCHEDULES: JSON.stringify(props.defaultSchedules),
+          FALLBACK_SCHEDULE: props.fallbackSchedule,
         },
         bundling: {
           minify: true,

@@ -61,17 +61,8 @@ new RepoPatrol(this, 'Patrol', {
   enableDashboard: true,
   mfaRequired: true, // TOTP MFA for dashboard login (default: true)
 
-  // Default schedules per job type (overridable per-repository)
-  defaultSchedules: {
-    [JobType.REVIEW_PULL_REQUESTS]: ScheduleExpression.cron({ hour: '0', minute: '0' }),
-    [JobType.TRIAGE_ISSUES]:        ScheduleExpression.cron({ hour: '0', minute: '0' }),
-    [JobType.HANDLE_DEPENDABOT]:    ScheduleExpression.rate(Duration.hours(6)),
-    [JobType.ANALYZE_CI_FAILURES]:  ScheduleExpression.rate(Duration.hours(3)),
-    [JobType.CHECK_DEPENDENCIES]:   ScheduleExpression.cron({ hour: '0', minute: '0', weekDay: 'MON' }),
-    [JobType.REPO_HEALTH_CHECK]:    ScheduleExpression.cron({ hour: '0', minute: '0', weekDay: 'MON' }),
-  },
-
   // Declarative repository configuration
+  // Jobs without an explicit schedule default to daily at UTC 00:00
   repositories: [
     {
       owner: 'my-org',
@@ -120,16 +111,16 @@ Enable the desired foundation model (default: `us.anthropic.claude-haiku-4-5-202
 
 ## Job Types
 
-| Job | Default Schedule | Description |
-|---|---|---|
-| `review_pull_requests` | Daily | Review open PRs and post comments |
-| `triage_issues` | Daily | Analyze issues, add labels, post comments |
-| `handle_dependabot` | Every 6 hours | Auto-approve/merge Dependabot PRs |
-| `analyze_ci_failures` | Every 3 hours | Analyze CI failure logs, suggest fixes |
-| `check_dependencies` | Weekly (Monday) | Check for dependency updates |
-| `repo_health_check` | Weekly (Monday) | Audit README, LICENSE, CI config |
+| Job | Description |
+|---|---|
+| `review_pull_requests` | Review open PRs and post comments |
+| `triage_issues` | Analyze issues, add labels, post comments |
+| `handle_dependabot` | Auto-approve/merge Dependabot PRs |
+| `analyze_ci_failures` | Analyze CI failure logs, suggest fixes |
+| `check_dependencies` | Check for dependency updates |
+| `repo_health_check` | Audit README, LICENSE, CI config |
 
-Schedules are configured **per repository x job type** via the Registry API. Default schedules can be overridden at the construct level or per-repository in DynamoDB.
+All jobs default to **daily at UTC 00:00** (`cron(0 0 * * ? *)`). Override per job via `RepositoryConfig.jobs[jobType].schedule`.
 
 ## How It Works
 

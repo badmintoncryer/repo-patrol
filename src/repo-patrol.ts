@@ -23,8 +23,8 @@ export interface JobConfig {
   readonly enabled?: boolean;
 
   /**
-   * Schedule for this job (overrides the default schedule).
-   * @default - Uses the construct-level default schedule for this job type
+   * Schedule for this job.
+   * @default - Daily at UTC 00:00 (cron(0 0 * * ? *))
    */
   readonly schedule?: ScheduleExpression;
 
@@ -79,13 +79,6 @@ export interface RepoPatrolProps {
   /** Maximum tool calls per agent invocation */
   readonly maxToolCalls?: number;
 
-  /**
-   * Default schedules per job type.
-   * Keys are JobType enum values (e.g. 'review_pull_requests').
-   * Per-repository job configs can override these.
-   */
-  readonly defaultSchedules?: { [jobType: string]: ScheduleExpression };
-
   /** Enable the Next.js dashboard with Cognito authentication */
   readonly enableDashboard?: boolean;
 
@@ -99,14 +92,12 @@ export interface RepoPatrolProps {
   readonly mfaRequired?: boolean;
 }
 
-const DEFAULT_SCHEDULES: { [key: string]: ScheduleExpression } = {
-  [JobType.REVIEW_PULL_REQUESTS]: ScheduleExpression.cron({ hour: '0', minute: '0' }), // Daily UTC 0:00
-  [JobType.TRIAGE_ISSUES]: ScheduleExpression.cron({ hour: '0', minute: '0' }),
-  [JobType.HANDLE_DEPENDABOT]: ScheduleExpression.rate(cdk.Duration.hours(6)),
-  [JobType.ANALYZE_CI_FAILURES]: ScheduleExpression.rate(cdk.Duration.hours(3)),
-  [JobType.CHECK_DEPENDENCIES]: ScheduleExpression.cron({ hour: '0', minute: '0', weekDay: 'MON' }),
-  [JobType.REPO_HEALTH_CHECK]: ScheduleExpression.cron({ hour: '0', minute: '0', weekDay: 'MON' }),
-};
+/**
+ * Fallback schedule when no schedule is configured for a job type.
+ * Daily at UTC 00:00.
+ */
+const FALLBACK_SCHEDULE = ScheduleExpression.cron({ hour: '0', minute: '0' });
+const FALLBACK_SCHEDULE_STRING = FALLBACK_SCHEDULE.expressionString;
 
 export class RepoPatrol extends Construct {
   public readonly reportBucket: s3.Bucket;
@@ -117,14 +108,6 @@ export class RepoPatrol extends Construct {
 
   constructor(scope: Construct, id: string, props: RepoPatrolProps) {
     super(scope, id);
-
-    // Merge default schedules with user overrides
-    const mergedSchedules = { ...DEFAULT_SCHEDULES, ...props.defaultSchedules };
-    // Convert ScheduleExpression to plain strings for Lambda env vars
-    const schedulesAsStrings: { [key: string]: string } = {};
-    for (const [k, v] of Object.entries(mergedSchedules)) {
-      schedulesAsStrings[k] = v.expressionString;
-    }
 
     // S3 bucket for reports
     this.reportBucket = new s3.Bucket(this, 'ReportBucket', {
@@ -157,7 +140,7 @@ export class RepoPatrol extends Construct {
     this.registry = new RepoRegistry(this, 'Registry', {
       dispatcherFunctionArn: this.scheduler.dispatcherFunction.functionArn,
       schedulerRoleArn: this.scheduler.schedulerRole.roleArn,
-      defaultSchedules: schedulesAsStrings,
+      fallbackSchedule: FALLBACK_SCHEDULE_STRING,
     });
 
     // Grant DynamoDB read to dispatcher (circular dependency workaround)
@@ -168,7 +151,7 @@ export class RepoPatrol extends Construct {
 
     // Seed initial repositories via Custom Resource
     if (props.repositories && props.repositories.length > 0) {
-      this.seedRepositories(props.repositories, mergedSchedules);
+      this.seedRepositories(props.repositories);
     }
 
     // Optional: Next.js Dashboard with Cognito auth
@@ -186,21 +169,17 @@ export class RepoPatrol extends Construct {
    * Seed initial repositories into DynamoDB and create their EventBridge Schedules.
    * Uses a Custom Resource so repos are registered on every deploy (idempotent upsert).
    */
-  private seedRepositories(
-    repositories: RepositoryConfig[],
-    defaultSchedules: { [key: string]: ScheduleExpression },
-  ) {
+  private seedRepositories(repositories: RepositoryConfig[]) {
     // Serialize repos config for the seeder Lambda
     const reposPayload = repositories.map((repo) => {
       const jobs: { [jobType: string]: { enabled: boolean; schedule: string; model_id: string } } = {};
 
-      // Build jobs config: merge defaults with per-repo overrides
+      // Build jobs config for each job type
       for (const jobType of Object.values(JobType)) {
         const jobConfig = repo.jobs?.[jobType];
-        const schedule = jobConfig?.schedule ?? defaultSchedules[jobType];
         jobs[jobType] = {
           enabled: jobConfig?.enabled ?? true,
-          schedule: schedule ? schedule.expressionString : 'rate(1 day)',
+          schedule: jobConfig?.schedule?.expressionString ?? FALLBACK_SCHEDULE_STRING,
           model_id: jobConfig?.modelId ?? '',
         };
       }

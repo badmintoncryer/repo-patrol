@@ -22,9 +22,7 @@ const schedulerClient = new SchedulerClient({});
 const TABLE_NAME = process.env.REPOS_TABLE_NAME!;
 const DISPATCHER_FUNCTION_ARN = process.env.DISPATCHER_FUNCTION_ARN!;
 const SCHEDULER_ROLE_ARN = process.env.SCHEDULER_ROLE_ARN!;
-const DEFAULT_SCHEDULES: Record<string, string> = JSON.parse(
-  process.env.DEFAULT_SCHEDULES || '{}',
-);
+const FALLBACK_SCHEDULE = process.env.FALLBACK_SCHEDULE || 'cron(0 0 * * ? *)';
 
 interface APIGatewayEvent {
   httpMethod: string;
@@ -67,8 +65,7 @@ async function syncSchedules(
 ) {
   for (const [jobType, jobConfig] of Object.entries(jobs)) {
     const name = scheduleNameFor(owner, repo, jobType);
-    const scheduleExpression =
-      jobConfig.schedule || DEFAULT_SCHEDULES[jobType] || 'rate(1 day)';
+    const scheduleExpression = jobConfig.schedule || FALLBACK_SCHEDULE;
     const isActive = enabled && jobConfig.enabled;
 
     const params = {
@@ -108,9 +105,17 @@ async function syncSchedules(
 /**
  * Delete all EventBridge Schedules for a repo.
  */
+const ALL_JOB_TYPES = [
+  'review_pull_requests',
+  'triage_issues',
+  'handle_dependabot',
+  'analyze_ci_failures',
+  'check_dependencies',
+  'repo_health_check',
+];
+
 async function deleteSchedules(owner: string, repo: string) {
-  const allJobTypes = Object.keys(DEFAULT_SCHEDULES);
-  for (const jobType of allJobTypes) {
+  for (const jobType of ALL_JOB_TYPES) {
     const name = scheduleNameFor(owner, repo, jobType);
     try {
       await schedulerClient.send(new DeleteScheduleCommand({ Name: name }));
