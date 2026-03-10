@@ -1,5 +1,6 @@
 import * as path from 'path';
 import * as cdk from 'aws-cdk-lib';
+import * as events from 'aws-cdk-lib/aws-events';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as nodejs from 'aws-cdk-lib/aws-lambda-nodejs';
@@ -10,6 +11,24 @@ import { AgentScheduler, JobType } from './agent-scheduler';
 import { RepoRegistry } from './repo-registry';
 import { ReportFrontend } from './report-frontend';
 import { StrandsAgentRuntime } from './strands-agent-runtime';
+
+/**
+ * Per-repository schedule configuration.
+ * Specifies the repository name and its schedule for each job type.
+ */
+export interface RepositorySchedule {
+  /**
+   * GitHub repository name in 'owner/repo' format.
+   * @example 'myorg/my-repo'
+   */
+  readonly repository: string;
+
+  /**
+   * Schedule per job type. Keys are JobType enum values (e.g. 'review_pull_requests').
+   * If omitted, the defaultSchedules will be used.
+   */
+  readonly schedules?: { [key: string]: events.Schedule };
+}
 
 export interface RepoPatrolProps {
   /** ARN of the Secrets Manager secret containing GitHub App credentials (app_id, private_key) */
@@ -22,10 +41,16 @@ export interface RepoPatrolProps {
   readonly maxToolCalls?: number;
 
   /**
-   * Default schedules per job type (EventBridge schedule expressions).
+   * Default schedules per job type applied to all repositories unless overridden.
    * Keys are JobType enum values (e.g. 'review_pull_requests').
    */
-  readonly defaultSchedules?: { [key: string]: string };
+  readonly defaultSchedules?: { [key: string]: events.Schedule };
+
+  /**
+   * List of repositories with their individual schedule configurations.
+   * Each entry specifies a repository name and optional per-job-type schedule overrides.
+   */
+  readonly repositories?: RepositorySchedule[];
 
   /** Enable the Next.js dashboard with Cognito authentication */
   readonly enableDashboard?: boolean;
@@ -34,13 +59,13 @@ export interface RepoPatrolProps {
   readonly dryRun?: boolean;
 }
 
-const DEFAULT_SCHEDULES: { [key: string]: string } = {
-  [JobType.REVIEW_PULL_REQUESTS]: 'cron(0 0 * * ? *)', // Daily JST 9:00
-  [JobType.TRIAGE_ISSUES]: 'cron(0 0 * * ? *)',
-  [JobType.HANDLE_DEPENDABOT]: 'rate(6 hours)',
-  [JobType.ANALYZE_CI_FAILURES]: 'rate(3 hours)',
-  [JobType.CHECK_DEPENDENCIES]: 'cron(0 0 ? * MON *)', // Weekly Monday JST 9:00
-  [JobType.REPO_HEALTH_CHECK]: 'cron(0 0 ? * MON *)',
+const DEFAULT_SCHEDULES: { [key: string]: events.Schedule } = {
+  [JobType.REVIEW_PULL_REQUESTS]: events.Schedule.cron({ hour: '0', minute: '0' }), // Daily JST 9:00
+  [JobType.TRIAGE_ISSUES]: events.Schedule.cron({ hour: '0', minute: '0' }),
+  [JobType.HANDLE_DEPENDABOT]: events.Schedule.rate(cdk.Duration.hours(6)),
+  [JobType.ANALYZE_CI_FAILURES]: events.Schedule.rate(cdk.Duration.hours(3)),
+  [JobType.CHECK_DEPENDENCIES]: events.Schedule.cron({ hour: '0', minute: '0', weekDay: 'MON' }), // Weekly Monday JST 9:00
+  [JobType.REPO_HEALTH_CHECK]: events.Schedule.cron({ hour: '0', minute: '0', weekDay: 'MON' }),
 };
 
 export class RepoPatrol extends Construct {
@@ -74,8 +99,24 @@ export class RepoPatrol extends Construct {
       dryRun: props.dryRun,
     });
 
-    // Merge default schedules with user overrides
-    const schedules = { ...DEFAULT_SCHEDULES, ...props.defaultSchedules };
+    // Merge default schedules with user overrides, converting Schedule objects to expression strings
+    const mergedSchedules = { ...DEFAULT_SCHEDULES, ...props.defaultSchedules };
+    const scheduleExpressions: { [key: string]: string } = {};
+    for (const [key, schedule] of Object.entries(mergedSchedules)) {
+      scheduleExpressions[key] = schedule.expressionString;
+    }
+
+    // Convert per-repository schedule configs to expression strings
+    const repositorySchedules: { [repo: string]: { [key: string]: string } } = {};
+    for (const repoConfig of props.repositories ?? []) {
+      if (repoConfig.schedules) {
+        const repoExpressions: { [key: string]: string } = {};
+        for (const [key, schedule] of Object.entries(repoConfig.schedules)) {
+          repoExpressions[key] = schedule.expressionString;
+        }
+        repositorySchedules[repoConfig.repository] = repoExpressions;
+      }
+    }
 
     // EventBridge Dispatcher Lambda + Scheduler IAM Role
     // Must be created before RepoRegistry (Registry needs dispatcherFunctionArn and schedulerRoleArn)
@@ -88,7 +129,8 @@ export class RepoPatrol extends Construct {
     this.registry = new RepoRegistry(this, 'Registry', {
       dispatcherFunctionArn: this.scheduler.dispatcherFunction.functionArn,
       schedulerRoleArn: this.scheduler.schedulerRole.roleArn,
-      defaultSchedules: schedules,
+      defaultSchedules: scheduleExpressions,
+      repositorySchedules,
     });
 
     // Fix circular reference: grant DynamoDB read to dispatcher after table creation

@@ -25,6 +25,9 @@ const SCHEDULER_ROLE_ARN = process.env.SCHEDULER_ROLE_ARN!;
 const DEFAULT_SCHEDULES: Record<string, string> = JSON.parse(
   process.env.DEFAULT_SCHEDULES || '{}',
 );
+const REPOSITORY_SCHEDULES: Record<string, Record<string, string>> = JSON.parse(
+  process.env.REPOSITORY_SCHEDULES || '{}',
+);
 
 interface APIGatewayEvent {
   httpMethod: string;
@@ -67,8 +70,10 @@ async function syncSchedules(
 ) {
   for (const [jobType, jobConfig] of Object.entries(jobs)) {
     const name = scheduleNameFor(owner, repo, jobType);
+    const repoKey = `${owner}/${repo}`;
+    const repoSchedules = REPOSITORY_SCHEDULES[repoKey] || {};
     const scheduleExpression =
-      jobConfig.schedule || DEFAULT_SCHEDULES[jobType] || 'rate(1 day)';
+      jobConfig.schedule || repoSchedules[jobType] || DEFAULT_SCHEDULES[jobType] || 'rate(1 day)';
     const isActive = enabled && jobConfig.enabled;
 
     const params = {

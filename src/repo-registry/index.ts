@@ -13,6 +13,8 @@ export interface RepoRegistryProps {
   readonly schedulerRoleArn: string;
   /** Default schedule expressions per job type */
   readonly defaultSchedules: { [key: string]: string };
+  /** Per-repository schedule expression overrides. Keyed by 'owner/repo'. */
+  readonly repositorySchedules?: { [repo: string]: { [key: string]: string } };
 }
 
 export class RepoRegistry extends Construct {
@@ -72,6 +74,7 @@ export class RepoRegistry extends Construct {
           DISPATCHER_FUNCTION_ARN: props.dispatcherFunctionArn,
           SCHEDULER_ROLE_ARN: props.schedulerRoleArn,
           DEFAULT_SCHEDULES: JSON.stringify(props.defaultSchedules),
+          REPOSITORY_SCHEDULES: JSON.stringify(props.repositorySchedules ?? {}),
         },
         bundling: {
           minify: true,
