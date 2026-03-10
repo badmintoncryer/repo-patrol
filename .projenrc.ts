@@ -59,6 +59,10 @@ const project = new awscdk.AwsCdkConstructLibrary({
   ],
 });
 
+// Exclude snapshot assets from tsconfig.dev.json and ESLint
+project.tsconfigDev.addExclude('test/*.snapshot/**/*');
+project.eslint?.addIgnorePattern('test/*.snapshot/**/*');
+
 // Integration tests with integ-runner
 project.projectBuild.testTask.exec(
   'pnpm tsc -p tsconfig.dev.json && pnpm integ-runner',

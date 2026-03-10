@@ -292,7 +292,8 @@ export class RepoPatrol extends Construct {
     new cdk.CustomResource(this, 'ScheduleCleanup', {
       serviceToken: provider.serviceToken,
       properties: {
-        Version: Date.now().toString(),
+        // Fixed value — cleanup only runs on stack deletion, not on every deploy
+        Version: '1',
       },
     });
   }
