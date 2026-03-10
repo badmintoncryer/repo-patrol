@@ -5,9 +5,9 @@
 import {
   BedrockAgentCoreClient,
   InvokeAgentRuntimeCommand,
-} from "@aws-sdk/client-bedrock-agentcore";
-import { DynamoDBClient, GetItemCommand } from "@aws-sdk/client-dynamodb";
-import { unmarshall, marshall } from "@aws-sdk/util-dynamodb";
+} from '@aws-sdk/client-bedrock-agentcore';
+import { DynamoDBClient, GetItemCommand } from '@aws-sdk/client-dynamodb';
+import { unmarshall, marshall } from '@aws-sdk/util-dynamodb';
 
 const agentCoreClient = new BedrockAgentCoreClient({});
 const dynamoClient = new DynamoDBClient({});
@@ -29,19 +29,19 @@ export const handler = async (event: SchedulerEvent) => {
     new GetItemCommand({
       TableName: REPOS_TABLE_NAME,
       Key: marshall({ repo_id: repoId }),
-    })
+    }),
   );
 
   if (!getResult.Item) {
     console.error(`Repo ${repoId} not found in DynamoDB`);
-    return { repoId, jobType, status: "error", error: "repo not found" };
+    return { repoId, jobType, status: 'error', error: 'repo not found' };
   }
 
   const repo = unmarshall(getResult.Item);
 
   if (!repo.enabled) {
     console.log(`Repo ${repoId} is disabled, skipping`);
-    return { repoId, jobType, status: "skipped", reason: "repo disabled" };
+    return { repoId, jobType, status: 'skipped', reason: 'repo disabled' };
   }
 
   const jobs = repo.jobs as Record<string, any> | undefined;
@@ -49,7 +49,7 @@ export const handler = async (event: SchedulerEvent) => {
 
   if (!jobConfig?.enabled) {
     console.log(`Job ${jobType} not enabled for ${repoId}, skipping`);
-    return { repoId, jobType, status: "skipped", reason: "job disabled" };
+    return { repoId, jobType, status: 'skipped', reason: 'job disabled' };
   }
 
   const payload = {
@@ -73,15 +73,15 @@ export const handler = async (event: SchedulerEvent) => {
       payload: new TextEncoder().encode(JSON.stringify(payload)),
     });
 
-    const response = await agentCoreClient.send(command);
-    const responseText = response.payload
-      ? new TextDecoder().decode(response.payload)
-      : "no response";
+    const result = await agentCoreClient.send(command);
+    const responseText = result.response
+      ? new TextDecoder().decode(await (result.response as any).transformToByteArray())
+      : 'no response';
 
     return {
       repoId,
       jobType,
-      status: "success",
+      status: 'success',
       responseLength: responseText.length,
     };
   } catch (error) {
@@ -89,7 +89,7 @@ export const handler = async (event: SchedulerEvent) => {
     return {
       repoId,
       jobType,
-      status: "error",
+      status: 'error',
       error: String(error),
     };
   }

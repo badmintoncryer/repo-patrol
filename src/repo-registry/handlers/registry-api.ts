@@ -5,8 +5,7 @@ import {
   DeleteItemCommand,
   ScanCommand,
   UpdateItemCommand,
-} from "@aws-sdk/client-dynamodb";
-import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
+} from '@aws-sdk/client-dynamodb';
 import {
   SchedulerClient,
   CreateScheduleCommand,
@@ -14,7 +13,8 @@ import {
   DeleteScheduleCommand,
   GetScheduleCommand,
   FlexibleTimeWindowMode,
-} from "@aws-sdk/client-scheduler";
+} from '@aws-sdk/client-scheduler';
+import { marshall, unmarshall } from '@aws-sdk/util-dynamodb';
 
 const dynamoClient = new DynamoDBClient({});
 const schedulerClient = new SchedulerClient({});
@@ -23,7 +23,7 @@ const TABLE_NAME = process.env.REPOS_TABLE_NAME!;
 const DISPATCHER_FUNCTION_ARN = process.env.DISPATCHER_FUNCTION_ARN!;
 const SCHEDULER_ROLE_ARN = process.env.SCHEDULER_ROLE_ARN!;
 const DEFAULT_SCHEDULES: Record<string, string> = JSON.parse(
-  process.env.DEFAULT_SCHEDULES || "{}"
+  process.env.DEFAULT_SCHEDULES || '{}',
 );
 
 interface APIGatewayEvent {
@@ -38,8 +38,8 @@ function response(statusCode: number, body: unknown) {
   return {
     statusCode,
     headers: {
-      "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*",
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
     },
     body: JSON.stringify(body),
   };
@@ -51,7 +51,7 @@ function response(statusCode: number, body: unknown) {
  */
 function scheduleNameFor(owner: string, repo: string, jobType: string): string {
   const sanitized = `${owner}-${repo}-${jobType}`
-    .replace(/[^a-zA-Z0-9\-_.]/g, "-")
+    .replace(/[^a-zA-Z0-9\-_.]/g, '-')
     .slice(0, 50);
   return `repo-patrol-${sanitized}`;
 }
@@ -63,18 +63,18 @@ async function syncSchedules(
   owner: string,
   repo: string,
   jobs: Record<string, any>,
-  enabled: boolean
+  enabled: boolean,
 ) {
   for (const [jobType, jobConfig] of Object.entries(jobs)) {
     const name = scheduleNameFor(owner, repo, jobType);
     const scheduleExpression =
-      jobConfig.schedule || DEFAULT_SCHEDULES[jobType] || "rate(1 day)";
+      jobConfig.schedule || DEFAULT_SCHEDULES[jobType] || 'rate(1 day)';
     const isActive = enabled && jobConfig.enabled;
 
     const params = {
       Name: name,
       ScheduleExpression: scheduleExpression,
-      ScheduleExpressionTimezone: "Asia/Tokyo",
+      ScheduleExpressionTimezone: 'Asia/Tokyo',
       FlexibleTimeWindow: { Mode: FlexibleTimeWindowMode.OFF },
       Target: {
         Arn: DISPATCHER_FUNCTION_ARN,
@@ -84,7 +84,7 @@ async function syncSchedules(
           jobType,
         }),
       },
-      State: isActive ? ("ENABLED" as const) : ("DISABLED" as const),
+      State: isActive ? ('ENABLED' as const) : ('DISABLED' as const),
     };
 
     try {
@@ -92,12 +92,12 @@ async function syncSchedules(
       await schedulerClient.send(new GetScheduleCommand({ Name: name }));
       // Update existing
       await schedulerClient.send(new UpdateScheduleCommand(params));
-      console.log(`Updated schedule ${name} (${isActive ? "ENABLED" : "DISABLED"})`);
+      console.log(`Updated schedule ${name} (${isActive ? 'ENABLED' : 'DISABLED'})`);
     } catch (e: any) {
-      if (e.name === "ResourceNotFoundException") {
+      if (e.name === 'ResourceNotFoundException') {
         // Create new
         await schedulerClient.send(new CreateScheduleCommand(params));
-        console.log(`Created schedule ${name} (${isActive ? "ENABLED" : "DISABLED"})`);
+        console.log(`Created schedule ${name} (${isActive ? 'ENABLED' : 'DISABLED'})`);
       } else {
         throw e;
       }
@@ -116,7 +116,7 @@ async function deleteSchedules(owner: string, repo: string) {
       await schedulerClient.send(new DeleteScheduleCommand({ Name: name }));
       console.log(`Deleted schedule ${name}`);
     } catch (e: any) {
-      if (e.name !== "ResourceNotFoundException") {
+      if (e.name !== 'ResourceNotFoundException') {
         console.error(`Failed to delete schedule ${name}:`, e);
       }
     }
@@ -129,32 +129,32 @@ export const handler = async (event: APIGatewayEvent) => {
 
   try {
     // GET /repos - List all repos
-    if (method === "GET" && !repoId) {
+    if (method === 'GET' && !repoId) {
       const result = await dynamoClient.send(
-        new ScanCommand({ TableName: TABLE_NAME })
+        new ScanCommand({ TableName: TABLE_NAME }),
       );
       const items = (result.Items || []).map((item) => unmarshall(item));
       return response(200, { repos: items });
     }
 
     // GET /repos/{repoId} - Get specific repo
-    if (method === "GET" && repoId) {
+    if (method === 'GET' && repoId) {
       const result = await dynamoClient.send(
         new GetItemCommand({
           TableName: TABLE_NAME,
           Key: marshall({ repo_id: repoId }),
-        })
+        }),
       );
       if (!result.Item) {
-        return response(404, { error: "Repository not found" });
+        return response(404, { error: 'Repository not found' });
       }
       return response(200, unmarshall(result.Item));
     }
 
     // POST /repos/sync - Re-sync all schedules from DynamoDB (consistency repair)
-    if (method === "POST" && event.path?.endsWith("/sync")) {
+    if (method === 'POST' && event.path?.endsWith('/sync')) {
       const result = await dynamoClient.send(
-        new ScanCommand({ TableName: TABLE_NAME })
+        new ScanCommand({ TableName: TABLE_NAME }),
       );
       const items = (result.Items || []).map((item) => unmarshall(item));
       const results: Array<{ repo_id: string; status: string; error?: string }> = [];
@@ -165,11 +165,11 @@ export const handler = async (event: APIGatewayEvent) => {
             repo.owner,
             repo.repo,
             repo.jobs || {},
-            repo.enabled
+            repo.enabled,
           );
-          results.push({ repo_id: repo.repo_id, status: "synced" });
+          results.push({ repo_id: repo.repo_id, status: 'synced' });
         } catch (e) {
-          results.push({ repo_id: repo.repo_id, status: "error", error: String(e) });
+          results.push({ repo_id: repo.repo_id, status: 'error', error: String(e) });
         }
       }
 
@@ -177,13 +177,13 @@ export const handler = async (event: APIGatewayEvent) => {
     }
 
     // POST /repos - Create new repo + create EventBridge Schedules
-    if (method === "POST") {
-      const body = JSON.parse(event.body || "{}");
+    if (method === 'POST') {
+      const body = JSON.parse(event.body || '{}');
       const { owner, repo, github_app_installation_id, jobs, model_id } = body;
 
       if (!owner || !repo || !github_app_installation_id) {
         return response(400, {
-          error: "owner, repo, and github_app_installation_id are required",
+          error: 'owner, repo, and github_app_installation_id are required',
         });
       }
 
@@ -195,7 +195,7 @@ export const handler = async (event: APIGatewayEvent) => {
         repo,
         enabled: true,
         github_app_installation_id,
-        model_id: model_id || "",
+        model_id: model_id || '',
         jobs: jobs || {},
         created_at: now,
         updated_at: now,
@@ -206,14 +206,14 @@ export const handler = async (event: APIGatewayEvent) => {
         new PutItemCommand({
           TableName: TABLE_NAME,
           Item: marshall(item, { removeUndefinedValues: true }),
-        })
+        }),
       );
 
       // Create EventBridge Schedules — rollback DynamoDB on failure
       try {
         await syncSchedules(owner, repo, jobs || {}, true);
       } catch (scheduleError) {
-        console.error("Failed to create schedules, rolling back DynamoDB:", scheduleError);
+        console.error('Failed to create schedules, rolling back DynamoDB:', scheduleError);
         // Best-effort cleanup of any partially created schedules
         try { await deleteSchedules(owner, repo); } catch (_) { /* ignore */ }
         // Roll back DynamoDB item
@@ -221,7 +221,7 @@ export const handler = async (event: APIGatewayEvent) => {
           new DeleteItemCommand({
             TableName: TABLE_NAME,
             Key: marshall({ repo_id: repoIdValue }),
-          })
+          }),
         );
         throw scheduleError;
       }
@@ -230,20 +230,20 @@ export const handler = async (event: APIGatewayEvent) => {
     }
 
     // PUT /repos/{repoId} - Update repo + sync EventBridge Schedules
-    if (method === "PUT" && repoId) {
-      const body = JSON.parse(event.body || "{}");
+    if (method === 'PUT' && repoId) {
+      const body = JSON.parse(event.body || '{}');
       const now = new Date().toISOString();
 
-      const updateExpressions: string[] = ["#updated_at = :updated_at"];
+      const updateExpressions: string[] = ['#updated_at = :updated_at'];
       const expressionNames: Record<string, string> = {
-        "#updated_at": "updated_at",
+        '#updated_at': 'updated_at',
       };
       const expressionValues: Record<string, any> = {
-        ":updated_at": { S: now },
+        ':updated_at': { S: now },
       };
 
       for (const [key, value] of Object.entries(body)) {
-        if (key === "repo_id") continue;
+        if (key === 'repo_id') continue;
         const attrName = `#${key}`;
         const attrValue = `:${key}`;
         updateExpressions.push(`${attrName} = ${attrValue}`);
@@ -255,10 +255,10 @@ export const handler = async (event: APIGatewayEvent) => {
         new UpdateItemCommand({
           TableName: TABLE_NAME,
           Key: marshall({ repo_id: repoId }),
-          UpdateExpression: `SET ${updateExpressions.join(", ")}`,
+          UpdateExpression: `SET ${updateExpressions.join(', ')}`,
           ExpressionAttributeNames: expressionNames,
           ExpressionAttributeValues: expressionValues,
-        })
+        }),
       );
 
       // Re-fetch full item to sync schedules
@@ -266,7 +266,7 @@ export const handler = async (event: APIGatewayEvent) => {
         new GetItemCommand({
           TableName: TABLE_NAME,
           Key: marshall({ repo_id: repoId }),
-        })
+        }),
       );
 
       let scheduleWarning: string | undefined;
@@ -277,13 +277,13 @@ export const handler = async (event: APIGatewayEvent) => {
             repo.owner,
             repo.repo,
             repo.jobs || {},
-            repo.enabled
+            repo.enabled,
           );
         } catch (scheduleError) {
           // DynamoDB update succeeded but schedule sync failed.
           // Return success with warning — caller can retry the update.
-          console.error("Schedule sync failed after DynamoDB update:", scheduleError);
-          scheduleWarning = "DynamoDB updated but schedule sync failed. Retry the update to fix.";
+          console.error('Schedule sync failed after DynamoDB update:', scheduleError);
+          scheduleWarning = 'DynamoDB updated but schedule sync failed. Retry the update to fix.';
         }
       }
 
@@ -295,13 +295,13 @@ export const handler = async (event: APIGatewayEvent) => {
     }
 
     // DELETE /repos/{repoId} - Delete repo + delete EventBridge Schedules
-    if (method === "DELETE" && repoId) {
+    if (method === 'DELETE' && repoId) {
       // Fetch repo to get owner/repo for schedule cleanup
       const existing = await dynamoClient.send(
         new GetItemCommand({
           TableName: TABLE_NAME,
           Key: marshall({ repo_id: repoId }),
-        })
+        }),
       );
 
       if (existing.Item) {
@@ -313,15 +313,15 @@ export const handler = async (event: APIGatewayEvent) => {
         new DeleteItemCommand({
           TableName: TABLE_NAME,
           Key: marshall({ repo_id: repoId }),
-        })
+        }),
       );
 
       return response(200, { deleted: repoId });
     }
 
-    return response(405, { error: "Method not allowed" });
+    return response(405, { error: 'Method not allowed' });
   } catch (error) {
-    console.error("Registry API error:", error);
+    console.error('Registry API error:', error);
     return response(500, { error: String(error) });
   }
 };

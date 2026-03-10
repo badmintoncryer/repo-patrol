@@ -6,45 +6,45 @@ import {
   SchedulerClient,
   ListSchedulesCommand,
   DeleteScheduleCommand,
-} from "@aws-sdk/client-scheduler";
+} from '@aws-sdk/client-scheduler';
 
 const schedulerClient = new SchedulerClient({});
 
 interface CloudFormationEvent {
-  RequestType: "Create" | "Update" | "Delete";
+  RequestType: 'Create' | 'Update' | 'Delete';
   ResourceProperties: Record<string, string>;
 }
 
 export const handler = async (event: CloudFormationEvent) => {
-  console.log("Schedule cleanup event:", event.RequestType);
+  console.log('Schedule cleanup event:', event.RequestType);
 
   // Only act on DELETE
-  if (event.RequestType !== "Delete") {
-    return { Status: "SUCCESS" };
+  if (event.RequestType !== 'Delete') {
+    return { Status: 'SUCCESS' };
   }
 
-  console.log("Stack deletion detected — cleaning up repo-patrol-* schedules");
+  console.log('Stack deletion detected — cleaning up repo-patrol-* schedules');
 
   let nextToken: string | undefined;
 
   do {
     const listResult = await schedulerClient.send(
       new ListSchedulesCommand({
-        NamePrefix: "repo-patrol-",
+        NamePrefix: 'repo-patrol-',
         MaxResults: 100,
         NextToken: nextToken,
-      })
+      }),
     );
 
     for (const schedule of listResult.Schedules || []) {
       if (!schedule.Name) continue;
       try {
         await schedulerClient.send(
-          new DeleteScheduleCommand({ Name: schedule.Name })
+          new DeleteScheduleCommand({ Name: schedule.Name }),
         );
         console.log(`Deleted schedule: ${schedule.Name}`);
       } catch (e: any) {
-        if (e.name !== "ResourceNotFoundException") {
+        if (e.name !== 'ResourceNotFoundException') {
           console.error(`Failed to delete schedule ${schedule.Name}:`, e);
         }
       }
@@ -53,6 +53,6 @@ export const handler = async (event: CloudFormationEvent) => {
     nextToken = listResult.NextToken;
   } while (nextToken);
 
-  console.log("Schedule cleanup complete");
-  return { Status: "SUCCESS" };
+  console.log('Schedule cleanup complete');
+  return { Status: 'SUCCESS' };
 };

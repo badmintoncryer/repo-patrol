@@ -1,18 +1,28 @@
-import * as path from "path";
-import { Construct } from "constructs";
-import * as cdk from "aws-cdk-lib";
-import * as lambda from "aws-cdk-lib/aws-lambda";
-import * as nodejs from "aws-cdk-lib/aws-lambda-nodejs";
-import * as iam from "aws-cdk-lib/aws-iam";
-import { Runtime } from "@aws-cdk/aws-bedrock-agentcore-alpha";
+import * as path from 'path';
+import { Runtime } from '@aws-cdk/aws-bedrock-agentcore-alpha';
+import * as cdk from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as nodejs from 'aws-cdk-lib/aws-lambda-nodejs';
+import { Construct } from 'constructs';
 
-export type JobType =
-  | "review_pull_requests"
-  | "triage_issues"
-  | "handle_dependabot"
-  | "analyze_ci_failures"
-  | "check_dependencies"
-  | "repo_health_check";
+/**
+ * Supported patrol job types.
+ */
+export enum JobType {
+  /** Review open pull requests and post comments */
+  REVIEW_PULL_REQUESTS = 'review_pull_requests',
+  /** Triage issues with labels and comments */
+  TRIAGE_ISSUES = 'triage_issues',
+  /** Handle Dependabot PRs (auto-approve/merge) */
+  HANDLE_DEPENDABOT = 'handle_dependabot',
+  /** Analyze CI failure logs and suggest fixes */
+  ANALYZE_CI_FAILURES = 'analyze_ci_failures',
+  /** Check dependency updates */
+  CHECK_DEPENDENCIES = 'check_dependencies',
+  /** Repository health check (README, LICENSE, CI config) */
+  REPO_HEALTH_CHECK = 'repo_health_check',
+}
 
 export interface AgentSchedulerProps {
   readonly agentRuntime: Runtime;
@@ -39,15 +49,15 @@ export class AgentScheduler extends Construct {
     super(scope, id);
 
     // Dispatcher Lambda — invoked per (repo × jobType)
-    this.dispatcherFunction = new nodejs.NodejsFunction(this, "Dispatcher", {
+    this.dispatcherFunction = new nodejs.NodejsFunction(this, 'Dispatcher', {
       runtime: lambda.Runtime.NODEJS_22_X,
       architecture: lambda.Architecture.ARM_64,
-      handler: "handler",
-      entry: path.join(__dirname, "handlers/invoke-agent.ts"),
+      handler: 'handler',
+      entry: path.join(__dirname, 'handlers/invoke-agent.ts'),
       timeout: cdk.Duration.minutes(15),
       memorySize: 256,
       environment: {
-        AGENT_RUNTIME_ARN: props.agentRuntime.runtimeArn,
+        AGENT_RUNTIME_ARN: props.agentRuntime.agentRuntimeArn,
         REPOS_TABLE_NAME: props.reposTableName,
       },
       bundling: {
@@ -59,17 +69,17 @@ export class AgentScheduler extends Construct {
     // Grant AgentCore invocation
     this.dispatcherFunction.addToRolePolicy(
       new iam.PolicyStatement({
-        actions: ["bedrock-agentcore:InvokeAgentRuntime"],
+        actions: ['bedrock-agentcore:InvokeAgentRuntime'],
         resources: [
-          props.agentRuntime.runtimeArn,
-          `${props.agentRuntime.runtimeArn}/*`,
+          props.agentRuntime.agentRuntimeArn,
+          `${props.agentRuntime.agentRuntimeArn}/*`,
         ],
-      })
+      }),
     );
 
     // Scheduler execution role — used by dynamically created EventBridge Schedules
-    this.schedulerRole = new iam.Role(this, "SchedulerRole", {
-      assumedBy: new iam.ServicePrincipal("scheduler.amazonaws.com"),
+    this.schedulerRole = new iam.Role(this, 'SchedulerRole', {
+      assumedBy: new iam.ServicePrincipal('scheduler.amazonaws.com'),
     });
     this.dispatcherFunction.grantInvoke(this.schedulerRole);
   }

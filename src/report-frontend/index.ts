@@ -1,12 +1,13 @@
-import * as path from "path";
-import { Construct } from "constructs";
-import * as cdk from "aws-cdk-lib";
-import * as lambda from "aws-cdk-lib/aws-lambda";
-import * as s3 from "aws-cdk-lib/aws-s3";
-import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
-import * as cloudfront from "aws-cdk-lib/aws-cloudfront";
-import * as origins from "aws-cdk-lib/aws-cloudfront-origins";
-import * as cognito from "aws-cdk-lib/aws-cognito";
+import * as path from 'path';
+import * as cdk from 'aws-cdk-lib';
+import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
+import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
+import * as cognito from 'aws-cdk-lib/aws-cognito';
+import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
+import { Platform } from 'aws-cdk-lib/aws-ecr-assets';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import { Construct } from 'constructs';
 
 export interface ReportFrontendProps {
   readonly reportBucket: s3.IBucket;
@@ -24,8 +25,8 @@ export class ReportFrontend extends Construct {
     super(scope, id);
 
     // Cognito User Pool for dashboard authentication
-    this.userPool = new cognito.UserPool(this, "UserPool", {
-      userPoolName: "repo-patrol-users",
+    this.userPool = new cognito.UserPool(this, 'UserPool', {
+      userPoolName: 'repo-patrol-users',
       selfSignUpEnabled: false,
       signInAliases: { email: true },
       passwordPolicy: {
@@ -38,7 +39,7 @@ export class ReportFrontend extends Construct {
     });
 
     // User Pool Domain for hosted UI
-    const userPoolDomain = this.userPool.addDomain("Domain", {
+    const userPoolDomain = this.userPool.addDomain('Domain', {
       cognitoDomain: {
         domainPrefix: `repo-patrol-${cdk.Aws.ACCOUNT_ID}`,
       },
@@ -47,12 +48,12 @@ export class ReportFrontend extends Construct {
     // Next.js Docker Lambda
     const webappFunction = new lambda.DockerImageFunction(
       this,
-      "WebappFunction",
+      'WebappFunction',
       {
-        functionName: "repo-patrol-webapp",
+        functionName: 'repo-patrol-webapp',
         code: lambda.DockerImageCode.fromImageAsset(
-          path.join(__dirname, "../../../../webapp"),
-          { platform: lambda.Architecture.ARM_64.dockerPlatform }
+          path.join(__dirname, '../../webapp'),
+          { platform: Platform.LINUX_ARM64 },
         ),
         architecture: lambda.Architecture.ARM_64,
         memorySize: 512,
@@ -63,9 +64,9 @@ export class ReportFrontend extends Construct {
           JOB_HISTORY_TABLE_NAME: props.jobHistoryTable.tableName,
           COGNITO_USER_POOL_ID: this.userPool.userPoolId,
           COGNITO_ISSUER: `https://cognito-idp.${cdk.Aws.REGION}.amazonaws.com/${this.userPool.userPoolId}`,
-          AWS_LWA_INVOKE_MODE: "response_stream",
+          AWS_LWA_INVOKE_MODE: 'response_stream',
         },
-      }
+      },
     );
 
     // Grant permissions
@@ -80,8 +81,8 @@ export class ReportFrontend extends Construct {
     });
 
     // User Pool Client (created after we know the CloudFront URL)
-    this.userPoolClient = this.userPool.addClient("WebappClient", {
-      userPoolClientName: "repo-patrol-webapp",
+    this.userPoolClient = this.userPool.addClient('WebappClient', {
+      userPoolClientName: 'repo-patrol-webapp',
       generateSecret: true,
       oAuth: {
         flows: { authorizationCodeGrant: true },
@@ -91,13 +92,13 @@ export class ReportFrontend extends Construct {
           cognito.OAuthScope.PROFILE,
         ],
         // Callback URLs will be updated after CloudFront distribution is created
-        callbackUrls: ["http://localhost:3000/api/auth/callback/cognito"],
-        logoutUrls: ["http://localhost:3000"],
+        callbackUrls: ['http://localhost:3000/api/auth/callback/cognito'],
+        logoutUrls: ['http://localhost:3000'],
       },
     });
 
     // CloudFront Distribution
-    this.distribution = new cloudfront.Distribution(this, "Distribution", {
+    this.distribution = new cloudfront.Distribution(this, 'Distribution', {
       defaultBehavior: {
         origin: new origins.FunctionUrlOrigin(functionUrl),
         viewerProtocolPolicy:
@@ -110,19 +111,19 @@ export class ReportFrontend extends Construct {
     });
 
     // Outputs
-    new cdk.CfnOutput(this, "DashboardUrl", {
+    new cdk.CfnOutput(this, 'DashboardUrl', {
       value: `https://${this.distribution.distributionDomainName}`,
-      description: "Dashboard URL",
+      description: 'Dashboard URL',
     });
 
-    new cdk.CfnOutput(this, "CognitoUserPoolId", {
+    new cdk.CfnOutput(this, 'CognitoUserPoolId', {
       value: this.userPool.userPoolId,
-      description: "Cognito User Pool ID",
+      description: 'Cognito User Pool ID',
     });
 
-    new cdk.CfnOutput(this, "CognitoDomain", {
+    new cdk.CfnOutput(this, 'CognitoDomain', {
       value: `https://${userPoolDomain.domainName}.auth.${cdk.Aws.REGION}.amazoncognito.com`,
-      description: "Cognito Domain URL",
+      description: 'Cognito Domain URL',
     });
   }
 }
