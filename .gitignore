@@ -35,6 +35,12 @@ cdk.out/
 .env.local
 cdk.context.json
 !test/*.snapshot/**/*
+src/**/*.js
+src/**/*.d.ts
+test/**/*.js
+test/**/*.d.ts
+.projenrc.js
+.projenrc.d.ts
 /test-reports/
 junit.xml
 /coverage/

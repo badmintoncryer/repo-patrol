@@ -123,10 +123,10 @@ export class ReportFrontend extends Construct {
       },
     });
 
-    // CloudFront Distribution
+    // CloudFront Distribution with OAC for Lambda Function URL
     this.distribution = new cloudfront.Distribution(this, 'Distribution', {
       defaultBehavior: {
-        origin: new origins.FunctionUrlOrigin(functionUrl),
+        origin: origins.FunctionUrlOrigin.withOriginAccessControl(functionUrl),
         viewerProtocolPolicy:
           cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         cachePolicy: cloudfront.CachePolicy.CACHING_DISABLED,

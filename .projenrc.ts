@@ -46,6 +46,12 @@ const project = new awscdk.AwsCdkConstructLibrary({
     '.env.local',
     'cdk.context.json',
     '!test/*.snapshot/**/*',
+    'src/**/*.js',
+    'src/**/*.d.ts',
+    'test/**/*.js',
+    'test/**/*.d.ts',
+    '.projenrc.js',
+    '.projenrc.d.ts',
   ],
 
   excludeTypescript: [
