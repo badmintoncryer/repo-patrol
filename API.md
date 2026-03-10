@@ -803,7 +803,7 @@ const jobConfig: JobConfig = { ... }
 | --- | --- | --- |
 | <code><a href="#repo-patrol.JobConfig.property.enabled">enabled</a></code> | <code>boolean</code> | Whether this job is enabled. |
 | <code><a href="#repo-patrol.JobConfig.property.modelId">modelId</a></code> | <code>string</code> | Override the Bedrock model ID for this specific job. |
-| <code><a href="#repo-patrol.JobConfig.property.schedule">schedule</a></code> | <code>aws-cdk-lib.aws_scheduler.ScheduleExpression</code> | Schedule for this job (overrides the default schedule). |
+| <code><a href="#repo-patrol.JobConfig.property.schedule">schedule</a></code> | <code>aws-cdk-lib.aws_scheduler.ScheduleExpression</code> | Schedule for this job. |
 
 ---
 
@@ -840,9 +840,9 @@ public readonly schedule: ScheduleExpression;
 ```
 
 - *Type:* aws-cdk-lib.aws_scheduler.ScheduleExpression
-- *Default:* Uses the construct-level default schedule for this job type
+- *Default:* Daily at UTC 00:00 (cron(0 0 * * ? *))
 
-Schedule for this job (overrides the default schedule).
+Schedule for this job.
 
 ---
 
@@ -861,10 +861,11 @@ const repoPatrolProps: RepoPatrolProps = { ... }
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#repo-patrol.RepoPatrolProps.property.githubAppSecretArn">githubAppSecretArn</a></code> | <code>string</code> | ARN of the Secrets Manager secret containing GitHub App credentials (app_id, private_key). |
-| <code><a href="#repo-patrol.RepoPatrolProps.property.defaultSchedules">defaultSchedules</a></code> | <code>{[ key: string ]: aws-cdk-lib.aws_scheduler.ScheduleExpression}</code> | Default schedules per job type. |
+| <code><a href="#repo-patrol.RepoPatrolProps.property.adminEmails">adminEmails</a></code> | <code>string[]</code> | Email addresses for admin users to create in the Cognito User Pool. |
 | <code><a href="#repo-patrol.RepoPatrolProps.property.dryRun">dryRun</a></code> | <code>boolean</code> | Run in dry-run mode (no GitHub write operations). |
 | <code><a href="#repo-patrol.RepoPatrolProps.property.enableDashboard">enableDashboard</a></code> | <code>boolean</code> | Enable the Next.js dashboard with Cognito authentication. |
 | <code><a href="#repo-patrol.RepoPatrolProps.property.maxToolCalls">maxToolCalls</a></code> | <code>number</code> | Maximum tool calls per agent invocation. |
+| <code><a href="#repo-patrol.RepoPatrolProps.property.mfaRequired">mfaRequired</a></code> | <code>boolean</code> | Whether to require MFA (TOTP) for dashboard login. |
 | <code><a href="#repo-patrol.RepoPatrolProps.property.modelId">modelId</a></code> | <code>string</code> | Default Bedrock model ID. |
 | <code><a href="#repo-patrol.RepoPatrolProps.property.repositories">repositories</a></code> | <code><a href="#repo-patrol.RepositoryConfig">RepositoryConfig</a>[]</code> | Repositories to monitor. |
 
@@ -882,18 +883,19 @@ ARN of the Secrets Manager secret containing GitHub App credentials (app_id, pri
 
 ---
 
-##### `defaultSchedules`<sup>Optional</sup> <a name="defaultSchedules" id="repo-patrol.RepoPatrolProps.property.defaultSchedules"></a>
+##### `adminEmails`<sup>Optional</sup> <a name="adminEmails" id="repo-patrol.RepoPatrolProps.property.adminEmails"></a>
 
 ```typescript
-public readonly defaultSchedules: {[ key: string ]: ScheduleExpression};
+public readonly adminEmails: string[];
 ```
 
-- *Type:* {[ key: string ]: aws-cdk-lib.aws_scheduler.ScheduleExpression}
+- *Type:* string[]
+- *Default:* No admin users are created
 
-Default schedules per job type.
+Email addresses for admin users to create in the Cognito User Pool.
 
-Keys are JobType enum values (e.g. 'review_pull_requests').
-Per-repository job configs can override these.
+Each user receives an invitation email from Cognito with a temporary password.
+Requires enableDashboard to be true (default).
 
 ---
 
@@ -930,6 +932,19 @@ public readonly maxToolCalls: number;
 - *Type:* number
 
 Maximum tool calls per agent invocation.
+
+---
+
+##### `mfaRequired`<sup>Optional</sup> <a name="mfaRequired" id="repo-patrol.RepoPatrolProps.property.mfaRequired"></a>
+
+```typescript
+public readonly mfaRequired: boolean;
+```
+
+- *Type:* boolean
+- *Default:* true
+
+Whether to require MFA (TOTP) for dashboard login.
 
 ---
 
@@ -974,21 +989,9 @@ const repoRegistryProps: RepoRegistryProps = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#repo-patrol.RepoRegistryProps.property.defaultSchedules">defaultSchedules</a></code> | <code>{[ key: string ]: string}</code> | Default schedule expressions per job type. |
 | <code><a href="#repo-patrol.RepoRegistryProps.property.dispatcherFunctionArn">dispatcherFunctionArn</a></code> | <code>string</code> | ARN of the Dispatcher Lambda that EventBridge Schedules will target. |
+| <code><a href="#repo-patrol.RepoRegistryProps.property.fallbackSchedule">fallbackSchedule</a></code> | <code>string</code> | Fallback schedule expression when no schedule is configured. |
 | <code><a href="#repo-patrol.RepoRegistryProps.property.schedulerRoleArn">schedulerRoleArn</a></code> | <code>string</code> | ARN of the IAM Role for EventBridge Scheduler. |
-
----
-
-##### `defaultSchedules`<sup>Required</sup> <a name="defaultSchedules" id="repo-patrol.RepoRegistryProps.property.defaultSchedules"></a>
-
-```typescript
-public readonly defaultSchedules: {[ key: string ]: string};
-```
-
-- *Type:* {[ key: string ]: string}
-
-Default schedule expressions per job type.
 
 ---
 
@@ -1001,6 +1004,18 @@ public readonly dispatcherFunctionArn: string;
 - *Type:* string
 
 ARN of the Dispatcher Lambda that EventBridge Schedules will target.
+
+---
+
+##### `fallbackSchedule`<sup>Required</sup> <a name="fallbackSchedule" id="repo-patrol.RepoRegistryProps.property.fallbackSchedule"></a>
+
+```typescript
+public readonly fallbackSchedule: string;
+```
+
+- *Type:* string
+
+Fallback schedule expression when no schedule is configured.
 
 ---
 
@@ -1033,6 +1048,8 @@ const reportFrontendProps: ReportFrontendProps = { ... }
 | <code><a href="#repo-patrol.ReportFrontendProps.property.jobHistoryTable">jobHistoryTable</a></code> | <code>aws-cdk-lib.aws_dynamodb.ITable</code> | *No description.* |
 | <code><a href="#repo-patrol.ReportFrontendProps.property.reportBucket">reportBucket</a></code> | <code>aws-cdk-lib.aws_s3.IBucket</code> | *No description.* |
 | <code><a href="#repo-patrol.ReportFrontendProps.property.reposTable">reposTable</a></code> | <code>aws-cdk-lib.aws_dynamodb.ITable</code> | *No description.* |
+| <code><a href="#repo-patrol.ReportFrontendProps.property.adminEmails">adminEmails</a></code> | <code>string[]</code> | Email addresses for admin users to create in the Cognito User Pool. |
+| <code><a href="#repo-patrol.ReportFrontendProps.property.mfaRequired">mfaRequired</a></code> | <code>boolean</code> | Whether to require MFA (TOTP) for dashboard login. |
 | <code><a href="#repo-patrol.ReportFrontendProps.property.registryFunctionUrl">registryFunctionUrl</a></code> | <code>string</code> | *No description.* |
 
 ---
@@ -1064,6 +1081,34 @@ public readonly reposTable: ITable;
 ```
 
 - *Type:* aws-cdk-lib.aws_dynamodb.ITable
+
+---
+
+##### `adminEmails`<sup>Optional</sup> <a name="adminEmails" id="repo-patrol.ReportFrontendProps.property.adminEmails"></a>
+
+```typescript
+public readonly adminEmails: string[];
+```
+
+- *Type:* string[]
+- *Default:* No admin users are created
+
+Email addresses for admin users to create in the Cognito User Pool.
+
+Each user receives an invitation email from Cognito with a temporary password.
+
+---
+
+##### `mfaRequired`<sup>Optional</sup> <a name="mfaRequired" id="repo-patrol.ReportFrontendProps.property.mfaRequired"></a>
+
+```typescript
+public readonly mfaRequired: boolean;
+```
+
+- *Type:* boolean
+- *Default:* true
+
+Whether to require MFA (TOTP) for dashboard login.
 
 ---
 

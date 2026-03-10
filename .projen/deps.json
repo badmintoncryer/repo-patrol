@@ -1,7 +1,21 @@
 {
   "dependencies": [
     {
+      "name": "@aws-cdk/integ-runner",
+      "version": "latest",
+      "type": "build"
+    },
+    {
+      "name": "@aws-cdk/integ-tests-alpha",
+      "version": "2.233.0-alpha.0",
+      "type": "build"
+    },
+    {
       "name": "@aws-sdk/client-bedrock-agentcore",
+      "type": "build"
+    },
+    {
+      "name": "@aws-sdk/client-cognito-identity-provider",
       "type": "build"
     },
     {

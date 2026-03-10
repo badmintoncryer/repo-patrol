@@ -25,7 +25,10 @@ const project = new awscdk.AwsCdkConstructLibrary({
 
   // Lambda handler type-checking only (bundled by esbuild via NodejsFunction at deploy time)
   devDeps: [
+    '@aws-cdk/integ-runner@latest',
+    '@aws-cdk/integ-tests-alpha@2.233.0-alpha.0',
     '@aws-sdk/client-bedrock-agentcore',
+    '@aws-sdk/client-cognito-identity-provider',
     '@aws-sdk/client-dynamodb',
     '@aws-sdk/client-scheduler',
     '@aws-sdk/util-dynamodb',
@@ -42,8 +45,18 @@ const project = new awscdk.AwsCdkConstructLibrary({
     '.env',
     '.env.local',
     'cdk.context.json',
+    '!test/*.snapshot/**/*',
+  ],
+
+  excludeTypescript: [
+    'test/*.snapshot/**/*',
   ],
 });
+
+// Integration tests with integ-runner
+project.projectBuild.testTask.exec(
+  'pnpm tsc -p tsconfig.dev.json && pnpm integ-runner',
+);
 
 // Include Docker assets and handler .ts sources in npm package
 project.addPackageIgnore('!/agent/');

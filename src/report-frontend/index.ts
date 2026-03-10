@@ -5,8 +5,11 @@ import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import { Platform } from 'aws-cdk-lib/aws-ecr-assets';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as nodejs from 'aws-cdk-lib/aws-lambda-nodejs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as cr from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 
 export interface ReportFrontendProps {
@@ -20,6 +23,13 @@ export interface ReportFrontendProps {
    * @default true
    */
   readonly mfaRequired?: boolean;
+
+  /**
+   * Email addresses for admin users to create in the Cognito User Pool.
+   * Each user receives an invitation email from Cognito with a temporary password.
+   * @default - No admin users are created
+   */
+  readonly adminEmails?: string[];
 }
 
 export class ReportFrontend extends Construct {
@@ -141,5 +151,56 @@ export class ReportFrontend extends Construct {
       value: `https://${userPoolDomain.domainName}.auth.${cdk.Aws.REGION}.amazoncognito.com`,
       description: 'Cognito Domain URL',
     });
+
+    // Seed admin users via Custom Resource
+    if (props.adminEmails && props.adminEmails.length > 0) {
+      const sortedEmails = [...props.adminEmails].sort();
+
+      const adminUserSeederFn = new nodejs.NodejsFunction(
+        this,
+        'AdminUserSeederFunction',
+        {
+          runtime: lambda.Runtime.NODEJS_22_X,
+          architecture: lambda.Architecture.ARM_64,
+          handler: 'handler',
+          entry: path.join(__dirname, '../handlers/admin-user-seeder.ts'),
+          timeout: cdk.Duration.minutes(2),
+          memorySize: 256,
+          bundling: {
+            minify: true,
+            sourceMap: true,
+          },
+        },
+      );
+
+      adminUserSeederFn.addToRolePolicy(
+        new iam.PolicyStatement({
+          actions: [
+            'cognito-idp:AdminCreateUser',
+            'cognito-idp:AdminDeleteUser',
+          ],
+          resources: [this.userPool.userPoolArn],
+        }),
+      );
+
+      const adminUserProvider = new cr.Provider(
+        this,
+        'AdminUserSeederProvider',
+        { onEventHandler: adminUserSeederFn },
+      );
+
+      new cdk.CustomResource(this, 'AdminUserSeeder', {
+        serviceToken: adminUserProvider.serviceToken,
+        properties: {
+          UserPoolId: this.userPool.userPoolId,
+          Emails: JSON.stringify(sortedEmails),
+        },
+      });
+
+      new cdk.CfnOutput(this, 'AdminEmails', {
+        value: sortedEmails.join(', '),
+        description: 'Admin user email addresses',
+      });
+    }
   }
 }

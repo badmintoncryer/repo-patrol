@@ -90,6 +90,14 @@ export interface RepoPatrolProps {
    * @default true
    */
   readonly mfaRequired?: boolean;
+
+  /**
+   * Email addresses for admin users to create in the Cognito User Pool.
+   * Each user receives an invitation email from Cognito with a temporary password.
+   * Requires enableDashboard to be true (default).
+   * @default - No admin users are created
+   */
+  readonly adminEmails?: string[];
 }
 
 /**
@@ -161,6 +169,7 @@ export class RepoPatrol extends Construct {
         reposTable: this.registry.reposTable,
         jobHistoryTable: this.registry.jobHistoryTable,
         mfaRequired: props.mfaRequired,
+        adminEmails: props.adminEmails,
       });
     }
   }

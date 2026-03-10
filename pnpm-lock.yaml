@@ -11,7 +11,16 @@ importers:
       '@aws-cdk/aws-bedrock-agentcore-alpha':
         specifier: 2.224.0-alpha.0
         version: 2.224.0-alpha.0(@aws-cdk/aws-bedrock-alpha@2.224.0-alpha.0(aws-cdk-lib@2.233.0(constructs@10.4.4))(constructs@10.4.4))(aws-cdk-lib@2.233.0(constructs@10.4.4))(constructs@10.4.4)
+      '@aws-cdk/integ-runner':
+        specifier: latest
+        version: 2.197.3
+      '@aws-cdk/integ-tests-alpha':
+        specifier: 2.233.0-alpha.0
+        version: 2.233.0-alpha.0(aws-cdk-lib@2.233.0(constructs@10.4.4))(constructs@10.4.4)
       '@aws-sdk/client-bedrock-agentcore':
+        specifier: ^3.1005.0
+        version: 3.1005.0
+      '@aws-sdk/client-cognito-identity-provider':
         specifier: ^3.1005.0
         version: 3.1005.0
       '@aws-sdk/client-dynamodb':
@@ -116,12 +125,30 @@ packages:
       aws-cdk-lib: ^2.224.0
       constructs: ^10.0.0
 
+  '@aws-cdk/aws-service-spec@0.1.161':
+    resolution: {integrity: sha512-le9UnSpEbuKfIqUk0a4MXd7kx2GqXmC+pdaLIt3sMFxPB9CBKgnOZwHRaBpFCqj2r13bf5j3NBONy3RkD9t3Sg==}
+
   '@aws-cdk/cloud-assembly-schema@48.20.0':
     resolution: {integrity: sha512-+eeiav9LY4wbF/EFuCt/vfvi/Zoxo8bf94PW5clbMraChEliq83w4TbRVy0jB9jE0v1ooFTtIjSQkowSPkfISg==}
     engines: {node: '>= 18.0.0'}
     bundledDependencies:
       - jsonschema
       - semver
+
+  '@aws-cdk/integ-runner@2.197.3':
+    resolution: {integrity: sha512-v2oXseDR7DTDTNFnHHtpjmLkyIeZrpxjjG72y7wIF/9tQvtmSuPG01zbaCvZKwSLXLUmfBaQ1OonMBd/Im3KwA==}
+    engines: {node: '>= 18.0.0'}
+    hasBin: true
+
+  '@aws-cdk/integ-tests-alpha@2.233.0-alpha.0':
+    resolution: {integrity: sha512-sLCGOPvh6/s/jOo26OwP3IXsO1GCkqttx7YYptoWEonl0P6ZHp0Cbtko+jROQPeD956OaUv+o1sqi7uwUIcHcA==}
+    engines: {node: '>= 18.0.0'}
+    peerDependencies:
+      aws-cdk-lib: ^2.233.0
+      constructs: ^10.0.0
+
+  '@aws-cdk/service-spec-types@0.0.227':
+    resolution: {integrity: sha512-xQHO0xzItQN5mFxox1iX/0NxDkHMgCval2imn5uJeYh5BA6jwm5XkIVrtS4YaL0B3Eb3U3Q+tG8jK9fD/orGxg==}
 
   '@aws-crypto/crc32@5.2.0':
     resolution: {integrity: sha512-nLbCWqQNgUiwwtFsen1AdzAtvuLRsQS8rYgMuxCrdKf9kOssamGLuPwyTY9wyYblNr9+1XM8v6zoDTPPSIeANg==}
@@ -142,6 +169,10 @@ packages:
 
   '@aws-sdk/client-bedrock-agentcore@3.1005.0':
     resolution: {integrity: sha512-hfb0HyqR9Fu3pbsjOrcHRMbN9wOuHI0Rd9fXhHelvgfq/IJY2UTlmxyY85OqomruP/JoyPrk0MJ7OHYm1NjXUQ==}
+    engines: {node: '>=20.0.0'}
+
+  '@aws-sdk/client-cognito-identity-provider@3.1005.0':
+    resolution: {integrity: sha512-C8mOO8JuL4qgof66AW8xm2eossUGXcxpfm3YHnbxBsStiwJrdEAzDTPLr070FVNYho9bwIcKT0cNPh6IDspnEA==}
     engines: {node: '>=20.0.0'}
 
   '@aws-sdk/client-dynamodb@3.1005.0':
@@ -430,6 +461,9 @@ packages:
 
   '@bcoe/v8-coverage@0.2.3':
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
+
+  '@cdklabs/tskb@0.0.4':
+    resolution: {integrity: sha512-NFx1X0l7p5DyHtLLEyNeh1hPN4UN9hTkZkzFs/Mp+kFk7dpdINGmGVpCfRDjJ2DrcNSNENUmT+w8g73TvmBbTw==}
 
   '@cspotcode/source-map-support@0.8.1':
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
@@ -1364,6 +1398,11 @@ packages:
       - table
       - yaml
       - mime-types
+
+  aws-cdk@2.1110.0:
+    resolution: {integrity: sha512-t881rXhuHWbiCXf8nuzf81jyOzHCgX1DNiCD3COwVGpT6DYna2SjsrDbraenJM722Oc+2OOAAMpKNEtVNj7mEg==}
+    engines: {node: '>= 18.0.0'}
+    hasBin: true
 
   babel-jest@30.2.0:
     resolution: {integrity: sha512-0YiBEOxWqKkSQWL9nNGGEgndoeL0ZpWrbLMNL5u/Kaxrli3Eaxlt3ZtIDktEvXt4L/R9r3ODr2zKwGM/2BjxVw==}
@@ -3577,7 +3616,26 @@ snapshots:
       aws-cdk-lib: 2.233.0(constructs@10.4.4)
       constructs: 10.4.4
 
+  '@aws-cdk/aws-service-spec@0.1.161':
+    dependencies:
+      '@aws-cdk/service-spec-types': 0.0.227
+      '@cdklabs/tskb': 0.0.4
+
   '@aws-cdk/cloud-assembly-schema@48.20.0': {}
+
+  '@aws-cdk/integ-runner@2.197.3':
+    dependencies:
+      '@aws-cdk/aws-service-spec': 0.1.161
+      aws-cdk: 2.1110.0
+
+  '@aws-cdk/integ-tests-alpha@2.233.0-alpha.0(aws-cdk-lib@2.233.0(constructs@10.4.4))(constructs@10.4.4)':
+    dependencies:
+      aws-cdk-lib: 2.233.0(constructs@10.4.4)
+      constructs: 10.4.4
+
+  '@aws-cdk/service-spec-types@0.0.227':
+    dependencies:
+      '@cdklabs/tskb': 0.0.4
 
   '@aws-crypto/crc32@5.2.0':
     dependencies:
@@ -3654,6 +3712,50 @@ snapshots:
       '@smithy/util-middleware': 4.2.11
       '@smithy/util-retry': 4.2.11
       '@smithy/util-stream': 4.5.17
+      '@smithy/util-utf8': 4.2.2
+      tslib: 2.8.1
+    transitivePeerDependencies:
+      - aws-crt
+
+  '@aws-sdk/client-cognito-identity-provider@3.1005.0':
+    dependencies:
+      '@aws-crypto/sha256-browser': 5.2.0
+      '@aws-crypto/sha256-js': 5.2.0
+      '@aws-sdk/core': 3.973.19
+      '@aws-sdk/credential-provider-node': 3.972.19
+      '@aws-sdk/middleware-host-header': 3.972.7
+      '@aws-sdk/middleware-logger': 3.972.7
+      '@aws-sdk/middleware-recursion-detection': 3.972.7
+      '@aws-sdk/middleware-user-agent': 3.972.20
+      '@aws-sdk/region-config-resolver': 3.972.7
+      '@aws-sdk/types': 3.973.5
+      '@aws-sdk/util-endpoints': 3.996.4
+      '@aws-sdk/util-user-agent-browser': 3.972.7
+      '@aws-sdk/util-user-agent-node': 3.973.5
+      '@smithy/config-resolver': 4.4.10
+      '@smithy/core': 3.23.9
+      '@smithy/fetch-http-handler': 5.3.13
+      '@smithy/hash-node': 4.2.11
+      '@smithy/invalid-dependency': 4.2.11
+      '@smithy/middleware-content-length': 4.2.11
+      '@smithy/middleware-endpoint': 4.4.23
+      '@smithy/middleware-retry': 4.4.40
+      '@smithy/middleware-serde': 4.2.12
+      '@smithy/middleware-stack': 4.2.11
+      '@smithy/node-config-provider': 4.3.11
+      '@smithy/node-http-handler': 4.4.14
+      '@smithy/protocol-http': 5.3.11
+      '@smithy/smithy-client': 4.12.3
+      '@smithy/types': 4.13.0
+      '@smithy/url-parser': 4.2.11
+      '@smithy/util-base64': 4.3.2
+      '@smithy/util-body-length-browser': 4.2.2
+      '@smithy/util-body-length-node': 4.2.3
+      '@smithy/util-defaults-mode-browser': 4.3.39
+      '@smithy/util-defaults-mode-node': 4.2.42
+      '@smithy/util-endpoints': 3.3.2
+      '@smithy/util-middleware': 4.2.11
+      '@smithy/util-retry': 4.2.11
       '@smithy/util-utf8': 4.2.2
       tslib: 2.8.1
     transitivePeerDependencies:
@@ -4221,6 +4323,8 @@ snapshots:
       '@babel/helper-validator-identifier': 7.28.5
 
   '@bcoe/v8-coverage@0.2.3': {}
+
+  '@cdklabs/tskb@0.0.4': {}
 
   '@cspotcode/source-map-support@0.8.1':
     dependencies:
@@ -5314,6 +5418,8 @@ snapshots:
       '@aws-cdk/asset-node-proxy-agent-v6': 2.1.1
       '@aws-cdk/cloud-assembly-schema': 48.20.0
       constructs: 10.4.4
+
+  aws-cdk@2.1110.0: {}
 
   babel-jest@30.2.0(@babel/core@7.29.0):
     dependencies:
