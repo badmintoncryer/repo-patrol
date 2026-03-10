@@ -4,6 +4,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as nodejs from 'aws-cdk-lib/aws-lambda-nodejs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
+import { ScheduleExpression } from 'aws-cdk-lib/aws-scheduler';
 import * as cr from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 import { AgentScheduler, JobType } from './agent-scheduler';
@@ -11,9 +12,66 @@ import { RepoRegistry } from './repo-registry';
 import { ReportFrontend } from './report-frontend';
 import { StrandsAgentRuntime } from './strands-agent-runtime';
 
+/**
+ * Per-job configuration within a repository.
+ */
+export interface JobConfig {
+  /**
+   * Whether this job is enabled.
+   * @default true
+   */
+  readonly enabled?: boolean;
+
+  /**
+   * Schedule for this job (overrides the default schedule).
+   * @default - Uses the construct-level default schedule for this job type
+   */
+  readonly schedule?: ScheduleExpression;
+
+  /**
+   * Override the Bedrock model ID for this specific job.
+   * @default - Uses the repository-level or construct-level model ID
+   */
+  readonly modelId?: string;
+}
+
+/**
+ * Configuration for a monitored GitHub repository.
+ */
+export interface RepositoryConfig {
+  /** GitHub repository owner (user or organization) */
+  readonly owner: string;
+
+  /** GitHub repository name */
+  readonly repo: string;
+
+  /** GitHub App installation ID for this repository */
+  readonly githubAppInstallationId: number;
+
+  /**
+   * Per-job-type configuration.
+   * Keys are JobType enum values (e.g. 'review_pull_requests').
+   * Omitted job types use the default schedule and are enabled.
+   */
+  readonly jobs?: { [jobType: string]: JobConfig };
+
+  /**
+   * Override the Bedrock model ID for this repository.
+   * @default - Uses the construct-level model ID
+   */
+  readonly modelId?: string;
+}
+
 export interface RepoPatrolProps {
   /** ARN of the Secrets Manager secret containing GitHub App credentials (app_id, private_key) */
   readonly githubAppSecretArn: string;
+
+  /**
+   * Repositories to monitor.
+   * Each repository gets independent EventBridge Schedules per job type.
+   * Additional repositories can be added dynamically via the Registry API.
+   */
+  readonly repositories?: RepositoryConfig[];
 
   /** Default Bedrock model ID */
   readonly modelId?: string;
@@ -22,10 +80,11 @@ export interface RepoPatrolProps {
   readonly maxToolCalls?: number;
 
   /**
-   * Default schedules per job type (EventBridge schedule expressions).
+   * Default schedules per job type.
    * Keys are JobType enum values (e.g. 'review_pull_requests').
+   * Per-repository job configs can override these.
    */
-  readonly defaultSchedules?: { [key: string]: string };
+  readonly defaultSchedules?: { [jobType: string]: ScheduleExpression };
 
   /** Enable the Next.js dashboard with Cognito authentication */
   readonly enableDashboard?: boolean;
@@ -34,13 +93,13 @@ export interface RepoPatrolProps {
   readonly dryRun?: boolean;
 }
 
-const DEFAULT_SCHEDULES: { [key: string]: string } = {
-  [JobType.REVIEW_PULL_REQUESTS]: 'cron(0 0 * * ? *)', // Daily JST 9:00
-  [JobType.TRIAGE_ISSUES]: 'cron(0 0 * * ? *)',
-  [JobType.HANDLE_DEPENDABOT]: 'rate(6 hours)',
-  [JobType.ANALYZE_CI_FAILURES]: 'rate(3 hours)',
-  [JobType.CHECK_DEPENDENCIES]: 'cron(0 0 ? * MON *)', // Weekly Monday JST 9:00
-  [JobType.REPO_HEALTH_CHECK]: 'cron(0 0 ? * MON *)',
+const DEFAULT_SCHEDULES: { [key: string]: ScheduleExpression } = {
+  [JobType.REVIEW_PULL_REQUESTS]: ScheduleExpression.cron({ hour: '0', minute: '0' }), // Daily UTC 0:00
+  [JobType.TRIAGE_ISSUES]: ScheduleExpression.cron({ hour: '0', minute: '0' }),
+  [JobType.HANDLE_DEPENDABOT]: ScheduleExpression.rate(cdk.Duration.hours(6)),
+  [JobType.ANALYZE_CI_FAILURES]: ScheduleExpression.rate(cdk.Duration.hours(3)),
+  [JobType.CHECK_DEPENDENCIES]: ScheduleExpression.cron({ hour: '0', minute: '0', weekDay: 'MON' }),
+  [JobType.REPO_HEALTH_CHECK]: ScheduleExpression.cron({ hour: '0', minute: '0', weekDay: 'MON' }),
 };
 
 export class RepoPatrol extends Construct {
@@ -52,6 +111,14 @@ export class RepoPatrol extends Construct {
 
   constructor(scope: Construct, id: string, props: RepoPatrolProps) {
     super(scope, id);
+
+    // Merge default schedules with user overrides
+    const mergedSchedules = { ...DEFAULT_SCHEDULES, ...props.defaultSchedules };
+    // Convert ScheduleExpression to plain strings for Lambda env vars
+    const schedulesAsStrings: { [key: string]: string } = {};
+    for (const [k, v] of Object.entries(mergedSchedules)) {
+      schedulesAsStrings[k] = v.expressionString;
+    }
 
     // S3 bucket for reports
     this.reportBucket = new s3.Bucket(this, 'ReportBucket', {
@@ -74,11 +141,7 @@ export class RepoPatrol extends Construct {
       dryRun: props.dryRun,
     });
 
-    // Merge default schedules with user overrides
-    const schedules = { ...DEFAULT_SCHEDULES, ...props.defaultSchedules };
-
     // EventBridge Dispatcher Lambda + Scheduler IAM Role
-    // Must be created before RepoRegistry (Registry needs dispatcherFunctionArn and schedulerRoleArn)
     this.scheduler = new AgentScheduler(this, 'Scheduler', {
       agentRuntime: this.agentRuntime.runtime,
       reposTableName: 'repo-patrol-repos',
@@ -88,17 +151,19 @@ export class RepoPatrol extends Construct {
     this.registry = new RepoRegistry(this, 'Registry', {
       dispatcherFunctionArn: this.scheduler.dispatcherFunction.functionArn,
       schedulerRoleArn: this.scheduler.schedulerRole.roleArn,
-      defaultSchedules: schedules,
+      defaultSchedules: schedulesAsStrings,
     });
 
-    // Fix circular reference: grant DynamoDB read to dispatcher after table creation
+    // Grant DynamoDB read to dispatcher (circular dependency workaround)
     this.registry.reposTable.grantReadData(this.scheduler.dispatcherFunction);
-
-    // Update AgentRuntime environment with actual table names
-    // (table names are hardcoded above to break circular dependency)
 
     // Custom Resource: clean up all dynamic repo-patrol-* EventBridge Schedules on stack deletion
     this.addScheduleCleanup();
+
+    // Seed initial repositories via Custom Resource
+    if (props.repositories && props.repositories.length > 0) {
+      this.seedRepositories(props.repositories, mergedSchedules);
+    }
 
     // Optional: Next.js Dashboard with Cognito auth
     if (props.enableDashboard !== false) {
@@ -108,6 +173,89 @@ export class RepoPatrol extends Construct {
         jobHistoryTable: this.registry.jobHistoryTable,
       });
     }
+  }
+
+  /**
+   * Seed initial repositories into DynamoDB and create their EventBridge Schedules.
+   * Uses a Custom Resource so repos are registered on every deploy (idempotent upsert).
+   */
+  private seedRepositories(
+    repositories: RepositoryConfig[],
+    defaultSchedules: { [key: string]: ScheduleExpression },
+  ) {
+    // Serialize repos config for the seeder Lambda
+    const reposPayload = repositories.map((repo) => {
+      const jobs: { [jobType: string]: { enabled: boolean; schedule: string; model_id: string } } = {};
+
+      // Build jobs config: merge defaults with per-repo overrides
+      for (const jobType of Object.values(JobType)) {
+        const jobConfig = repo.jobs?.[jobType];
+        const schedule = jobConfig?.schedule ?? defaultSchedules[jobType];
+        jobs[jobType] = {
+          enabled: jobConfig?.enabled ?? true,
+          schedule: schedule ? schedule.expressionString : 'rate(1 day)',
+          model_id: jobConfig?.modelId ?? '',
+        };
+      }
+
+      return {
+        owner: repo.owner,
+        repo: repo.repo,
+        github_app_installation_id: repo.githubAppInstallationId,
+        model_id: repo.modelId ?? '',
+        jobs,
+      };
+    });
+
+    const seederFunction = new nodejs.NodejsFunction(this, 'RepoSeederFunction', {
+      runtime: lambda.Runtime.NODEJS_22_X,
+      architecture: lambda.Architecture.ARM_64,
+      handler: 'handler',
+      entry: path.join(__dirname, 'handlers/repo-seeder.ts'),
+      timeout: cdk.Duration.minutes(5),
+      memorySize: 256,
+      environment: {
+        REPOS_TABLE_NAME: this.registry.reposTable.tableName,
+        DISPATCHER_FUNCTION_ARN: this.scheduler.dispatcherFunction.functionArn,
+        SCHEDULER_ROLE_ARN: this.scheduler.schedulerRole.roleArn,
+      },
+      bundling: {
+        minify: true,
+        sourceMap: true,
+      },
+    });
+
+    this.registry.reposTable.grantReadWriteData(seederFunction);
+
+    seederFunction.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: [
+          'scheduler:CreateSchedule',
+          'scheduler:UpdateSchedule',
+          'scheduler:GetSchedule',
+        ],
+        resources: ['arn:aws:scheduler:*:*:schedule/default/repo-patrol-*'],
+      }),
+    );
+
+    seederFunction.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: ['iam:PassRole'],
+        resources: [this.scheduler.schedulerRole.roleArn],
+      }),
+    );
+
+    const provider = new cr.Provider(this, 'RepoSeederProvider', {
+      onEventHandler: seederFunction,
+    });
+
+    new cdk.CustomResource(this, 'RepoSeeder', {
+      serviceToken: provider.serviceToken,
+      properties: {
+        // Repositories config — triggers update when changed
+        Repositories: JSON.stringify(reposPayload),
+      },
+    });
   }
 
   /**
@@ -149,7 +297,6 @@ export class RepoPatrol extends Construct {
     new cdk.CustomResource(this, 'ScheduleCleanup', {
       serviceToken: provider.serviceToken,
       properties: {
-        // Force update on redeploy to keep the cleanup Lambda fresh
         Version: Date.now().toString(),
       },
     });
