@@ -47,6 +47,8 @@ npm install aws-cdk-lib constructs @aws-cdk/aws-bedrock-agentcore-alpha
 ## Usage
 
 ```typescript
+import { Duration, TimeZone } from 'aws-cdk-lib';
+import { ScheduleExpression } from 'aws-cdk-lib/aws-scheduler';
 import { RepoPatrol, JobType } from 'repo-patrol';
 
 new RepoPatrol(this, 'Patrol', {
@@ -57,15 +59,36 @@ new RepoPatrol(this, 'Patrol', {
   maxToolCalls: 100,
   dryRun: false,
   enableDashboard: true,
+  mfaRequired: true, // TOTP MFA for dashboard login (default: true)
 
+  // Default schedules per job type (overridable per-repository)
   defaultSchedules: {
-    [JobType.REVIEW_PULL_REQUESTS]: 'cron(0 0 * * ? *)',   // Daily UTC 0:00
-    [JobType.TRIAGE_ISSUES]:        'cron(0 0 * * ? *)',
-    [JobType.HANDLE_DEPENDABOT]:    'rate(6 hours)',
-    [JobType.ANALYZE_CI_FAILURES]:  'rate(3 hours)',
-    [JobType.CHECK_DEPENDENCIES]:   'cron(0 0 ? * MON *)', // Weekly Monday
-    [JobType.REPO_HEALTH_CHECK]:    'cron(0 0 ? * MON *)',
+    [JobType.REVIEW_PULL_REQUESTS]: ScheduleExpression.cron({ hour: '0', minute: '0' }),
+    [JobType.TRIAGE_ISSUES]:        ScheduleExpression.cron({ hour: '0', minute: '0' }),
+    [JobType.HANDLE_DEPENDABOT]:    ScheduleExpression.rate(Duration.hours(6)),
+    [JobType.ANALYZE_CI_FAILURES]:  ScheduleExpression.rate(Duration.hours(3)),
+    [JobType.CHECK_DEPENDENCIES]:   ScheduleExpression.cron({ hour: '0', minute: '0', weekDay: 'MON' }),
+    [JobType.REPO_HEALTH_CHECK]:    ScheduleExpression.cron({ hour: '0', minute: '0', weekDay: 'MON' }),
   },
+
+  // Declarative repository configuration
+  repositories: [
+    {
+      owner: 'my-org',
+      repo: 'my-app',
+      githubAppInstallationId: 12345,
+      jobs: {
+        [JobType.REVIEW_PULL_REQUESTS]: {
+          schedule: ScheduleExpression.cron({
+            hour: '0', minute: '0', timeZone: TimeZone.ASIA_TOKYO,
+          }),
+        },
+        [JobType.HANDLE_DEPENDABOT]: {
+          schedule: ScheduleExpression.rate(Duration.hours(12)),
+        },
+      },
+    },
+  ],
 });
 ```
 
@@ -149,17 +172,60 @@ When `enableDashboard: true` (default), the construct deploys:
 
 ## AWS Resources Created
 
-| Resource | Description |
-|---|---|
-| S3 Bucket | Report storage |
-| DynamoDB Tables (x3) | repos, job_history, processed_items |
-| Bedrock AgentCore Runtime | Strands Agent container (ARM64) |
-| Lambda Functions (x3) | Dispatcher, Registry API, Schedule Cleanup |
-| IAM Roles | Scheduler execution, Lambda execution, AgentCore execution |
-| EventBridge Schedules | Dynamic, per repo x jobType |
-| Custom Resource | Schedule cleanup on stack deletion |
-| CloudFront Distribution | Dashboard CDN (if enabled) |
-| Cognito User Pool | Dashboard auth (if enabled) |
+| Resource | Count | Description |
+|---|---|---|
+| S3 Bucket | 1 | Report storage |
+| DynamoDB Tables | 3 | repos, job_history, processed_items |
+| Bedrock AgentCore Runtime | 1 | Strands Agent container (ARM64) |
+| Lambda Functions | 5 | Dispatcher, Registry API, Repo Seeder, Schedule Cleanup, Webapp |
+| IAM Roles | 1 + per-Lambda | Scheduler execution role + Lambda execution roles |
+| EventBridge Schedules | Dynamic | Per repo x jobType (e.g. 5 repos x 6 jobs = 30 schedules) |
+| Custom Resources | 2 | Repo Seeder + Schedule Cleanup on stack deletion |
+| Secrets Manager | 0 | Uses existing secret (user-provided ARN) |
+| CloudFront Distribution | 0-1 | Dashboard CDN (if `enableDashboard: true`) |
+| Cognito User Pool | 0-1 | Dashboard auth with MFA (if `enableDashboard: true`) |
+
+## Cost Estimate
+
+All resources are serverless / pay-per-use. Prices are for **us-east-1** (On-Demand).
+
+### Per-Resource Pricing
+
+| Resource | Pricing Model | Unit Price |
+|---|---|---|
+| **Bedrock AgentCore Runtime** | vCPU + Memory | $0.0895/vCPU-hour + $0.00945/GB-hour |
+| **Bedrock Model** (Haiku 4.5) | Token-based | $0.25/1M input tokens, ~$0.25/1M output tokens |
+| **Lambda** (ARM64) | Request + Duration | $0.20/1M requests + $0.0000133334/GB-second |
+| **DynamoDB** (On-Demand) | Read/Write units | $0.125/1M RRU + $0.625/1M WRU + $0.25/GB-month storage |
+| **S3** (Standard) | Storage + Requests | $0.023/GB-month + $0.005/1K PUT + $0.0004/1K GET |
+| **EventBridge Scheduler** | Invocations | First 14M/month free, then $1.00/1M |
+| **CloudFront** | Requests + Transfer | $0.01/10K HTTPS requests + 1TB/month free transfer |
+| **Cognito** (Advanced Security) | MAU | $0.02/MAU (Plus tier) |
+| **Secrets Manager** | Per secret | $0.40/secret/month + $0.05/10K API calls |
+
+### Monthly Cost Estimate
+
+Assumes each job runs ~2 min with 2 vCPU + 4 GB, processing ~15K tokens per run.
+
+| Category | 5 repos (small) | 20 repos (medium) |
+|---|---|---|
+| **Bedrock AgentCore Runtime** | ~$6.50 | ~$26.00 |
+| **Bedrock Model** (Haiku 4.5) | ~$3.50 | ~$14.00 |
+| **Lambda** (all functions) | ~$0.10 | ~$0.30 |
+| **Secrets Manager** | $0.40 | $0.40 |
+| **DynamoDB** | ~$0.01 | ~$0.05 |
+| **S3** | ~$0.02 | ~$0.05 |
+| **EventBridge Scheduler** | $0.00 | $0.00 |
+| **CloudFront + Cognito** | ~$0.15 | ~$0.15 |
+| **Total** | **~$10–12/month** | **~$41–47/month** |
+
+> **Cost drivers**: AgentCore Runtime compute and Bedrock model invocations account for ~90% of the cost. Costs scale linearly with the number of repositories and schedule frequency.
+>
+> **To reduce costs**:
+> - Use Haiku 4.5 (default) instead of Sonnet (~12x cheaper per token)
+> - Reduce schedule frequency for less critical jobs
+> - Set `enableDashboard: false` to eliminate CloudFront + Cognito + Webapp Lambda
+> - Tune `maxToolCalls` to limit agent execution time
 
 ## API Reference
 

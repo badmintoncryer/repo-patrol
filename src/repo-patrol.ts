@@ -91,6 +91,12 @@ export interface RepoPatrolProps {
 
   /** Run in dry-run mode (no GitHub write operations) */
   readonly dryRun?: boolean;
+
+  /**
+   * Whether to require MFA (TOTP) for dashboard login.
+   * @default true
+   */
+  readonly mfaRequired?: boolean;
 }
 
 const DEFAULT_SCHEDULES: { [key: string]: ScheduleExpression } = {
@@ -171,6 +177,7 @@ export class RepoPatrol extends Construct {
         reportBucket: this.reportBucket,
         reposTable: this.registry.reposTable,
         jobHistoryTable: this.registry.jobHistoryTable,
+        mfaRequired: props.mfaRequired,
       });
     }
   }

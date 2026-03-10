@@ -14,6 +14,12 @@ export interface ReportFrontendProps {
   readonly reposTable: dynamodb.ITable;
   readonly jobHistoryTable: dynamodb.ITable;
   readonly registryFunctionUrl?: string;
+
+  /**
+   * Whether to require MFA (TOTP) for dashboard login.
+   * @default true
+   */
+  readonly mfaRequired?: boolean;
 }
 
 export class ReportFrontend extends Construct {
@@ -24,17 +30,27 @@ export class ReportFrontend extends Construct {
   constructor(scope: Construct, id: string, props: ReportFrontendProps) {
     super(scope, id);
 
+    const mfaRequired = props.mfaRequired ?? true;
+
     // Cognito User Pool for dashboard authentication
     this.userPool = new cognito.UserPool(this, 'UserPool', {
       userPoolName: 'repo-patrol-users',
       selfSignUpEnabled: false,
       signInAliases: { email: true },
       passwordPolicy: {
-        minLength: 8,
+        minLength: 12,
         requireLowercase: true,
         requireUppercase: true,
         requireDigits: true,
+        requireSymbols: true,
       },
+      mfa: mfaRequired ? cognito.Mfa.REQUIRED : cognito.Mfa.OPTIONAL,
+      mfaSecondFactor: {
+        sms: false,
+        otp: true,
+      },
+      accountRecovery: cognito.AccountRecovery.EMAIL_ONLY,
+      advancedSecurityMode: cognito.AdvancedSecurityMode.ENFORCED,
       removalPolicy: cdk.RemovalPolicy.RETAIN,
     });
 
