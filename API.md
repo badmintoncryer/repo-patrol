@@ -800,11 +800,12 @@ const repoPatrolProps: RepoPatrolProps = { ... }
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#repo-patrol.RepoPatrolProps.property.githubAppSecretArn">githubAppSecretArn</a></code> | <code>string</code> | ARN of the Secrets Manager secret containing GitHub App credentials (app_id, private_key). |
-| <code><a href="#repo-patrol.RepoPatrolProps.property.defaultSchedules">defaultSchedules</a></code> | <code>{[ key: string ]: string}</code> | Default schedules per job type (EventBridge schedule expressions). |
+| <code><a href="#repo-patrol.RepoPatrolProps.property.defaultSchedules">defaultSchedules</a></code> | <code>{[ key: string ]: aws-cdk-lib.aws_events.Schedule}</code> | Default schedules per job type applied to all repositories unless overridden. |
 | <code><a href="#repo-patrol.RepoPatrolProps.property.dryRun">dryRun</a></code> | <code>boolean</code> | Run in dry-run mode (no GitHub write operations). |
 | <code><a href="#repo-patrol.RepoPatrolProps.property.enableDashboard">enableDashboard</a></code> | <code>boolean</code> | Enable the Next.js dashboard with Cognito authentication. |
 | <code><a href="#repo-patrol.RepoPatrolProps.property.maxToolCalls">maxToolCalls</a></code> | <code>number</code> | Maximum tool calls per agent invocation. |
 | <code><a href="#repo-patrol.RepoPatrolProps.property.modelId">modelId</a></code> | <code>string</code> | Default Bedrock model ID. |
+| <code><a href="#repo-patrol.RepoPatrolProps.property.repositories">repositories</a></code> | <code><a href="#repo-patrol.RepositorySchedule">RepositorySchedule</a>[]</code> | List of repositories with their individual schedule configurations. |
 
 ---
 
@@ -823,12 +824,12 @@ ARN of the Secrets Manager secret containing GitHub App credentials (app_id, pri
 ##### `defaultSchedules`<sup>Optional</sup> <a name="defaultSchedules" id="repo-patrol.RepoPatrolProps.property.defaultSchedules"></a>
 
 ```typescript
-public readonly defaultSchedules: {[ key: string ]: string};
+public readonly defaultSchedules: {[ key: string ]: Schedule};
 ```
 
-- *Type:* {[ key: string ]: string}
+- *Type:* {[ key: string ]: aws-cdk-lib.aws_events.Schedule}
 
-Default schedules per job type (EventBridge schedule expressions).
+Default schedules per job type applied to all repositories unless overridden.
 
 Keys are JobType enum values (e.g. 'review_pull_requests').
 
@@ -882,6 +883,20 @@ Default Bedrock model ID.
 
 ---
 
+##### `repositories`<sup>Optional</sup> <a name="repositories" id="repo-patrol.RepoPatrolProps.property.repositories"></a>
+
+```typescript
+public readonly repositories: RepositorySchedule[];
+```
+
+- *Type:* <a href="#repo-patrol.RepositorySchedule">RepositorySchedule</a>[]
+
+List of repositories with their individual schedule configurations.
+
+Each entry specifies a repository name and optional per-job-type schedule overrides.
+
+---
+
 ### RepoRegistryProps <a name="RepoRegistryProps" id="repo-patrol.RepoRegistryProps"></a>
 
 #### Initializer <a name="Initializer" id="repo-patrol.RepoRegistryProps.Initializer"></a>
@@ -899,6 +914,7 @@ const repoRegistryProps: RepoRegistryProps = { ... }
 | <code><a href="#repo-patrol.RepoRegistryProps.property.defaultSchedules">defaultSchedules</a></code> | <code>{[ key: string ]: string}</code> | Default schedule expressions per job type. |
 | <code><a href="#repo-patrol.RepoRegistryProps.property.dispatcherFunctionArn">dispatcherFunctionArn</a></code> | <code>string</code> | ARN of the Dispatcher Lambda that EventBridge Schedules will target. |
 | <code><a href="#repo-patrol.RepoRegistryProps.property.schedulerRoleArn">schedulerRoleArn</a></code> | <code>string</code> | ARN of the IAM Role for EventBridge Scheduler. |
+| <code><a href="#repo-patrol.RepoRegistryProps.property.repositorySchedules">repositorySchedules</a></code> | <code>{[ key: string ]: {[ key: string ]: string}}</code> | Per-repository schedule expression overrides. |
 
 ---
 
@@ -935,6 +951,20 @@ public readonly schedulerRoleArn: string;
 - *Type:* string
 
 ARN of the IAM Role for EventBridge Scheduler.
+
+---
+
+##### `repositorySchedules`<sup>Optional</sup> <a name="repositorySchedules" id="repo-patrol.RepoRegistryProps.property.repositorySchedules"></a>
+
+```typescript
+public readonly repositorySchedules: {[ key: string ]: {[ key: string ]: string}};
+```
+
+- *Type:* {[ key: string ]: {[ key: string ]: string}}
+
+Per-repository schedule expression overrides.
+
+Keyed by 'owner/repo'.
 
 ---
 
@@ -996,6 +1026,63 @@ public readonly registryFunctionUrl: string;
 ```
 
 - *Type:* string
+
+---
+
+### RepositorySchedule <a name="RepositorySchedule" id="repo-patrol.RepositorySchedule"></a>
+
+Per-repository schedule configuration.
+
+Specifies the repository name and its schedule for each job type.
+
+#### Initializer <a name="Initializer" id="repo-patrol.RepositorySchedule.Initializer"></a>
+
+```typescript
+import { RepositorySchedule } from 'repo-patrol'
+
+const repositorySchedule: RepositorySchedule = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#repo-patrol.RepositorySchedule.property.repository">repository</a></code> | <code>string</code> | GitHub repository name in 'owner/repo' format. |
+| <code><a href="#repo-patrol.RepositorySchedule.property.schedules">schedules</a></code> | <code>{[ key: string ]: aws-cdk-lib.aws_events.Schedule}</code> | Schedule per job type. |
+
+---
+
+##### `repository`<sup>Required</sup> <a name="repository" id="repo-patrol.RepositorySchedule.property.repository"></a>
+
+```typescript
+public readonly repository: string;
+```
+
+- *Type:* string
+
+GitHub repository name in 'owner/repo' format.
+
+---
+
+*Example*
+
+```typescript
+'myorg/my-repo'
+```
+
+
+##### `schedules`<sup>Optional</sup> <a name="schedules" id="repo-patrol.RepositorySchedule.property.schedules"></a>
+
+```typescript
+public readonly schedules: {[ key: string ]: Schedule};
+```
+
+- *Type:* {[ key: string ]: aws-cdk-lib.aws_events.Schedule}
+
+Schedule per job type.
+
+Keys are JobType enum values (e.g. 'review_pull_requests').
+If omitted, the defaultSchedules will be used.
 
 ---
 
