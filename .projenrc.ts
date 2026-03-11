@@ -64,4 +64,8 @@ project.eslint?.addOverride({
   },
 });
 
+// Integ test app for manual deployment verification
+project.gitignore.include('/integ/');
+project.tsconfig?.addInclude('integ/**/*.ts');
+
 project.synth();
