@@ -45,7 +45,6 @@ export class ReportFrontend extends Construct {
 
     // Cognito User Pool for dashboard authentication
     this.userPool = new cognito.UserPool(this, 'UserPool', {
-      userPoolName: 'repo-patrol-users',
       selfSignUpEnabled: false,
       signInAliases: { email: true },
       passwordPolicy: {
@@ -75,7 +74,6 @@ export class ReportFrontend extends Construct {
     // Dummy callback URLs are used initially to avoid circular dependency with CloudFront.
     // They are updated after deployment via AwsCustomResource.
     this.userPoolClient = this.userPool.addClient('WebappClient', {
-      userPoolClientName: 'repo-patrol-webapp',
       generateSecret: false,
       oAuth: {
         flows: { authorizationCodeGrant: true },
@@ -96,7 +94,6 @@ export class ReportFrontend extends Construct {
       this,
       'WebappFunction',
       {
-        functionName: 'repo-patrol-webapp',
         code: lambda.DockerImageCode.fromImageAsset(
           path.join(__dirname, '../../webapp'),
           { platform: Platform.LINUX_ARM64 },

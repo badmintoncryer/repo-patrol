@@ -27,20 +27,16 @@ test('RepoPatrol creates expected resources', () => {
 
   // DynamoDB repos table
   template.hasResourceProperties('AWS::DynamoDB::Table', {
-    TableName: 'repo-patrol-repos',
     KeySchema: [{ AttributeName: 'repo_id', KeyType: 'HASH' }],
   });
 
   // DynamoDB job history table
   template.hasResourceProperties('AWS::DynamoDB::Table', {
-    TableName: 'repo-patrol-job-history',
     TimeToLiveSpecification: { AttributeName: 'ttl', Enabled: true },
   });
 
   // DynamoDB processed items table
-  template.hasResourceProperties('AWS::DynamoDB::Table', {
-    TableName: 'repo-patrol-processed-items',
-  });
+  template.resourceCountIs('AWS::DynamoDB::Table', 3);
 
   // Scheduler IAM Role
   template.hasResourceProperties('AWS::IAM::Role', {

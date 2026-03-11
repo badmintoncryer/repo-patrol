@@ -7,10 +7,6 @@ import * as nodejs from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Construct } from 'constructs';
 
 export interface RepoRegistryProps {
-  /** ARN of the Dispatcher Lambda that EventBridge Schedules will target */
-  readonly dispatcherFunctionArn: string;
-  /** ARN of the IAM Role for EventBridge Scheduler */
-  readonly schedulerRoleArn: string;
   /** Fallback schedule expression when no schedule is configured */
   readonly fallbackSchedule: string;
 }
@@ -26,7 +22,6 @@ export class RepoRegistry extends Construct {
 
     // Repos table
     this.reposTable = new dynamodb.Table(this, 'ReposTable', {
-      tableName: 'repo-patrol-repos',
       partitionKey: { name: 'repo_id', type: dynamodb.AttributeType.STRING },
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
       removalPolicy: cdk.RemovalPolicy.RETAIN,
@@ -34,7 +29,6 @@ export class RepoRegistry extends Construct {
 
     // Job history table
     this.jobHistoryTable = new dynamodb.Table(this, 'JobHistoryTable', {
-      tableName: 'repo-patrol-job-history',
       partitionKey: { name: 'repo_id', type: dynamodb.AttributeType.STRING },
       sortKey: { name: 'executed_at', type: dynamodb.AttributeType.STRING },
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
@@ -47,7 +41,6 @@ export class RepoRegistry extends Construct {
       this,
       'ProcessedItemsTable',
       {
-        tableName: 'repo-patrol-processed-items',
         partitionKey: { name: 'repo_id', type: dynamodb.AttributeType.STRING },
         sortKey: { name: 'item_key', type: dynamodb.AttributeType.STRING },
         billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
@@ -69,8 +62,6 @@ export class RepoRegistry extends Construct {
         memorySize: 256,
         environment: {
           REPOS_TABLE_NAME: this.reposTable.tableName,
-          DISPATCHER_FUNCTION_ARN: props.dispatcherFunctionArn,
-          SCHEDULER_ROLE_ARN: props.schedulerRoleArn,
           FALLBACK_SCHEDULE: props.fallbackSchedule,
         },
         bundling: {
@@ -95,12 +86,5 @@ export class RepoRegistry extends Construct {
       }),
     );
 
-    // Grant PassRole for scheduler role
-    this.registryFunction.addToRolePolicy(
-      new iam.PolicyStatement({
-        actions: ['iam:PassRole'],
-        resources: [props.schedulerRoleArn],
-      }),
-    );
   }
 }

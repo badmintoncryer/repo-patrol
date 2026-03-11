@@ -989,21 +989,7 @@ const repoRegistryProps: RepoRegistryProps = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#repo-patrol.RepoRegistryProps.property.dispatcherFunctionArn">dispatcherFunctionArn</a></code> | <code>string</code> | ARN of the Dispatcher Lambda that EventBridge Schedules will target. |
 | <code><a href="#repo-patrol.RepoRegistryProps.property.fallbackSchedule">fallbackSchedule</a></code> | <code>string</code> | Fallback schedule expression when no schedule is configured. |
-| <code><a href="#repo-patrol.RepoRegistryProps.property.schedulerRoleArn">schedulerRoleArn</a></code> | <code>string</code> | ARN of the IAM Role for EventBridge Scheduler. |
-
----
-
-##### `dispatcherFunctionArn`<sup>Required</sup> <a name="dispatcherFunctionArn" id="repo-patrol.RepoRegistryProps.property.dispatcherFunctionArn"></a>
-
-```typescript
-public readonly dispatcherFunctionArn: string;
-```
-
-- *Type:* string
-
-ARN of the Dispatcher Lambda that EventBridge Schedules will target.
 
 ---
 
@@ -1016,18 +1002,6 @@ public readonly fallbackSchedule: string;
 - *Type:* string
 
 Fallback schedule expression when no schedule is configured.
-
----
-
-##### `schedulerRoleArn`<sup>Required</sup> <a name="schedulerRoleArn" id="repo-patrol.RepoRegistryProps.property.schedulerRoleArn"></a>
-
-```typescript
-public readonly schedulerRoleArn: string;
-```
-
-- *Type:* string
-
-ARN of the IAM Role for EventBridge Scheduler.
 
 ---
 

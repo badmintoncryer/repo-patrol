@@ -119,20 +119,24 @@ export class RepoPatrol extends Construct {
 
     // S3 bucket for reports
     this.reportBucket = new s3.Bucket(this, 'ReportBucket', {
-      bucketName: `repo-patrol-reports-${cdk.Aws.ACCOUNT_ID}`,
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
       encryption: s3.BucketEncryption.S3_MANAGED,
       removalPolicy: cdk.RemovalPolicy.RETAIN,
       autoDeleteObjects: false,
     });
 
+    // DynamoDB tables + Registry API (manages dynamic EventBridge Schedules)
+    this.registry = new RepoRegistry(this, 'Registry', {
+      fallbackSchedule: FALLBACK_SCHEDULE_STRING,
+    });
+
     // Strands Agent on Bedrock AgentCore
     this.agentRuntime = new StrandsAgentRuntime(this, 'AgentRuntime', {
       reportBucket: this.reportBucket,
       githubAppSecretArn: props.githubAppSecretArn,
-      reposTableName: 'repo-patrol-repos',
-      jobHistoryTableName: 'repo-patrol-job-history',
-      processedItemsTableName: 'repo-patrol-processed-items',
+      reposTableName: this.registry.reposTable.tableName,
+      jobHistoryTableName: this.registry.jobHistoryTable.tableName,
+      processedItemsTableName: this.registry.processedItemsTable.tableName,
       modelId: props.modelId,
       maxToolCalls: props.maxToolCalls,
       dryRun: props.dryRun,
@@ -141,17 +145,20 @@ export class RepoPatrol extends Construct {
     // EventBridge Dispatcher Lambda + Scheduler IAM Role
     this.scheduler = new AgentScheduler(this, 'Scheduler', {
       agentRuntime: this.agentRuntime.runtime,
-      reposTableName: 'repo-patrol-repos',
+      reposTableName: this.registry.reposTable.tableName,
     });
 
-    // DynamoDB tables + Registry API (manages dynamic EventBridge Schedules)
-    this.registry = new RepoRegistry(this, 'Registry', {
-      dispatcherFunctionArn: this.scheduler.dispatcherFunction.functionArn,
-      schedulerRoleArn: this.scheduler.schedulerRole.roleArn,
-      fallbackSchedule: FALLBACK_SCHEDULE_STRING,
-    });
+    // Wire up Registry Lambda with Scheduler info (deferred to avoid circular dependency)
+    this.registry.registryFunction.addEnvironment('DISPATCHER_FUNCTION_ARN', this.scheduler.dispatcherFunction.functionArn);
+    this.registry.registryFunction.addEnvironment('SCHEDULER_ROLE_ARN', this.scheduler.schedulerRole.roleArn);
+    this.registry.registryFunction.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: ['iam:PassRole'],
+        resources: [this.scheduler.schedulerRole.roleArn],
+      }),
+    );
 
-    // Grant DynamoDB read to dispatcher (circular dependency workaround)
+    // Grant DynamoDB read to dispatcher
     this.registry.reposTable.grantReadData(this.scheduler.dispatcherFunction);
 
     // Custom Resource: clean up all dynamic repo-patrol-* EventBridge Schedules on stack deletion
