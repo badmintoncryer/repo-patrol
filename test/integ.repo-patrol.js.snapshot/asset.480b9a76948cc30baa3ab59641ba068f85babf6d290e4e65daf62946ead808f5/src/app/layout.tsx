@@ -24,9 +24,6 @@ export default function RootLayout({
               <a href="/repos/new" className="hover:text-blue-600">
                 + Add Repo
               </a>
-              <a href="/api/auth/sign-out" className="hover:text-red-600">
-                Sign Out
-              </a>
             </nav>
           </div>
         </header>

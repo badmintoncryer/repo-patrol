@@ -9,7 +9,5 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       issuer: process.env.COGNITO_ISSUER!,
     }),
   ],
-  pages: {
-    signIn: "/api/auth/signin",
-  },
+  trustHost: true,
 });

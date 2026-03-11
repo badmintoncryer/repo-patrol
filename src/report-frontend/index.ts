@@ -9,6 +9,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as nodejs from 'aws-cdk-lib/aws-lambda-nodejs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as ssm from 'aws-cdk-lib/aws-ssm';
 import * as cr from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 
@@ -65,13 +66,32 @@ export class ReportFrontend extends Construct {
     });
 
     // User Pool Domain for hosted UI
+    const domainPrefix = `repo-patrol-${cdk.Aws.ACCOUNT_ID}`;
     const userPoolDomain = this.userPool.addDomain('Domain', {
-      cognitoDomain: {
-        domainPrefix: `repo-patrol-${cdk.Aws.ACCOUNT_ID}`,
+      cognitoDomain: { domainPrefix },
+    });
+
+    // User Pool Client — Amplify uses public client (no secret)
+    // Dummy callback URLs are used initially to avoid circular dependency with CloudFront.
+    // They are updated after deployment via AwsCustomResource.
+    this.userPoolClient = this.userPool.addClient('WebappClient', {
+      userPoolClientName: 'repo-patrol-webapp',
+      generateSecret: false,
+      oAuth: {
+        flows: { authorizationCodeGrant: true },
+        scopes: [
+          cognito.OAuthScope.OPENID,
+          cognito.OAuthScope.EMAIL,
+          cognito.OAuthScope.PROFILE,
+          cognito.OAuthScope.custom('aws.cognito.signin.user.admin'),
+        ],
+        callbackUrls: ['http://localhost/dummy'],
+        logoutUrls: ['http://localhost/dummy'],
       },
     });
 
     // Next.js Docker Lambda
+    const cognitoDomain = `${domainPrefix}.auth.${cdk.Aws.REGION}.amazoncognito.com`;
     const webappFunction = new lambda.DockerImageFunction(
       this,
       'WebappFunction',
@@ -88,8 +108,9 @@ export class ReportFrontend extends Construct {
           REPORT_BUCKET_NAME: props.reportBucket.bucketName,
           REPOS_TABLE_NAME: props.reposTable.tableName,
           JOB_HISTORY_TABLE_NAME: props.jobHistoryTable.tableName,
-          COGNITO_USER_POOL_ID: this.userPool.userPoolId,
-          COGNITO_ISSUER: `https://cognito-idp.${cdk.Aws.REGION}.amazonaws.com/${this.userPool.userPoolId}`,
+          USER_POOL_ID: this.userPool.userPoolId,
+          USER_POOL_CLIENT_ID: this.userPoolClient.userPoolClientId,
+          COGNITO_DOMAIN: cognitoDomain,
           AWS_LWA_INVOKE_MODE: 'response_stream',
         },
       },
@@ -100,30 +121,35 @@ export class ReportFrontend extends Construct {
     props.reposTable.grantReadWriteData(webappFunction);
     props.jobHistoryTable.grantReadData(webappFunction);
 
-    // Function URL
+    // Function URL with IAM authentication.
+    // CloudFront OAC signs requests with SigV4, and Lambda@Edge adds
+    // x-amz-content-sha256 header for POST body verification.
     const functionUrl = webappFunction.addFunctionUrl({
       authType: lambda.FunctionUrlAuthType.AWS_IAM,
       invokeMode: lambda.InvokeMode.RESPONSE_STREAM,
     });
 
-    // User Pool Client (created after we know the CloudFront URL)
-    this.userPoolClient = this.userPool.addClient('WebappClient', {
-      userPoolClientName: 'repo-patrol-webapp',
-      generateSecret: true,
-      oAuth: {
-        flows: { authorizationCodeGrant: true },
-        scopes: [
-          cognito.OAuthScope.OPENID,
-          cognito.OAuthScope.EMAIL,
-          cognito.OAuthScope.PROFILE,
-        ],
-        // Callback URLs will be updated after CloudFront distribution is created
-        callbackUrls: ['http://localhost:3000/api/auth/callback/cognito'],
-        logoutUrls: ['http://localhost:3000'],
-      },
+    // Lambda@Edge for SHA-256 payload signing.
+    // Required for POST requests through CloudFront OAC to Lambda Function URL.
+    // Without this, SigV4 signature mismatch occurs for requests with a body.
+    const signPayloadFn = new cloudfront.experimental.EdgeFunction(this, 'SignPayloadFn', {
+      runtime: lambda.Runtime.NODEJS_22_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline([
+        "const crypto = require('crypto');",
+        'exports.handler = async (event) => {',
+        '  const request = event.Records[0].cf.request;',
+        "  const body = request.body?.data ?? '';",
+        "  request.headers['x-amz-content-sha256'] = [{",
+        "    key: 'x-amz-content-sha256',",
+        "    value: crypto.createHash('sha256').update(Buffer.from(body, 'base64')).digest('hex')",
+        '  }];',
+        '  return request;',
+        '};',
+      ].join('\n')),
     });
 
-    // CloudFront Distribution with OAC for Lambda Function URL
+    // CloudFront Distribution with OAC + Lambda@Edge
     this.distribution = new cloudfront.Distribution(this, 'Distribution', {
       defaultBehavior: {
         origin: origins.FunctionUrlOrigin.withOriginAccessControl(functionUrl),
@@ -133,12 +159,70 @@ export class ReportFrontend extends Construct {
         originRequestPolicy:
           cloudfront.OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
         allowedMethods: cloudfront.AllowedMethods.ALLOW_ALL,
+        edgeLambdas: [
+          {
+            functionVersion: signPayloadFn.currentVersion,
+            eventType: cloudfront.LambdaEdgeEventType.ORIGIN_REQUEST,
+            includeBody: true,
+          },
+        ],
       },
+    });
+
+    const cloudFrontUrl = `https://${this.distribution.distributionDomainName}`;
+
+    // SSM Parameter to store CloudFront domain for Amplify origin resolution.
+    // Lambda reads this at runtime to construct OAuth callback URLs.
+    const originSourceParameter = new ssm.StringParameter(this, 'OriginSourceParameter', {
+      stringValue: 'dummy',
+    });
+    originSourceParameter.grantRead(webappFunction);
+    webappFunction.addEnvironment('AMPLIFY_APP_ORIGIN_SSM_PARAMETER', originSourceParameter.parameterName);
+
+    // Update SSM parameter with actual CloudFront URL after deployment
+    new cr.AwsCustomResource(this, 'UpdateOriginSourceParameter', {
+      onUpdate: {
+        service: 'ssm',
+        action: 'putParameter',
+        parameters: {
+          Name: originSourceParameter.parameterName,
+          Value: cloudFrontUrl,
+          Overwrite: true,
+        },
+        physicalResourceId: cr.PhysicalResourceId.of(originSourceParameter.parameterName),
+      },
+      policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
+        resources: [originSourceParameter.parameterArn],
+      }),
+    });
+
+    // Update Cognito callback URLs with actual CloudFront domain after deployment.
+    // This resolves the circular dependency: CloudFront → Lambda → needs CloudFront URL.
+    new cr.AwsCustomResource(this, 'UpdateCallbackUrls', {
+      onUpdate: {
+        service: '@aws-sdk/client-cognito-identity-provider',
+        action: 'updateUserPoolClient',
+        parameters: {
+          ClientId: this.userPoolClient.userPoolClientId,
+          UserPoolId: this.userPool.userPoolId,
+          AllowedOAuthFlows: ['code'],
+          AllowedOAuthFlowsUserPoolClient: true,
+          AllowedOAuthScopes: ['profile', 'email', 'openid', 'aws.cognito.signin.user.admin'],
+          ExplicitAuthFlows: ['ALLOW_USER_SRP_AUTH', 'ALLOW_REFRESH_TOKEN_AUTH'],
+          CallbackURLs: [`${cloudFrontUrl}/api/auth/sign-in-callback`],
+          LogoutURLs: [`${cloudFrontUrl}/api/auth/sign-out-callback`],
+          SupportedIdentityProviders: ['COGNITO'],
+        },
+        physicalResourceId: cr.PhysicalResourceId.of(this.userPool.userPoolId),
+      },
+      policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
+        resources: [this.userPool.userPoolArn],
+      }),
     });
 
     // Outputs
     new cdk.CfnOutput(this, 'DashboardUrl', {
-      value: `https://${this.distribution.distributionDomainName}`,
+      value: cloudFrontUrl,
       description: 'Dashboard URL',
     });
 

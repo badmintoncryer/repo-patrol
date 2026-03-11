@@ -4,15 +4,14 @@ import {
   ListObjectsV2Command,
   GetObjectCommand,
 } from "@aws-sdk/client-s3";
-import { getSession } from "@/lib/auth";
+import { auth } from "@/auth";
 
 const s3 = new S3Client({});
 const BUCKET = process.env.REPORT_BUCKET_NAME!;
 
 export async function GET(request: NextRequest) {
-  try {
-    await getSession();
-  } catch {
+  const session = await auth();
+  if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   const owner = request.nextUrl.searchParams.get("owner");

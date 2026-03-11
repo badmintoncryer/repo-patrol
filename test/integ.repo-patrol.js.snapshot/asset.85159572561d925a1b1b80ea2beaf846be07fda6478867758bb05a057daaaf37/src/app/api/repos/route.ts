@@ -8,18 +8,17 @@ import {
   UpdateItemCommand,
 } from "@aws-sdk/client-dynamodb";
 import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
-import { getSession } from "@/lib/auth";
+import { auth } from "@/auth";
 
 const client = new DynamoDBClient({});
 const TABLE_NAME = process.env.REPOS_TABLE_NAME!;
 
 async function requireAuth() {
-  try {
-    await getSession();
-    return null;
-  } catch {
+  const session = await auth();
+  if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  return null;
 }
 
 export async function GET(request: NextRequest) {
