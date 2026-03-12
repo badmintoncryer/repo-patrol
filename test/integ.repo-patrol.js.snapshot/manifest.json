@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-deploy-role-123456789012-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-cfn-exec-role-123456789012-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-123456789012-us-east-1/2bb00c44407e4cff983533fe23e013a3d0d10c799298fd7dca98f7b891bbfc3d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-123456789012-us-east-1/4883709fc2358d3577d1d0e4bbc606c1a7a3b4117d7f7c10f1d8189b479d092f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -1174,7 +1174,7 @@
                 "otp": true
               },
               "accountRecovery": 2,
-              "advancedSecurityMode": "ENFORCED",
+              "featurePlan": "ESSENTIALS",
               "removalPolicy": "retain"
             }
           }
@@ -1192,7 +1192,8 @@
               "userPool": "*",
               "cognitoDomain": {
                 "domainPrefix": "*"
-              }
+              },
+              "managedLoginVersion": 2
             }
           }
         ],
@@ -1223,6 +1224,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "PatrolFrontendUserPoolWebappClient408541CD"
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/ManagedLoginBranding": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PatrolFrontendManagedLoginBrandingFB2D97F8"
           }
         ],
         "/RepoPatrolTestStack/Patrol/Frontend/WebappFunction": [

@@ -60,14 +60,15 @@ export class ReportFrontend extends Construct {
         otp: true,
       },
       accountRecovery: cognito.AccountRecovery.EMAIL_ONLY,
-      advancedSecurityMode: cognito.AdvancedSecurityMode.ENFORCED,
+      featurePlan: cognito.FeaturePlan.ESSENTIALS,
       removalPolicy: cdk.RemovalPolicy.RETAIN,
     });
 
-    // User Pool Domain for hosted UI
+    // User Pool Domain with Managed Login (replaces legacy Hosted UI)
     const domainPrefix = `repo-patrol-${cdk.Aws.ACCOUNT_ID}`;
     const userPoolDomain = this.userPool.addDomain('Domain', {
       cognitoDomain: { domainPrefix },
+      managedLoginVersion: cognito.ManagedLoginVersion.NEWER_MANAGED_LOGIN,
     });
 
     // User Pool Client — Amplify uses public client (no secret)
@@ -86,6 +87,13 @@ export class ReportFrontend extends Construct {
         callbackUrls: ['http://localhost/dummy'],
         logoutUrls: ['http://localhost/dummy'],
       },
+    });
+
+    // Managed Login branding (default Cognito-provided style)
+    new cognito.CfnManagedLoginBranding(this, 'ManagedLoginBranding', {
+      userPoolId: this.userPool.userPoolId,
+      clientId: this.userPoolClient.userPoolClientId,
+      useCognitoProvidedValues: true,
     });
 
     // Next.js Docker Lambda

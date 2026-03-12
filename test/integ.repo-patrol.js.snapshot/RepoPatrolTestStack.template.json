@@ -962,9 +962,7 @@
      }
     },
     "SmsVerificationMessage": "The verification code to your new account is {####}",
-    "UserPoolAddOns": {
-     "AdvancedSecurityMode": "ENFORCED"
-    },
+    "UserPoolTier": "ESSENTIALS",
     "UsernameAttributes": [
      "email"
     ],
@@ -992,6 +990,7 @@
       ]
      ]
     },
+    "ManagedLoginVersion": 2,
     "UserPoolId": {
      "Ref": "PatrolFrontendUserPool39743415"
     }
@@ -1020,6 +1019,18 @@
     "SupportedIdentityProviders": [
      "COGNITO"
     ],
+    "UserPoolId": {
+     "Ref": "PatrolFrontendUserPool39743415"
+    }
+   }
+  },
+  "PatrolFrontendManagedLoginBrandingFB2D97F8": {
+   "Type": "AWS::Cognito::ManagedLoginBranding",
+   "Properties": {
+    "ClientId": {
+     "Ref": "PatrolFrontendUserPoolWebappClient408541CD"
+    },
+    "UseCognitoProvidedValues": true,
     "UserPoolId": {
      "Ref": "PatrolFrontendUserPool39743415"
     }
