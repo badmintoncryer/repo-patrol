@@ -1,5 +1,6 @@
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { App, Stack } from 'aws-cdk-lib';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import { RepoPatrol } from '../src';
 
 const app = new App();
@@ -14,7 +15,9 @@ class TestStack extends Stack {
     });
 
     new RepoPatrol(this, 'Patrol', {
-      githubAppSecretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
+      githubAppSecret: secretsmanager.CfnSecret.fromSecretId(
+        this, 'GhSecret', 'repo-patrol/github-app',
+      ),
       enableDashboard: true,
       adminEmails: ['malaysia.cryer@gmail.com'],
     });

@@ -3,13 +3,15 @@ import {
   Runtime,
   AgentRuntimeArtifact,
 } from '@aws-cdk/aws-bedrock-agentcore-alpha';
+import * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import { Construct } from 'constructs';
 
 export interface StrandsAgentRuntimeProps {
   readonly reportBucket: s3.IBucket;
-  readonly githubAppSecretArn: string;
+  readonly githubAppSecret: secretsmanager.ISecretRef;
   readonly reposTableName: string;
   readonly jobHistoryTableName: string;
   readonly processedItemsTableName: string;
@@ -23,6 +25,12 @@ export class StrandsAgentRuntime extends Construct {
 
   constructor(scope: Construct, id: string, props: StrandsAgentRuntimeProps) {
     super(scope, id);
+    const secretArn = cdk.Stack.of(this).formatArn({
+      service: 'secretsmanager',
+      resource: 'secret',
+      resourceName: props.githubAppSecret.secretRef.secretId,
+      arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
+    });
 
     this.runtime = new Runtime(this, 'Runtime', {
       runtimeName: 'repo_patrol_agent',
@@ -31,7 +39,7 @@ export class StrandsAgentRuntime extends Construct {
       ),
       environmentVariables: {
         REPORT_BUCKET_NAME: props.reportBucket.bucketName,
-        GITHUB_APP_SECRET_ARN: props.githubAppSecretArn,
+        GITHUB_APP_SECRET_ARN: secretArn,
         REPOS_TABLE_NAME: props.reposTableName,
         JOB_HISTORY_TABLE_NAME: props.jobHistoryTableName,
         PROCESSED_ITEMS_TABLE_NAME: props.processedItemsTableName,
@@ -56,12 +64,11 @@ export class StrandsAgentRuntime extends Construct {
     props.reportBucket.grantWrite(this.runtime);
 
     // Secrets Manager read for GitHub App credentials
-    this.runtime.addToRolePolicy(
-      new iam.PolicyStatement({
-        actions: ['secretsmanager:GetSecretValue'],
-        resources: [props.githubAppSecretArn],
-      }),
-    );
+    iam.Grant.addToPrincipal({
+      grantee: this.runtime,
+      actions: ['secretsmanager:GetSecretValue'],
+      resourceArns: [secretArn],
+    });
 
     // DynamoDB access for job history and processed items
     this.runtime.addToRolePolicy(

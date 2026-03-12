@@ -2,14 +2,22 @@ import * as cdk from 'aws-cdk-lib';
 import { Duration, TimeZone } from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
 import { ScheduleExpression } from 'aws-cdk-lib/aws-scheduler';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import { JobType, RepoPatrol } from '../src';
+
+function testSecret(stack: cdk.Stack, id = 'TestSecret') {
+  return secretsmanager.CfnSecret.fromSecretId(
+    stack, id, 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
+  );
+}
 
 test('RepoPatrol creates expected resources', () => {
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'TestStack');
 
+  const secret = testSecret(stack);
   new RepoPatrol(stack, 'TestPatrol', {
-    githubAppSecretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
+    githubAppSecret: secret,
     enableDashboard: false,
   });
 
@@ -57,7 +65,7 @@ test('RepoPatrol with repositories creates seeder custom resource', () => {
   const stack = new cdk.Stack(app, 'TestStack');
 
   new RepoPatrol(stack, 'TestPatrol', {
-    githubAppSecretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
+    githubAppSecret: testSecret(stack),
     enableDashboard: false,
     repositories: [
       {
@@ -107,7 +115,7 @@ test('RepoPatrol uses daily UTC 00:00 as fallback schedule', () => {
   const stack = new cdk.Stack(app, 'TestStack');
 
   new RepoPatrol(stack, 'TestPatrol', {
-    githubAppSecretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
+    githubAppSecret: testSecret(stack),
     enableDashboard: false,
   });
 
@@ -128,7 +136,7 @@ test('RepoPatrol without per-job schedule uses fallback for all jobs', () => {
   const stack = new cdk.Stack(app, 'TestStack');
 
   new RepoPatrol(stack, 'TestPatrol', {
-    githubAppSecretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
+    githubAppSecret: testSecret(stack),
     enableDashboard: false,
     repositories: [
       {

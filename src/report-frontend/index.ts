@@ -9,6 +9,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as nodejs from 'aws-cdk-lib/aws-lambda-nodejs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 import * as cr from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
@@ -18,6 +19,9 @@ export interface ReportFrontendProps {
   readonly reposTable: dynamodb.ITable;
   readonly jobHistoryTable: dynamodb.ITable;
   readonly registryFunctionUrl?: string;
+
+  /** Secrets Manager secret containing GitHub App credentials for installation_id auto-resolution */
+  readonly githubAppSecret: secretsmanager.ISecretRef;
 
   /**
    * Whether to require MFA (TOTP) for dashboard login.
@@ -98,6 +102,12 @@ export class ReportFrontend extends Construct {
 
     // Next.js Docker Lambda
     const cognitoDomain = `${domainPrefix}.auth.${cdk.Aws.REGION}.amazoncognito.com`;
+    const secretArn = cdk.Stack.of(this).formatArn({
+      service: 'secretsmanager',
+      resource: 'secret',
+      resourceName: props.githubAppSecret.secretRef.secretId,
+      arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
+    });
     const webappFunction = new lambda.DockerImageFunction(
       this,
       'WebappFunction',
@@ -116,6 +126,7 @@ export class ReportFrontend extends Construct {
           USER_POOL_ID: this.userPool.userPoolId,
           USER_POOL_CLIENT_ID: this.userPoolClient.userPoolClientId,
           COGNITO_DOMAIN: cognitoDomain,
+          GITHUB_APP_SECRET_ARN: secretArn,
           AWS_LWA_INVOKE_MODE: 'response_stream',
         },
       },
@@ -125,6 +136,13 @@ export class ReportFrontend extends Construct {
     props.reportBucket.grantRead(webappFunction);
     props.reposTable.grantReadWriteData(webappFunction);
     props.jobHistoryTable.grantReadData(webappFunction);
+
+    // Secrets Manager read for GitHub App installation auto-resolution
+    iam.Grant.addToPrincipal({
+      grantee: webappFunction,
+      actions: ['secretsmanager:GetSecretValue'],
+      resourceArns: [secretArn],
+    });
 
     // Function URL with IAM authentication.
     // CloudFront OAC signs requests with SigV4, and Lambda@Edge adds

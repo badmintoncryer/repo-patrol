@@ -5,6 +5,7 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as nodejs from 'aws-cdk-lib/aws-lambda-nodejs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { ScheduleExpression } from 'aws-cdk-lib/aws-scheduler';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as cr from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 import { AgentScheduler, JobType } from './agent-scheduler';
@@ -63,8 +64,8 @@ export interface RepositoryConfig {
 }
 
 export interface RepoPatrolProps {
-  /** ARN of the Secrets Manager secret containing GitHub App credentials (app_id, private_key) */
-  readonly githubAppSecretArn: string;
+  /** Secrets Manager secret containing GitHub App credentials (app_id, private_key) */
+  readonly githubAppSecret: secretsmanager.ISecretRef;
 
   /**
    * Repositories to monitor.
@@ -133,7 +134,7 @@ export class RepoPatrol extends Construct {
     // Strands Agent on Bedrock AgentCore
     this.agentRuntime = new StrandsAgentRuntime(this, 'AgentRuntime', {
       reportBucket: this.reportBucket,
-      githubAppSecretArn: props.githubAppSecretArn,
+      githubAppSecret: props.githubAppSecret,
       reposTableName: this.registry.reposTable.tableName,
       jobHistoryTableName: this.registry.jobHistoryTable.tableName,
       processedItemsTableName: this.registry.processedItemsTable.tableName,
@@ -175,6 +176,7 @@ export class RepoPatrol extends Construct {
         reportBucket: this.reportBucket,
         reposTable: this.registry.reposTable,
         jobHistoryTable: this.registry.jobHistoryTable,
+        githubAppSecret: props.githubAppSecret,
         mfaRequired: props.mfaRequired,
         adminEmails: props.adminEmails,
       });

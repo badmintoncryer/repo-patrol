@@ -20,7 +20,10 @@
     }
    },
    "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/Patrol/ReportBucket/Resource"
+   }
   },
   "PatrolRegistryReposTableCBB750FC": {
    "Type": "AWS::DynamoDB::Table",
@@ -40,7 +43,10 @@
     ]
    },
    "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/Patrol/Registry/ReposTable/Resource"
+   }
   },
   "PatrolRegistryJobHistoryTable8B2E96BC": {
    "Type": "AWS::DynamoDB::Table",
@@ -72,7 +78,10 @@
     }
    },
    "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/Patrol/Registry/JobHistoryTable/Resource"
+   }
   },
   "PatrolRegistryProcessedItemsTable167B64E3": {
    "Type": "AWS::DynamoDB::Table",
@@ -104,7 +113,10 @@
     }
    },
    "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/Patrol/Registry/ProcessedItemsTable/Resource"
+   }
   },
   "PatrolRegistryRegistryApiFunctionServiceRole458F71E5": {
    "Type": "AWS::IAM::Role",
@@ -135,6 +147,9 @@
       ]
      }
     ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/Patrol/Registry/RegistryApiFunction/ServiceRole/Resource"
    }
   },
   "PatrolRegistryRegistryApiFunctionServiceRoleDefaultPolicy41207709": {
@@ -145,17 +160,28 @@
       {
        "Action": [
         "dynamodb:BatchGetItem",
-        "dynamodb:BatchWriteItem",
-        "dynamodb:ConditionCheckItem",
-        "dynamodb:DeleteItem",
-        "dynamodb:DescribeTable",
-        "dynamodb:GetItem",
-        "dynamodb:GetRecords",
-        "dynamodb:GetShardIterator",
-        "dynamodb:PutItem",
         "dynamodb:Query",
+        "dynamodb:GetItem",
         "dynamodb:Scan",
-        "dynamodb:UpdateItem"
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "PatrolRegistryReposTableCBB750FC",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator"
        ],
        "Effect": "Allow",
        "Resource": {
@@ -168,9 +194,9 @@
       {
        "Action": [
         "scheduler:CreateSchedule",
+        "scheduler:UpdateSchedule",
         "scheduler:DeleteSchedule",
-        "scheduler:GetSchedule",
-        "scheduler:UpdateSchedule"
+        "scheduler:GetSchedule"
        ],
        "Effect": "Allow",
        "Resource": "arn:aws:scheduler:*:*:schedule/default/repo-patrol-*"
@@ -194,6 +220,9 @@
       "Ref": "PatrolRegistryRegistryApiFunctionServiceRole458F71E5"
      }
     ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/Patrol/Registry/RegistryApiFunction/ServiceRole/DefaultPolicy/Resource"
    }
   },
   "PatrolRegistryRegistryApiFunction8F717C0A": {
@@ -203,7 +232,7 @@
      "arm64"
     ],
     "Code": {
-     "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+     "S3Bucket": "cdk-hnb659fds-assets-214794239830-us-east-1",
      "S3Key": "8b9e02d3d782c37a3d82c7ff785b5174f631b72d4f189b4deb3eb6f6b103b6ec.zip"
     },
     "Environment": {
@@ -240,26 +269,13 @@
    "DependsOn": [
     "PatrolRegistryRegistryApiFunctionServiceRoleDefaultPolicy41207709",
     "PatrolRegistryRegistryApiFunctionServiceRole458F71E5"
-   ]
-  },
-  "PatrolRegistryRegistryApiFunctionLogGroup4FAF4CA8": {
-   "Type": "AWS::Logs::LogGroup",
-   "Properties": {
-    "LogGroupName": {
-     "Fn::Join": [
-      "",
-      [
-       "/aws/lambda/",
-       {
-        "Ref": "PatrolRegistryRegistryApiFunction8F717C0A"
-       }
-      ]
-     ]
-    },
-    "RetentionInDays": 731
-   },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/Patrol/Registry/RegistryApiFunction/Resource",
+    "aws:asset:path": "asset.8b9e02d3d782c37a3d82c7ff785b5174f631b72d4f189b4deb3eb6f6b103b6ec",
+    "aws:asset:is-bundled": true,
+    "aws:asset:property": "Code"
+   }
   },
   "PatrolAgentRuntimeExecutionRoleABFC2A2C": {
    "Type": "AWS::IAM::Role",
@@ -278,6 +294,9 @@
     },
     "Description": "Execution role for Bedrock Agent Core Runtime",
     "MaxSessionDuration": 28800
+   },
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/Patrol/AgentRuntime/Runtime/ExecutionRole/Resource"
    }
   },
   "PatrolAgentRuntimeExecutionRoleDefaultPolicyFBEFF744": {
@@ -287,17 +306,39 @@
      "Statement": [
       {
        "Action": [
-        "logs:CreateLogGroup",
-        "logs:DescribeLogStreams"
+        "logs:DescribeLogStreams",
+        "logs:CreateLogGroup"
        ],
        "Effect": "Allow",
-       "Resource": "arn:aws:logs:us-east-1:123456789012:log-group:/aws/bedrock-agentcore/runtimes/*",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":logs:us-east-1:214794239830:log-group:/aws/bedrock-agentcore/runtimes/*"
+         ]
+        ]
+       },
        "Sid": "LogGroupAccess"
       },
       {
        "Action": "logs:DescribeLogGroups",
        "Effect": "Allow",
-       "Resource": "arn:aws:logs:us-east-1:123456789012:log-group:*",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":logs:us-east-1:214794239830:log-group:*"
+         ]
+        ]
+       },
        "Sid": "DescribeLogGroups"
       },
       {
@@ -306,15 +347,26 @@
         "logs:PutLogEvents"
        ],
        "Effect": "Allow",
-       "Resource": "arn:aws:logs:us-east-1:123456789012:log-group:/aws/bedrock-agentcore/runtimes/*:log-stream:*",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":logs:us-east-1:214794239830:log-group:/aws/bedrock-agentcore/runtimes/*:log-stream:*"
+         ]
+        ]
+       },
        "Sid": "LogStreamAccess"
       },
       {
        "Action": [
-        "xray:GetSamplingRules",
-        "xray:GetSamplingTargets",
+        "xray:PutTraceSegments",
         "xray:PutTelemetryRecords",
-        "xray:PutTraceSegments"
+        "xray:GetSamplingRules",
+        "xray:GetSamplingTargets"
        ],
        "Effect": "Allow",
        "Resource": "*",
@@ -339,8 +391,30 @@
        ],
        "Effect": "Allow",
        "Resource": [
-        "arn:aws:bedrock-agentcore:us-east-1:123456789012:workload-identity-directory/default",
-        "arn:aws:bedrock-agentcore:us-east-1:123456789012:workload-identity-directory/default/workload-identity/*"
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":bedrock-agentcore:us-east-1:214794239830:workload-identity-directory/default"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":bedrock-agentcore:us-east-1:214794239830:workload-identity-directory/default/workload-identity/*"
+          ]
+         ]
+        }
        ],
        "Sid": "GetAgentAccessToken"
       },
@@ -354,13 +428,13 @@
       },
       {
        "Action": [
-        "s3:Abort*",
         "s3:DeleteObject*",
         "s3:PutObject",
         "s3:PutObjectLegalHold",
         "s3:PutObjectRetention",
         "s3:PutObjectTagging",
-        "s3:PutObjectVersionTagging"
+        "s3:PutObjectVersionTagging",
+        "s3:Abort*"
        ],
        "Effect": "Allow",
        "Resource": [
@@ -389,15 +463,25 @@
       {
        "Action": "secretsmanager:GetSecretValue",
        "Effect": "Allow",
-       "Resource": "arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret"
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":secretsmanager:us-east-1:214794239830:secret:repo-patrol/github-app"
+         ]
+        ]
+       }
       },
       {
        "Action": [
-        "dynamodb:GetItem",
         "dynamodb:PutItem",
+        "dynamodb:GetItem",
         "dynamodb:Query",
-        "dynamodb:Scan",
-        "ecr:GetAuthorizationToken"
+        "dynamodb:Scan"
        ],
        "Effect": "Allow",
        "Resource": "*"
@@ -405,11 +489,27 @@
       {
        "Action": [
         "ecr:BatchCheckLayerAvailability",
-        "ecr:BatchGetImage",
-        "ecr:GetDownloadUrlForLayer"
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:BatchGetImage"
        ],
        "Effect": "Allow",
-       "Resource": "arn:aws:ecr:us-east-1:123456789012:repository/cdk-hnb659fds-container-assets-123456789012-us-east-1"
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ecr:us-east-1:214794239830:repository/cdk-hnb659fds-container-assets-214794239830-us-east-1"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "ecr:GetAuthorizationToken",
+       "Effect": "Allow",
+       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"
@@ -420,6 +520,9 @@
       "Ref": "PatrolAgentRuntimeExecutionRoleABFC2A2C"
      }
     ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/Patrol/AgentRuntime/Runtime/ExecutionRole/DefaultPolicy/Resource"
    }
   },
   "PatrolAgentRuntime2CCE02DD": {
@@ -428,7 +531,7 @@
     "AgentRuntimeArtifact": {
      "ContainerConfiguration": {
       "ContainerUri": {
-       "Fn::Sub": "123456789012.dkr.ecr.us-east-1.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-123456789012-us-east-1:68fbb7092bfabf4a2b3e4cf007227cd32a57d66c1bd024cf5e0ae91715325389"
+       "Fn::Sub": "214794239830.dkr.ecr.us-east-1.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-214794239830-us-east-1:68fbb7092bfabf4a2b3e4cf007227cd32a57d66c1bd024cf5e0ae91715325389"
       }
      }
     },
@@ -437,7 +540,18 @@
      "REPORT_BUCKET_NAME": {
       "Ref": "PatrolReportBucket939016BB"
      },
-     "GITHUB_APP_SECRET_ARN": "arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret",
+     "GITHUB_APP_SECRET_ARN": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":secretsmanager:us-east-1:214794239830:secret:repo-patrol/github-app"
+       ]
+      ]
+     },
      "REPOS_TABLE_NAME": {
       "Ref": "PatrolRegistryReposTableCBB750FC"
      },
@@ -465,7 +579,10 @@
    "DependsOn": [
     "PatrolAgentRuntimeExecutionRoleDefaultPolicyFBEFF744",
     "PatrolAgentRuntimeExecutionRoleABFC2A2C"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/Patrol/AgentRuntime/Runtime/Resource"
+   }
   },
   "PatrolSchedulerDispatcherServiceRoleA975916D": {
    "Type": "AWS::IAM::Role",
@@ -496,6 +613,9 @@
       ]
      }
     ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/Patrol/Scheduler/Dispatcher/ServiceRole/Resource"
    }
   },
   "PatrolSchedulerDispatcherServiceRoleDefaultPolicy5F55FF1C": {
@@ -532,13 +652,24 @@
       {
        "Action": [
         "dynamodb:BatchGetItem",
-        "dynamodb:ConditionCheckItem",
-        "dynamodb:DescribeTable",
-        "dynamodb:GetItem",
-        "dynamodb:GetRecords",
-        "dynamodb:GetShardIterator",
         "dynamodb:Query",
-        "dynamodb:Scan"
+        "dynamodb:GetItem",
+        "dynamodb:Scan",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "PatrolRegistryReposTableCBB750FC",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator"
        ],
        "Effect": "Allow",
        "Resource": {
@@ -557,6 +688,9 @@
       "Ref": "PatrolSchedulerDispatcherServiceRoleA975916D"
      }
     ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/Patrol/Scheduler/Dispatcher/ServiceRole/DefaultPolicy/Resource"
    }
   },
   "PatrolSchedulerDispatcher76326CDF": {
@@ -566,7 +700,7 @@
      "arm64"
     ],
     "Code": {
-     "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+     "S3Bucket": "cdk-hnb659fds-assets-214794239830-us-east-1",
      "S3Key": "af98e197725569b919429cfa53544fd57e82eaa10953450888a13799c7ac3bf8.zip"
     },
     "Environment": {
@@ -596,26 +730,13 @@
    "DependsOn": [
     "PatrolSchedulerDispatcherServiceRoleDefaultPolicy5F55FF1C",
     "PatrolSchedulerDispatcherServiceRoleA975916D"
-   ]
-  },
-  "PatrolSchedulerDispatcherLogGroup504A3743": {
-   "Type": "AWS::Logs::LogGroup",
-   "Properties": {
-    "LogGroupName": {
-     "Fn::Join": [
-      "",
-      [
-       "/aws/lambda/",
-       {
-        "Ref": "PatrolSchedulerDispatcher76326CDF"
-       }
-      ]
-     ]
-    },
-    "RetentionInDays": 731
-   },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/Patrol/Scheduler/Dispatcher/Resource",
+    "aws:asset:path": "asset.af98e197725569b919429cfa53544fd57e82eaa10953450888a13799c7ac3bf8",
+    "aws:asset:is-bundled": true,
+    "aws:asset:property": "Code"
+   }
   },
   "PatrolSchedulerSchedulerRoleF583FF4D": {
    "Type": "AWS::IAM::Role",
@@ -632,6 +753,9 @@
      ],
      "Version": "2012-10-17"
     }
+   },
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/Patrol/Scheduler/SchedulerRole/Resource"
    }
   },
   "PatrolSchedulerSchedulerRoleDefaultPolicy06A77364": {
@@ -674,6 +798,9 @@
       "Ref": "PatrolSchedulerSchedulerRoleF583FF4D"
      }
     ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/Patrol/Scheduler/SchedulerRole/DefaultPolicy/Resource"
    }
   },
   "PatrolScheduleCleanupFunctionServiceRole06503D28": {
@@ -705,6 +832,9 @@
       ]
      }
     ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/Patrol/ScheduleCleanupFunction/ServiceRole/Resource"
    }
   },
   "PatrolScheduleCleanupFunctionServiceRoleDefaultPolicyB0CEBFF5": {
@@ -714,8 +844,8 @@
      "Statement": [
       {
        "Action": [
-        "scheduler:DeleteSchedule",
-        "scheduler:ListSchedules"
+        "scheduler:ListSchedules",
+        "scheduler:DeleteSchedule"
        ],
        "Effect": "Allow",
        "Resource": "*"
@@ -729,6 +859,9 @@
       "Ref": "PatrolScheduleCleanupFunctionServiceRole06503D28"
      }
     ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/Patrol/ScheduleCleanupFunction/ServiceRole/DefaultPolicy/Resource"
    }
   },
   "PatrolScheduleCleanupFunctionA8E7EA93": {
@@ -738,7 +871,7 @@
      "arm64"
     ],
     "Code": {
-     "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+     "S3Bucket": "cdk-hnb659fds-assets-214794239830-us-east-1",
      "S3Key": "83ce14d48b96db450dbb3b46c94d6a434b461649e71bda044c7f7ad213563464.zip"
     },
     "Handler": "index.handler",
@@ -755,26 +888,13 @@
    "DependsOn": [
     "PatrolScheduleCleanupFunctionServiceRoleDefaultPolicyB0CEBFF5",
     "PatrolScheduleCleanupFunctionServiceRole06503D28"
-   ]
-  },
-  "PatrolScheduleCleanupFunctionLogGroup9AD91D35": {
-   "Type": "AWS::Logs::LogGroup",
-   "Properties": {
-    "LogGroupName": {
-     "Fn::Join": [
-      "",
-      [
-       "/aws/lambda/",
-       {
-        "Ref": "PatrolScheduleCleanupFunctionA8E7EA93"
-       }
-      ]
-     ]
-    },
-    "RetentionInDays": 731
-   },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/Patrol/ScheduleCleanupFunction/Resource",
+    "aws:asset:path": "asset.83ce14d48b96db450dbb3b46c94d6a434b461649e71bda044c7f7ad213563464",
+    "aws:asset:is-bundled": true,
+    "aws:asset:property": "Code"
+   }
   },
   "PatrolScheduleCleanupProviderframeworkonEventServiceRoleAEBBF59B": {
    "Type": "AWS::IAM::Role",
@@ -805,6 +925,9 @@
       ]
      }
     ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/Patrol/ScheduleCleanupProvider/framework-onEvent/ServiceRole/Resource"
    }
   },
   "PatrolScheduleCleanupProviderframeworkonEventServiceRoleDefaultPolicy38106DB0": {
@@ -857,13 +980,16 @@
       "Ref": "PatrolScheduleCleanupProviderframeworkonEventServiceRoleAEBBF59B"
      }
     ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/Patrol/ScheduleCleanupProvider/framework-onEvent/ServiceRole/DefaultPolicy/Resource"
    }
   },
   "PatrolScheduleCleanupProviderframeworkonEvent595A9B6E": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+     "S3Bucket": "cdk-hnb659fds-assets-214794239830-us-east-1",
      "S3Key": "07a90cc3efdfc34da22208dcd9d211f06f5b0e01b21e778edc7c3966b1f61d57.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (RepoPatrolTestStack/Patrol/ScheduleCleanupProvider)",
@@ -894,26 +1020,13 @@
    "DependsOn": [
     "PatrolScheduleCleanupProviderframeworkonEventServiceRoleDefaultPolicy38106DB0",
     "PatrolScheduleCleanupProviderframeworkonEventServiceRoleAEBBF59B"
-   ]
-  },
-  "PatrolScheduleCleanupProviderframeworkonEventLogGroup587E7DB3": {
-   "Type": "AWS::Logs::LogGroup",
-   "Properties": {
-    "LogGroupName": {
-     "Fn::Join": [
-      "",
-      [
-       "/aws/lambda/",
-       {
-        "Ref": "PatrolScheduleCleanupProviderframeworkonEvent595A9B6E"
-       }
-      ]
-     ]
-    },
-    "RetentionInDays": 731
-   },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/Patrol/ScheduleCleanupProvider/framework-onEvent/Resource",
+    "aws:asset:path": "asset.07a90cc3efdfc34da22208dcd9d211f06f5b0e01b21e778edc7c3966b1f61d57",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
   },
   "PatrolScheduleCleanupC8713768": {
    "Type": "AWS::CloudFormation::CustomResource",
@@ -927,7 +1040,10 @@
     "Version": "1"
    },
    "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/Patrol/ScheduleCleanup/Default"
+   }
   },
   "PatrolFrontendUserPool39743415": {
    "Type": "AWS::Cognito::UserPool",
@@ -974,7 +1090,10 @@
     }
    },
    "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/Patrol/Frontend/UserPool/Resource"
+   }
   },
   "PatrolFrontendUserPoolDomain6074427B": {
    "Type": "AWS::Cognito::UserPoolDomain",
@@ -994,6 +1113,9 @@
     "UserPoolId": {
      "Ref": "PatrolFrontendUserPool39743415"
     }
+   },
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/Patrol/Frontend/UserPool/Domain/Resource"
    }
   },
   "PatrolFrontendUserPoolWebappClient408541CD": {
@@ -1022,6 +1144,9 @@
     "UserPoolId": {
      "Ref": "PatrolFrontendUserPool39743415"
     }
+   },
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/Patrol/Frontend/UserPool/WebappClient/Resource"
    }
   },
   "PatrolFrontendManagedLoginBrandingFB2D97F8": {
@@ -1034,6 +1159,9 @@
     "UserPoolId": {
      "Ref": "PatrolFrontendUserPool39743415"
     }
+   },
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/Patrol/Frontend/ManagedLoginBranding"
    }
   },
   "PatrolFrontendWebappFunctionServiceRoleC5682C29": {
@@ -1065,6 +1193,9 @@
       ]
      }
     ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/Patrol/Frontend/WebappFunction/ServiceRole/Resource"
    }
   },
   "PatrolFrontendWebappFunctionServiceRoleDefaultPolicy4B1622CF": {
@@ -1074,8 +1205,8 @@
      "Statement": [
       {
        "Action": [
-        "s3:GetBucket*",
         "s3:GetObject*",
+        "s3:GetBucket*",
         "s3:List*"
        ],
        "Effect": "Allow",
@@ -1105,17 +1236,28 @@
       {
        "Action": [
         "dynamodb:BatchGetItem",
-        "dynamodb:BatchWriteItem",
-        "dynamodb:ConditionCheckItem",
-        "dynamodb:DeleteItem",
-        "dynamodb:DescribeTable",
-        "dynamodb:GetItem",
-        "dynamodb:GetRecords",
-        "dynamodb:GetShardIterator",
-        "dynamodb:PutItem",
         "dynamodb:Query",
+        "dynamodb:GetItem",
         "dynamodb:Scan",
-        "dynamodb:UpdateItem"
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "PatrolRegistryReposTableCBB750FC",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator"
        ],
        "Effect": "Allow",
        "Resource": {
@@ -1128,13 +1270,11 @@
       {
        "Action": [
         "dynamodb:BatchGetItem",
-        "dynamodb:ConditionCheckItem",
-        "dynamodb:DescribeTable",
-        "dynamodb:GetItem",
-        "dynamodb:GetRecords",
-        "dynamodb:GetShardIterator",
         "dynamodb:Query",
-        "dynamodb:Scan"
+        "dynamodb:GetItem",
+        "dynamodb:Scan",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DescribeTable"
        ],
        "Effect": "Allow",
        "Resource": {
@@ -1146,17 +1286,50 @@
       },
       {
        "Action": [
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "PatrolRegistryJobHistoryTable8B2E96BC",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "secretsmanager:GetSecretValue",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":secretsmanager:us-east-1:214794239830:secret:repo-patrol/github-app"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
         "ssm:DescribeParameters",
+        "ssm:GetParameters",
         "ssm:GetParameter",
-        "ssm:GetParameterHistory",
-        "ssm:GetParameters"
+        "ssm:GetParameterHistory"
        ],
        "Effect": "Allow",
        "Resource": {
         "Fn::Join": [
          "",
          [
-          "arn:aws:ssm:us-east-1:123456789012:parameter/",
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ssm:us-east-1:214794239830:parameter/",
           {
            "Ref": "PatrolFrontendOriginSourceParameterD1D1CE26"
           }
@@ -1173,6 +1346,9 @@
       "Ref": "PatrolFrontendWebappFunctionServiceRoleC5682C29"
      }
     ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/Patrol/Frontend/WebappFunction/ServiceRole/DefaultPolicy/Resource"
    }
   },
   "PatrolFrontendWebappFunction85D9F760": {
@@ -1183,7 +1359,7 @@
     ],
     "Code": {
      "ImageUri": {
-      "Fn::Sub": "123456789012.dkr.ecr.us-east-1.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-123456789012-us-east-1:2edf03890eeef4685ea5794158d026c7706a988a38c0af2da3cc841a99568682"
+      "Fn::Sub": "214794239830.dkr.ecr.us-east-1.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-214794239830-us-east-1:b47c4f02f66216ba2b4cae74296f13ac78c167d6cd395e5ef4f52c2723fb2183"
      }
     },
     "Environment": {
@@ -1219,6 +1395,18 @@
         ]
        ]
       },
+      "GITHUB_APP_SECRET_ARN": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":secretsmanager:us-east-1:214794239830:secret:repo-patrol/github-app"
+        ]
+       ]
+      },
       "AWS_LWA_INVOKE_MODE": "response_stream",
       "AMPLIFY_APP_ORIGIN_SSM_PARAMETER": {
        "Ref": "PatrolFrontendOriginSourceParameterD1D1CE26"
@@ -1238,26 +1426,13 @@
    "DependsOn": [
     "PatrolFrontendWebappFunctionServiceRoleDefaultPolicy4B1622CF",
     "PatrolFrontendWebappFunctionServiceRoleC5682C29"
-   ]
-  },
-  "PatrolFrontendWebappFunctionLogGroup0167D785": {
-   "Type": "AWS::Logs::LogGroup",
-   "Properties": {
-    "LogGroupName": {
-     "Fn::Join": [
-      "",
-      [
-       "/aws/lambda/",
-       {
-        "Ref": "PatrolFrontendWebappFunction85D9F760"
-       }
-      ]
-     ]
-    },
-    "RetentionInDays": 731
-   },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/Patrol/Frontend/WebappFunction/Resource",
+    "aws:asset:path": "asset.b47c4f02f66216ba2b4cae74296f13ac78c167d6cd395e5ef4f52c2723fb2183",
+    "aws:asset:dockerfile-path": "Dockerfile",
+    "aws:asset:property": "Code.ImageUri"
+   }
   },
   "PatrolFrontendWebappFunctionFunctionUrlB6AEF066": {
    "Type": "AWS::Lambda::Url",
@@ -1270,6 +1445,9 @@
       "Arn"
      ]
     }
+   },
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/Patrol/Frontend/WebappFunction/FunctionUrl/Resource"
    }
   },
   "PatrolFrontendSignPayloadFnServiceRoleC1738EF0": {
@@ -1281,10 +1459,14 @@
        "Action": "sts:AssumeRole",
        "Effect": "Allow",
        "Principal": {
-        "Service": [
-         "edgelambda.amazonaws.com",
-         "lambda.amazonaws.com"
-        ]
+        "Service": "lambda.amazonaws.com"
+       }
+      },
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "edgelambda.amazonaws.com"
        }
       }
      ],
@@ -1304,6 +1486,9 @@
       ]
      }
     ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/Patrol/Frontend/SignPayloadFn/Fn/ServiceRole/Resource"
    }
   },
   "PatrolFrontendSignPayloadFn910F7C7A": {
@@ -1323,28 +1508,12 @@
    },
    "DependsOn": [
     "PatrolFrontendSignPayloadFnServiceRoleC1738EF0"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/Patrol/Frontend/SignPayloadFn/Fn/Resource"
+   }
   },
-  "PatrolFrontendSignPayloadFnLogGroupBC27072E": {
-   "Type": "AWS::Logs::LogGroup",
-   "Properties": {
-    "LogGroupName": {
-     "Fn::Join": [
-      "",
-      [
-       "/aws/lambda/",
-       {
-        "Ref": "PatrolFrontendSignPayloadFn910F7C7A"
-       }
-      ]
-     ]
-    },
-    "RetentionInDays": 731
-   },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
-  },
-  "PatrolFrontendSignPayloadFnCurrentVersionB3E27C318cbf91ffee61ff5b7e2d9f5bc70c9ed2": {
+  "PatrolFrontendSignPayloadFnCurrentVersionB3E27C31928d1e106af2c7e954741ab61b1b7868": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
@@ -1352,6 +1521,7 @@
     }
    },
    "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/Patrol/Frontend/SignPayloadFn/Fn/CurrentVersion/Resource",
     "aws:cdk:do-not-refactor": true
    }
   },
@@ -1364,6 +1534,9 @@
      "SigningBehavior": "always",
      "SigningProtocol": "sigv4"
     }
+   },
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/Patrol/Frontend/Distribution/Origin1/FunctionUrlOriginAccessControl/Resource"
    }
   },
   "PatrolFrontendDistributionOrigin1InvokeFromApiForRepoPatrolTestStackPatrolFrontendDistributionOrigin1D5004B3633E0883B": {
@@ -1396,6 +1569,9 @@
       ]
      ]
     }
+   },
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/Patrol/Frontend/Distribution/Origin1/InvokeFromApiForRepoPatrolTestStackPatrolFrontendDistributionOrigin1D5004B36"
    }
   },
   "PatrolFrontendDistribution980A8ABC": {
@@ -1419,7 +1595,7 @@
         "EventType": "origin-request",
         "IncludeBody": true,
         "LambdaFunctionARN": {
-         "Ref": "PatrolFrontendSignPayloadFnCurrentVersionB3E27C318cbf91ffee61ff5b7e2d9f5bc70c9ed2"
+         "Ref": "PatrolFrontendSignPayloadFnCurrentVersionB3E27C31928d1e106af2c7e954741ab61b1b7868"
         }
        }
       ],
@@ -1464,6 +1640,9 @@
       }
      ]
     }
+   },
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/Patrol/Frontend/Distribution/Resource"
    }
   },
   "PatrolFrontendOriginSourceParameterD1D1CE26": {
@@ -1471,6 +1650,9 @@
    "Properties": {
     "Type": "String",
     "Value": "dummy"
+   },
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/Patrol/Frontend/OriginSourceParameter/Resource"
    }
   },
   "PatrolFrontendUpdateOriginSourceParameter04E96B7A": {
@@ -1528,13 +1710,16 @@
       ]
      ]
     },
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": true
    },
    "DependsOn": [
     "PatrolFrontendUpdateOriginSourceParameterCustomResourcePolicyA81A8B69"
    ],
    "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/Patrol/Frontend/UpdateOriginSourceParameter/Resource/Default"
+   }
   },
   "PatrolFrontendUpdateOriginSourceParameterCustomResourcePolicyA81A8B69": {
    "Type": "AWS::IAM::Policy",
@@ -1548,7 +1733,11 @@
         "Fn::Join": [
          "",
          [
-          "arn:aws:ssm:us-east-1:123456789012:parameter/",
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ssm:us-east-1:214794239830:parameter/",
           {
            "Ref": "PatrolFrontendOriginSourceParameterD1D1CE26"
           }
@@ -1565,6 +1754,9 @@
       "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
      }
     ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/Patrol/Frontend/UpdateOriginSourceParameter/CustomResourcePolicy/Resource"
    }
   },
   "PatrolFrontendUpdateCallbackUrls00F4F424": {
@@ -1644,13 +1836,16 @@
       ]
      ]
     },
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": true
    },
    "DependsOn": [
     "PatrolFrontendUpdateCallbackUrlsCustomResourcePolicyDBBDDAF1"
    ],
    "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/Patrol/Frontend/UpdateCallbackUrls/Resource/Default"
+   }
   },
   "PatrolFrontendUpdateCallbackUrlsCustomResourcePolicyDBBDDAF1": {
    "Type": "AWS::IAM::Policy",
@@ -1676,6 +1871,9 @@
       "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
      }
     ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/Patrol/Frontend/UpdateCallbackUrls/CustomResourcePolicy/Resource"
    }
   },
   "PatrolFrontendAdminUserSeederFunctionServiceRoleA507ACEA": {
@@ -1707,6 +1905,9 @@
       ]
      }
     ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/Patrol/Frontend/AdminUserSeederFunction/ServiceRole/Resource"
    }
   },
   "PatrolFrontendAdminUserSeederFunctionServiceRoleDefaultPolicy1760400A": {
@@ -1736,6 +1937,9 @@
       "Ref": "PatrolFrontendAdminUserSeederFunctionServiceRoleA507ACEA"
      }
     ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/Patrol/Frontend/AdminUserSeederFunction/ServiceRole/DefaultPolicy/Resource"
    }
   },
   "PatrolFrontendAdminUserSeederFunction5F9CE513": {
@@ -1745,7 +1949,7 @@
      "arm64"
     ],
     "Code": {
-     "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+     "S3Bucket": "cdk-hnb659fds-assets-214794239830-us-east-1",
      "S3Key": "c19825f3ddbb80216b9c4e21dadab035c1873ab641f27701aaa60e652dabddc2.zip"
     },
     "Handler": "index.handler",
@@ -1762,26 +1966,13 @@
    "DependsOn": [
     "PatrolFrontendAdminUserSeederFunctionServiceRoleDefaultPolicy1760400A",
     "PatrolFrontendAdminUserSeederFunctionServiceRoleA507ACEA"
-   ]
-  },
-  "PatrolFrontendAdminUserSeederFunctionLogGroup15FE276A": {
-   "Type": "AWS::Logs::LogGroup",
-   "Properties": {
-    "LogGroupName": {
-     "Fn::Join": [
-      "",
-      [
-       "/aws/lambda/",
-       {
-        "Ref": "PatrolFrontendAdminUserSeederFunction5F9CE513"
-       }
-      ]
-     ]
-    },
-    "RetentionInDays": 731
-   },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/Patrol/Frontend/AdminUserSeederFunction/Resource",
+    "aws:asset:path": "asset.c19825f3ddbb80216b9c4e21dadab035c1873ab641f27701aaa60e652dabddc2",
+    "aws:asset:is-bundled": true,
+    "aws:asset:property": "Code"
+   }
   },
   "PatrolFrontendAdminUserSeederProviderframeworkonEventServiceRole5A15FA9E": {
    "Type": "AWS::IAM::Role",
@@ -1812,6 +2003,9 @@
       ]
      }
     ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/Patrol/Frontend/AdminUserSeederProvider/framework-onEvent/ServiceRole/Resource"
    }
   },
   "PatrolFrontendAdminUserSeederProviderframeworkonEventServiceRoleDefaultPolicy55E95D08": {
@@ -1864,13 +2058,16 @@
       "Ref": "PatrolFrontendAdminUserSeederProviderframeworkonEventServiceRole5A15FA9E"
      }
     ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/Patrol/Frontend/AdminUserSeederProvider/framework-onEvent/ServiceRole/DefaultPolicy/Resource"
    }
   },
   "PatrolFrontendAdminUserSeederProviderframeworkonEventB8DE2B58": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+     "S3Bucket": "cdk-hnb659fds-assets-214794239830-us-east-1",
      "S3Key": "07a90cc3efdfc34da22208dcd9d211f06f5b0e01b21e778edc7c3966b1f61d57.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (RepoPatrolTestStack/Patrol/Frontend/AdminUserSeederProvider)",
@@ -1901,26 +2098,13 @@
    "DependsOn": [
     "PatrolFrontendAdminUserSeederProviderframeworkonEventServiceRoleDefaultPolicy55E95D08",
     "PatrolFrontendAdminUserSeederProviderframeworkonEventServiceRole5A15FA9E"
-   ]
-  },
-  "PatrolFrontendAdminUserSeederProviderframeworkonEventLogGroupC02BBA08": {
-   "Type": "AWS::Logs::LogGroup",
-   "Properties": {
-    "LogGroupName": {
-     "Fn::Join": [
-      "",
-      [
-       "/aws/lambda/",
-       {
-        "Ref": "PatrolFrontendAdminUserSeederProviderframeworkonEventB8DE2B58"
-       }
-      ]
-     ]
-    },
-    "RetentionInDays": 731
-   },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/Patrol/Frontend/AdminUserSeederProvider/framework-onEvent/Resource",
+    "aws:asset:path": "asset.07a90cc3efdfc34da22208dcd9d211f06f5b0e01b21e778edc7c3966b1f61d57",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
   },
   "PatrolFrontendAdminUserSeeder73488258": {
    "Type": "AWS::CloudFormation::CustomResource",
@@ -1937,7 +2121,10 @@
     "Emails": "[\"malaysia.cryer@gmail.com\"]"
    },
    "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/Patrol/Frontend/AdminUserSeeder/Default"
+   }
   },
   "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2": {
    "Type": "AWS::IAM::Role",
@@ -1968,13 +2155,16 @@
       ]
      }
     ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource"
    }
   },
   "AWS679f53fac002430cb0da5b7982bd22872D164C4C": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+     "S3Bucket": "cdk-hnb659fds-assets-214794239830-us-east-1",
      "S3Key": "bc8ef58951f4c88e641dd23090e9d2e2e61c7530a07960e767522941e959b625.zip"
     },
     "Handler": "index.handler",
@@ -1989,26 +2179,22 @@
    },
    "DependsOn": [
     "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/AWS679f53fac002430cb0da5b7982bd2287/Resource",
+    "aws:asset:path": "asset.bc8ef58951f4c88e641dd23090e9d2e2e61c7530a07960e767522941e959b625",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
   },
-  "AWS679f53fac002430cb0da5b7982bd2287LogGroup449FB7C2": {
-   "Type": "AWS::Logs::LogGroup",
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
    "Properties": {
-    "LogGroupName": {
-     "Fn::Join": [
-      "",
-      [
-       "/aws/lambda/",
-       {
-        "Ref": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
-       }
-      ]
-     ]
-    },
-    "RetentionInDays": 731
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/3VSy67TMBD9lu5d35KyYUebgoQE3Krlsq0cexqmSWaqGeeWKsq/o7xKALE6Zx4e22dOYptkvbarhbvp0odiWWJmm2N0vjAHUK7Fg3E3PTW6ts229gVEk55pZANsnUJrwp1cxSGzzTeXldB19aQ1pauy4E7EAS5qv/bwsSYfkcmgq2xz4OFAj3su0d+7cGCt0fXJqUJUu+lgHGib9EyPOQ+yY1+AfKpcDv8UX6Ts5nbwHUS7UnqmGd2DVKh9dETKS4j8uKI1GQRhX7gcKHoWsN2Ta4pYgfGcE0a2zYuC7JmHiyY+kR1XDmleGjNTmJYIFOcNvzNfHLkcwmfOkbbiKCDlrQEvkzqzrw9CgRd7gCsrRpZ7tyfjS67DWZiibeDnFQQroOhK+yHMBNuhRsGs/lu9Z8EcaeM9qKZMUYZ//ic9n9Ia1aqzliDleyeuggjSaz4FbWv6Zx+jy5Fy42uNXJ1k9KHaZi/8igHEbG6a9tXJpK35M+7dNOPPdbzWsTVJ8taulq68/nB2tXg/2v6pw3G7y8d6x7Zxw63pDGwv+vSarOybdzZZXBRxKUN5avsFefVZBFIDAAA="
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "Metadata": {
+    "aws:cdk:path": "RepoPatrolTestStack/CDKMetadata/Default"
+   }
   }
  },
  "Outputs": {
