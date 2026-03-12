@@ -16,6 +16,7 @@ class TestStack extends Stack {
     new RepoPatrol(this, 'Patrol', {
       githubAppSecretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
       enableDashboard: true,
+      adminEmails: ['malaysia.cryer@gmail.com'],
     });
   }
 }

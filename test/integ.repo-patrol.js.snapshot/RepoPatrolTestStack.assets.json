@@ -76,16 +76,31 @@
         }
       }
     },
-    "b9d6927764ac4d210381f568179406de75c92c40a2dd3b553cab5fc7eaf32fc6": {
+    "c19825f3ddbb80216b9c4e21dadab035c1873ab641f27701aaa60e652dabddc2": {
+      "displayName": "Patrol/Frontend/AdminUserSeederFunction/Code",
+      "source": {
+        "path": "asset.c19825f3ddbb80216b9c4e21dadab035c1873ab641f27701aaa60e652dabddc2",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "123456789012-us-east-1-b8845487": {
+          "bucketName": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "objectKey": "c19825f3ddbb80216b9c4e21dadab035c1873ab641f27701aaa60e652dabddc2.zip",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-file-publishing-role-123456789012-us-east-1"
+        }
+      }
+    },
+    "2bb00c44407e4cff983533fe23e013a3d0d10c799298fd7dca98f7b891bbfc3d": {
       "displayName": "RepoPatrolTestStack Template",
       "source": {
         "path": "RepoPatrolTestStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "123456789012-us-east-1-abd08c28": {
+        "123456789012-us-east-1-9ce39034": {
           "bucketName": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "objectKey": "b9d6927764ac4d210381f568179406de75c92c40a2dd3b553cab5fc7eaf32fc6.json",
+          "objectKey": "2bb00c44407e4cff983533fe23e013a3d0d10c799298fd7dca98f7b891bbfc3d.json",
           "region": "us-east-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-file-publishing-role-123456789012-us-east-1"
         }

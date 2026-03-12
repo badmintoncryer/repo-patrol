@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-deploy-role-123456789012-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-cfn-exec-role-123456789012-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-123456789012-us-east-1/b9d6927764ac4d210381f568179406de75c92c40a2dd3b553cab5fc7eaf32fc6.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-123456789012-us-east-1/2bb00c44407e4cff983533fe23e013a3d0d10c799298fd7dca98f7b891bbfc3d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -1790,6 +1790,299 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "PatrolFrontendCognitoDomain68829331"
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/AdminUserSeederFunction": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "architecture": "*",
+              "handler": "*",
+              "entry": "*",
+              "timeout": "*",
+              "memorySize": "*",
+              "bundling": {
+                "minify": true,
+                "sourceMap": true
+              },
+              "code": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "architecture": "*",
+              "handler": "*",
+              "entry": "*",
+              "timeout": "*",
+              "memorySize": "*",
+              "bundling": {
+                "minify": true,
+                "sourceMap": true
+              }
+            }
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/AdminUserSeederFunction/ServiceRole": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "Failed to add construct metadata for node [ServiceRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/AdminUserSeederFunction/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/AdminUserSeederFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PatrolFrontendAdminUserSeederFunctionServiceRoleA507ACEA"
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/AdminUserSeederFunction/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/AdminUserSeederFunction/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PatrolFrontendAdminUserSeederFunctionServiceRoleDefaultPolicy1760400A"
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/AdminUserSeederFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PatrolFrontendAdminUserSeederFunction5F9CE513"
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/AdminUserSeederFunction/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/AdminUserSeederFunction/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PatrolFrontendAdminUserSeederFunctionLogGroup15FE276A"
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/AdminUserSeederProvider/framework-onEvent": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "description": "*",
+              "runtime": "*",
+              "handler": "*",
+              "timeout": "*",
+              "loggingFormat": "JSON",
+              "applicationLogLevelV2": "FATAL",
+              "logGroup": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "securityGroups": "*",
+              "role": "*",
+              "functionName": "*",
+              "environmentEncryption": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEnvironment": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/AdminUserSeederProvider/framework-onEvent/ServiceRole": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "Failed to add construct metadata for node [ServiceRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/AdminUserSeederProvider/framework-onEvent/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/AdminUserSeederProvider/framework-onEvent/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PatrolFrontendAdminUserSeederProviderframeworkonEventServiceRole5A15FA9E"
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/AdminUserSeederProvider/framework-onEvent/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/AdminUserSeederProvider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PatrolFrontendAdminUserSeederProviderframeworkonEventServiceRoleDefaultPolicy55E95D08"
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/AdminUserSeederProvider/framework-onEvent/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PatrolFrontendAdminUserSeederProviderframeworkonEventB8DE2B58"
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/AdminUserSeederProvider/framework-onEvent/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/AdminUserSeederProvider/framework-onEvent/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PatrolFrontendAdminUserSeederProviderframeworkonEventLogGroupC02BBA08"
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/AdminUserSeeder": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/AdminUserSeeder/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PatrolFrontendAdminUserSeeder73488258"
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/AdminEmails": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PatrolFrontendAdminEmails0D9C2525"
           }
         ],
         "/RepoPatrolTestStack/AWS679f53fac002430cb0da5b7982bd2287": [
