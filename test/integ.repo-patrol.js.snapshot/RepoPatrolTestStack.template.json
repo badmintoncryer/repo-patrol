@@ -1183,7 +1183,7 @@
     ],
     "Code": {
      "ImageUri": {
-      "Fn::Sub": "123456789012.dkr.ecr.us-east-1.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-123456789012-us-east-1:a8f432b1889816efbba5fd2a52fe6950fc3aabce5d0933dc02353b5a6fe6ee53"
+      "Fn::Sub": "123456789012.dkr.ecr.us-east-1.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-123456789012-us-east-1:2edf03890eeef4685ea5794158d026c7706a988a38c0af2da3cc841a99568682"
      }
     },
     "Environment": {

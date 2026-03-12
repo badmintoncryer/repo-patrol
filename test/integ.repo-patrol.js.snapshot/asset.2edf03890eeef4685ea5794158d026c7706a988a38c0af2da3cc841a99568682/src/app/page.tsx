@@ -31,24 +31,26 @@ export default async function DashboardPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold">Monitored Repositories</h2>
+      <div className="flex items-center justify-between mb-8">
+        <h2 className="text-2xl font-bold text-white">
+          Monitored Repositories
+        </h2>
         <Link
           href="/repos/new"
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700"
+          className="bg-gradient-to-r from-indigo-600 to-indigo-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-indigo-500 hover:to-indigo-400 transition-all shadow-lg shadow-indigo-500/20"
         >
           + Add Repository
         </Link>
       </div>
 
       {repos.length === 0 ? (
-        <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
-          <p className="text-gray-500 mb-4">
+        <div className="rounded-xl border border-dashed border-slate-700/50 bg-slate-800/30 p-16 text-center">
+          <p className="text-slate-400 mb-4">
             No repositories registered yet.
           </p>
           <Link
             href="/repos/new"
-            className="text-blue-600 hover:underline"
+            className="text-indigo-400 hover:text-indigo-300 transition-colors"
           >
             Add your first repository
           </Link>
@@ -63,24 +65,24 @@ export default async function DashboardPage() {
               <Link
                 key={repo.repo_id}
                 href={`/repos/${repo.owner}/${repo.repo}`}
-                className="bg-white rounded-lg border border-gray-200 p-6 hover:border-blue-300 transition-colors"
+                className="group rounded-xl border border-slate-700/50 bg-slate-800/50 p-6 hover:border-indigo-500/50 hover:bg-slate-800 transition-all"
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="text-lg font-semibold">
+                    <h3 className="text-lg font-semibold text-white group-hover:text-indigo-300 transition-colors">
                       {repo.owner}/{repo.repo}
                     </h3>
-                    <p className="text-sm text-gray-500 mt-1">
+                    <p className="text-sm text-slate-400 mt-1">
                       {enabledJobs.length} jobs active
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
                     <span
-                      className={`inline-block w-3 h-3 rounded-full ${
-                        repo.enabled ? "bg-green-500" : "bg-gray-300"
+                      className={`inline-block w-2.5 h-2.5 rounded-full ${
+                        repo.enabled ? "bg-emerald-400 shadow-sm shadow-emerald-400/50" : "bg-slate-600"
                       }`}
                     />
-                    <span className="text-sm text-gray-500">
+                    <span className="text-sm text-slate-400">
                       {repo.enabled ? "Active" : "Disabled"}
                     </span>
                   </div>
@@ -89,7 +91,7 @@ export default async function DashboardPage() {
                   {enabledJobs.map(([jobType]) => (
                     <span
                       key={jobType}
-                      className="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded"
+                      className="bg-slate-700/50 text-slate-300 text-xs px-2.5 py-1 rounded-md"
                     >
                       {jobType}
                     </span>

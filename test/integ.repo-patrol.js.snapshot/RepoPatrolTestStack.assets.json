@@ -91,16 +91,16 @@
         }
       }
     },
-    "4883709fc2358d3577d1d0e4bbc606c1a7a3b4117d7f7c10f1d8189b479d092f": {
+    "8f328c8165345b3a03008b2de0102df542497933926bfbad87d167d078d4fe7a": {
       "displayName": "RepoPatrolTestStack Template",
       "source": {
         "path": "RepoPatrolTestStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "123456789012-us-east-1-1dbe5ff6": {
+        "123456789012-us-east-1-a2adbd50": {
           "bucketName": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "objectKey": "4883709fc2358d3577d1d0e4bbc606c1a7a3b4117d7f7c10f1d8189b479d092f.json",
+          "objectKey": "8f328c8165345b3a03008b2de0102df542497933926bfbad87d167d078d4fe7a.json",
           "region": "us-east-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-file-publishing-role-123456789012-us-east-1"
         }
@@ -108,16 +108,16 @@
     }
   },
   "dockerImages": {
-    "a8f432b1889816efbba5fd2a52fe6950fc3aabce5d0933dc02353b5a6fe6ee53": {
+    "2edf03890eeef4685ea5794158d026c7706a988a38c0af2da3cc841a99568682": {
       "displayName": "Patrol/Frontend/WebappFunction/AssetImage",
       "source": {
-        "directory": "asset.a8f432b1889816efbba5fd2a52fe6950fc3aabce5d0933dc02353b5a6fe6ee53",
+        "directory": "asset.2edf03890eeef4685ea5794158d026c7706a988a38c0af2da3cc841a99568682",
         "platform": "linux/arm64"
       },
       "destinations": {
-        "123456789012-us-east-1-05877824": {
+        "123456789012-us-east-1-6e5ade9c": {
           "repositoryName": "cdk-hnb659fds-container-assets-123456789012-us-east-1",
-          "imageTag": "a8f432b1889816efbba5fd2a52fe6950fc3aabce5d0933dc02353b5a6fe6ee53",
+          "imageTag": "2edf03890eeef4685ea5794158d026c7706a988a38c0af2da3cc841a99568682",
           "region": "us-east-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-image-publishing-role-123456789012-us-east-1"
         }
