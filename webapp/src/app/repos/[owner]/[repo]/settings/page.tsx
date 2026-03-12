@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 
+const selectClass =
+  "w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 focus:outline-none transition-colors";
+
 export default function RepoSettingsPage() {
   const params = useParams();
   const router = useRouter();
@@ -49,41 +52,46 @@ export default function RepoSettingsPage() {
   };
 
   if (!config) {
-    return <p className="text-gray-500">Loading...</p>;
+    return <p className="text-slate-500">Loading...</p>;
   }
 
   return (
     <div className="max-w-2xl">
       <Link
         href={`/repos/${owner}/${repo}`}
-        className="text-sm text-gray-500 hover:text-gray-700"
+        className="text-sm text-slate-500 hover:text-slate-300 transition-colors"
       >
         &larr; Back
       </Link>
-      <h2 className="text-2xl font-bold mt-1 mb-6">
+      <h2 className="text-2xl font-bold text-white mt-1 mb-6">
         Settings: {owner}/{repo}
       </h2>
 
-      <div className="space-y-4">
+      <div className="rounded-xl border border-slate-700/50 bg-slate-800/50 p-6 space-y-5">
         <div>
-          <label className="block text-sm font-medium mb-1">Enabled</label>
-          <input
-            type="checkbox"
-            checked={config.enabled}
-            onChange={(e) =>
-              setConfig({ ...config, enabled: e.target.checked })
-            }
-          />
+          <label className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              checked={config.enabled}
+              onChange={(e) =>
+                setConfig({ ...config, enabled: e.target.checked })
+              }
+              className="rounded border-slate-600 bg-slate-800 text-indigo-500 focus:ring-indigo-500/20"
+            />
+            <span className="text-sm font-medium text-slate-200">Enabled</span>
+          </label>
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Model ID</label>
+          <label className="block text-sm font-medium text-slate-300 mb-1">
+            Model ID
+          </label>
           <select
             value={config.model_id || ""}
             onChange={(e) =>
               setConfig({ ...config, model_id: e.target.value })
             }
-            className="w-full border rounded-lg px-3 py-2"
+            className={selectClass}
           >
             <option value="">Default (Haiku 4.5)</option>
             <option value="us.anthropic.claude-haiku-4-5-20251001-v1:0">
@@ -98,22 +106,33 @@ export default function RepoSettingsPage() {
           </select>
         </div>
 
-        <div className="flex gap-3 pt-4">
+        <div className="flex gap-3 pt-2">
           <button
             onClick={handleSave}
             disabled={saving}
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            className="bg-gradient-to-r from-indigo-600 to-indigo-500 text-white px-6 py-2.5 rounded-lg font-medium hover:from-indigo-500 hover:to-indigo-400 transition-all shadow-lg shadow-indigo-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {saving ? "Saving..." : "Save"}
           </button>
-          <button
-            onClick={handleDelete}
-            disabled={deleting}
-            className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 disabled:opacity-50"
-          >
-            {deleting ? "Deleting..." : "Delete Repository"}
-          </button>
         </div>
+      </div>
+
+      {/* Danger Zone */}
+      <div className="mt-8 rounded-xl border border-rose-500/20 bg-rose-500/5 p-6">
+        <h3 className="text-sm font-semibold text-rose-400 mb-3">
+          Danger Zone
+        </h3>
+        <p className="text-sm text-slate-400 mb-4">
+          This will permanently delete the repository and all associated
+          schedules.
+        </p>
+        <button
+          onClick={handleDelete}
+          disabled={deleting}
+          className="bg-rose-600 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-rose-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {deleting ? "Deleting..." : "Delete Repository"}
+        </button>
       </div>
     </div>
   );
