@@ -860,7 +860,7 @@ const repoPatrolProps: RepoPatrolProps = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#repo-patrol.RepoPatrolProps.property.githubAppSecret">githubAppSecret</a></code> | <code>aws-cdk-lib.interfaces.aws_secretsmanager.ISecretRef</code> | Secrets Manager secret containing GitHub App credentials (app_id, private_key). |
+| <code><a href="#repo-patrol.RepoPatrolProps.property.githubAppSecret">githubAppSecret</a></code> | <code>aws-cdk-lib.aws_secretsmanager.ISecret</code> | Secrets Manager secret containing GitHub App credentials (app_id, private_key). |
 | <code><a href="#repo-patrol.RepoPatrolProps.property.adminEmails">adminEmails</a></code> | <code>string[]</code> | Email addresses for admin users to create in the Cognito User Pool. |
 | <code><a href="#repo-patrol.RepoPatrolProps.property.dryRun">dryRun</a></code> | <code>boolean</code> | Run in dry-run mode (no GitHub write operations). |
 | <code><a href="#repo-patrol.RepoPatrolProps.property.enableDashboard">enableDashboard</a></code> | <code>boolean</code> | Enable the Next.js dashboard with Cognito authentication. |
@@ -874,10 +874,10 @@ const repoPatrolProps: RepoPatrolProps = { ... }
 ##### `githubAppSecret`<sup>Required</sup> <a name="githubAppSecret" id="repo-patrol.RepoPatrolProps.property.githubAppSecret"></a>
 
 ```typescript
-public readonly githubAppSecret: ISecretRef;
+public readonly githubAppSecret: ISecret;
 ```
 
-- *Type:* aws-cdk-lib.interfaces.aws_secretsmanager.ISecretRef
+- *Type:* aws-cdk-lib.aws_secretsmanager.ISecret
 
 Secrets Manager secret containing GitHub App credentials (app_id, private_key).
 
@@ -1019,7 +1019,7 @@ const reportFrontendProps: ReportFrontendProps = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#repo-patrol.ReportFrontendProps.property.githubAppSecret">githubAppSecret</a></code> | <code>aws-cdk-lib.interfaces.aws_secretsmanager.ISecretRef</code> | Secrets Manager secret containing GitHub App credentials for installation_id auto-resolution. |
+| <code><a href="#repo-patrol.ReportFrontendProps.property.githubAppSecret">githubAppSecret</a></code> | <code>aws-cdk-lib.aws_secretsmanager.ISecret</code> | Secrets Manager secret containing GitHub App credentials for installation_id auto-resolution. |
 | <code><a href="#repo-patrol.ReportFrontendProps.property.jobHistoryTable">jobHistoryTable</a></code> | <code>aws-cdk-lib.aws_dynamodb.ITable</code> | *No description.* |
 | <code><a href="#repo-patrol.ReportFrontendProps.property.reportBucket">reportBucket</a></code> | <code>aws-cdk-lib.aws_s3.IBucket</code> | *No description.* |
 | <code><a href="#repo-patrol.ReportFrontendProps.property.reposTable">reposTable</a></code> | <code>aws-cdk-lib.aws_dynamodb.ITable</code> | *No description.* |
@@ -1032,10 +1032,10 @@ const reportFrontendProps: ReportFrontendProps = { ... }
 ##### `githubAppSecret`<sup>Required</sup> <a name="githubAppSecret" id="repo-patrol.ReportFrontendProps.property.githubAppSecret"></a>
 
 ```typescript
-public readonly githubAppSecret: ISecretRef;
+public readonly githubAppSecret: ISecret;
 ```
 
-- *Type:* aws-cdk-lib.interfaces.aws_secretsmanager.ISecretRef
+- *Type:* aws-cdk-lib.aws_secretsmanager.ISecret
 
 Secrets Manager secret containing GitHub App credentials for installation_id auto-resolution.
 
@@ -1211,7 +1211,7 @@ const strandsAgentRuntimeProps: StrandsAgentRuntimeProps = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#repo-patrol.StrandsAgentRuntimeProps.property.githubAppSecret">githubAppSecret</a></code> | <code>aws-cdk-lib.interfaces.aws_secretsmanager.ISecretRef</code> | *No description.* |
+| <code><a href="#repo-patrol.StrandsAgentRuntimeProps.property.githubAppSecret">githubAppSecret</a></code> | <code>aws-cdk-lib.aws_secretsmanager.ISecret</code> | *No description.* |
 | <code><a href="#repo-patrol.StrandsAgentRuntimeProps.property.jobHistoryTableName">jobHistoryTableName</a></code> | <code>string</code> | *No description.* |
 | <code><a href="#repo-patrol.StrandsAgentRuntimeProps.property.processedItemsTableName">processedItemsTableName</a></code> | <code>string</code> | *No description.* |
 | <code><a href="#repo-patrol.StrandsAgentRuntimeProps.property.reportBucket">reportBucket</a></code> | <code>aws-cdk-lib.aws_s3.IBucket</code> | *No description.* |
@@ -1225,10 +1225,10 @@ const strandsAgentRuntimeProps: StrandsAgentRuntimeProps = { ... }
 ##### `githubAppSecret`<sup>Required</sup> <a name="githubAppSecret" id="repo-patrol.StrandsAgentRuntimeProps.property.githubAppSecret"></a>
 
 ```typescript
-public readonly githubAppSecret: ISecretRef;
+public readonly githubAppSecret: ISecret;
 ```
 
-- *Type:* aws-cdk-lib.interfaces.aws_secretsmanager.ISecretRef
+- *Type:* aws-cdk-lib.aws_secretsmanager.ISecret
 
 ---
 
