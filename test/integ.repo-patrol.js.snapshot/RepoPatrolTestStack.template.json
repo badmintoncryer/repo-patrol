@@ -389,7 +389,7 @@
       {
        "Action": "secretsmanager:GetSecretValue",
        "Effect": "Allow",
-       "Resource": "arn:aws:secretsmanager:us-east-1:123456789012:secret:repo-patrol/github-app"
+       "Resource": "arn:aws:secretsmanager:us-east-1:123456789012:secret:repo-patrol/github-app*"
       },
       {
        "Action": [
@@ -1147,7 +1147,7 @@
       {
        "Action": "secretsmanager:GetSecretValue",
        "Effect": "Allow",
-       "Resource": "arn:aws:secretsmanager:us-east-1:123456789012:secret:repo-patrol/github-app"
+       "Resource": "arn:aws:secretsmanager:us-east-1:123456789012:secret:repo-patrol/github-app*"
       },
       {
        "Action": [
