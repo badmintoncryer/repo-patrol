@@ -24,8 +24,6 @@ export class StrandsAgentRuntime extends Construct {
 
   constructor(scope: Construct, id: string, props: StrandsAgentRuntimeProps) {
     super(scope, id);
-    const secretArn = props.githubAppSecret.secretArn;
-
     this.runtime = new Runtime(this, 'Runtime', {
       runtimeName: 'repo_patrol_agent',
       agentRuntimeArtifact: AgentRuntimeArtifact.fromAsset(
@@ -33,7 +31,7 @@ export class StrandsAgentRuntime extends Construct {
       ),
       environmentVariables: {
         REPORT_BUCKET_NAME: props.reportBucket.bucketName,
-        GITHUB_APP_SECRET_ARN: secretArn,
+        GITHUB_APP_SECRET_ARN: props.githubAppSecret.secretArn,
         REPOS_TABLE_NAME: props.reposTableName,
         JOB_HISTORY_TABLE_NAME: props.jobHistoryTableName,
         PROCESSED_ITEMS_TABLE_NAME: props.processedItemsTableName,
@@ -58,11 +56,7 @@ export class StrandsAgentRuntime extends Construct {
     props.reportBucket.grantWrite(this.runtime);
 
     // Secrets Manager read for GitHub App credentials
-    iam.Grant.addToPrincipal({
-      grantee: this.runtime,
-      actions: ['secretsmanager:GetSecretValue'],
-      resourceArns: [`${secretArn}*`],
-    });
+    props.githubAppSecret.grantRead(this.runtime);
 
     // DynamoDB access for job history and processed items
     this.runtime.addToRolePolicy(

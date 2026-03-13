@@ -102,7 +102,6 @@ export class ReportFrontend extends Construct {
 
     // Next.js Docker Lambda
     const cognitoDomain = `${domainPrefix}.auth.${cdk.Aws.REGION}.amazoncognito.com`;
-    const secretArn = props.githubAppSecret.secretArn;
     const webappFunction = new lambda.DockerImageFunction(
       this,
       'WebappFunction',
@@ -121,7 +120,7 @@ export class ReportFrontend extends Construct {
           USER_POOL_ID: this.userPool.userPoolId,
           USER_POOL_CLIENT_ID: this.userPoolClient.userPoolClientId,
           COGNITO_DOMAIN: cognitoDomain,
-          GITHUB_APP_SECRET_ARN: secretArn,
+          GITHUB_APP_SECRET_ARN: props.githubAppSecret.secretArn,
           AWS_LWA_INVOKE_MODE: 'response_stream',
         },
       },
@@ -133,11 +132,7 @@ export class ReportFrontend extends Construct {
     props.jobHistoryTable.grantReadData(webappFunction);
 
     // Secrets Manager read for GitHub App installation auto-resolution
-    iam.Grant.addToPrincipal({
-      grantee: webappFunction,
-      actions: ['secretsmanager:GetSecretValue'],
-      resourceArns: [`${secretArn}*`],
-    });
+    props.githubAppSecret.grantRead(webappFunction);
 
     // Function URL with IAM authentication.
     // CloudFront OAC signs requests with SigV4, and Lambda@Edge adds

@@ -387,9 +387,12 @@
        ]
       },
       {
-       "Action": "secretsmanager:GetSecretValue",
+       "Action": [
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:GetSecretValue"
+       ],
        "Effect": "Allow",
-       "Resource": "arn:aws:secretsmanager:us-east-1:123456789012:secret:repo-patrol/github-app*"
+       "Resource": "arn:aws:secretsmanager:us-east-1:123456789012:secret:repo-patrol/github-app-??????"
       },
       {
        "Action": [
@@ -1145,9 +1148,12 @@
        }
       },
       {
-       "Action": "secretsmanager:GetSecretValue",
+       "Action": [
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:GetSecretValue"
+       ],
        "Effect": "Allow",
-       "Resource": "arn:aws:secretsmanager:us-east-1:123456789012:secret:repo-patrol/github-app*"
+       "Resource": "arn:aws:secretsmanager:us-east-1:123456789012:secret:repo-patrol/github-app-??????"
       },
       {
        "Action": [
@@ -1188,7 +1194,7 @@
     ],
     "Code": {
      "ImageUri": {
-      "Fn::Sub": "123456789012.dkr.ecr.us-east-1.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-123456789012-us-east-1:b47c4f02f66216ba2b4cae74296f13ac78c167d6cd395e5ef4f52c2723fb2183"
+      "Fn::Sub": "123456789012.dkr.ecr.us-east-1.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-123456789012-us-east-1:c8007f7a71eb3586ee99e99aef8cbeae58f064d4c86a4babf00fad87d76b473f"
      }
     },
     "Environment": {

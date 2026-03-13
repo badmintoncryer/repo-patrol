@@ -47,9 +47,7 @@ npm install aws-cdk-lib constructs @aws-cdk/aws-bedrock-agentcore-alpha
 ## Usage
 
 ```typescript
-import { Duration, TimeZone } from 'aws-cdk-lib';
-import { ScheduleExpression } from 'aws-cdk-lib/aws-scheduler';
-import { RepoPatrol, JobType } from 'repo-patrol';
+import { RepoPatrol } from 'repo-patrol';
 
 new RepoPatrol(this, 'Patrol', {
   githubAppSecretArn: 'arn:aws:secretsmanager:us-west-2:123456789012:secret:github-app',
@@ -60,28 +58,10 @@ new RepoPatrol(this, 'Patrol', {
   dryRun: false,
   enableDashboard: true,
   mfaRequired: true, // TOTP MFA for dashboard login (default: true)
-
-  // Declarative repository configuration
-  // Jobs without an explicit schedule default to daily at UTC 00:00
-  repositories: [
-    {
-      owner: 'my-org',
-      repo: 'my-app',
-      githubAppInstallationId: 12345,
-      jobs: {
-        [JobType.REVIEW_PULL_REQUESTS]: {
-          schedule: ScheduleExpression.cron({
-            hour: '0', minute: '0', timeZone: TimeZone.ASIA_TOKYO,
-          }),
-        },
-        [JobType.HANDLE_DEPENDABOT]: {
-          schedule: ScheduleExpression.rate(Duration.hours(12)),
-        },
-      },
-    },
-  ],
 });
 ```
+
+Repositories are managed dynamically via the Dashboard UI or Registry API after deployment.
 
 ## Prerequisites
 
@@ -120,7 +100,7 @@ Enable the desired foundation model (default: `us.anthropic.claude-haiku-4-5-202
 | `check_dependencies` | Check for dependency updates |
 | `repo_health_check` | Audit README, LICENSE, CI config |
 
-All jobs default to **daily at UTC 00:00** (`cron(0 0 * * ? *)`). Override per job via `RepositoryConfig.jobs[jobType].schedule`.
+All jobs default to **daily at UTC 00:00** (`cron(0 0 * * ? *)`). Override per job via the Dashboard UI or Registry API.
 
 ## How It Works
 
@@ -168,10 +148,10 @@ When `enableDashboard: true` (default), the construct deploys:
 | S3 Bucket | 1 | Report storage |
 | DynamoDB Tables | 3 | repos, job_history, processed_items |
 | Bedrock AgentCore Runtime | 1 | Strands Agent container (ARM64) |
-| Lambda Functions | 5 | Dispatcher, Registry API, Repo Seeder, Schedule Cleanup, Webapp |
+| Lambda Functions | 4 | Dispatcher, Registry API, Schedule Cleanup, Webapp |
 | IAM Roles | 1 + per-Lambda | Scheduler execution role + Lambda execution roles |
 | EventBridge Schedules | Dynamic | Per repo x jobType (e.g. 5 repos x 6 jobs = 30 schedules) |
-| Custom Resources | 2 | Repo Seeder + Schedule Cleanup on stack deletion |
+| Custom Resources | 1 | Schedule Cleanup on stack deletion |
 | Secrets Manager | 0 | Uses existing secret (user-provided ARN) |
 | CloudFront Distribution | 0-1 | Dashboard CDN (if `enableDashboard: true`) |
 | Cognito User Pool | 0-1 | Dashboard auth with MFA (if `enableDashboard: true`) |

@@ -785,67 +785,6 @@ Repos table name (string to avoid circular dependency with RepoRegistry).
 
 ---
 
-### JobConfig <a name="JobConfig" id="repo-patrol.JobConfig"></a>
-
-Per-job configuration within a repository.
-
-#### Initializer <a name="Initializer" id="repo-patrol.JobConfig.Initializer"></a>
-
-```typescript
-import { JobConfig } from 'repo-patrol'
-
-const jobConfig: JobConfig = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#repo-patrol.JobConfig.property.enabled">enabled</a></code> | <code>boolean</code> | Whether this job is enabled. |
-| <code><a href="#repo-patrol.JobConfig.property.modelId">modelId</a></code> | <code>string</code> | Override the Bedrock model ID for this specific job. |
-| <code><a href="#repo-patrol.JobConfig.property.schedule">schedule</a></code> | <code>aws-cdk-lib.aws_scheduler.ScheduleExpression</code> | Schedule for this job. |
-
----
-
-##### `enabled`<sup>Optional</sup> <a name="enabled" id="repo-patrol.JobConfig.property.enabled"></a>
-
-```typescript
-public readonly enabled: boolean;
-```
-
-- *Type:* boolean
-- *Default:* true
-
-Whether this job is enabled.
-
----
-
-##### `modelId`<sup>Optional</sup> <a name="modelId" id="repo-patrol.JobConfig.property.modelId"></a>
-
-```typescript
-public readonly modelId: string;
-```
-
-- *Type:* string
-- *Default:* Uses the repository-level or construct-level model ID
-
-Override the Bedrock model ID for this specific job.
-
----
-
-##### `schedule`<sup>Optional</sup> <a name="schedule" id="repo-patrol.JobConfig.property.schedule"></a>
-
-```typescript
-public readonly schedule: ScheduleExpression;
-```
-
-- *Type:* aws-cdk-lib.aws_scheduler.ScheduleExpression
-- *Default:* Daily at UTC 00:00 (cron(0 0 * * ? *))
-
-Schedule for this job.
-
----
-
 ### RepoPatrolProps <a name="RepoPatrolProps" id="repo-patrol.RepoPatrolProps"></a>
 
 #### Initializer <a name="Initializer" id="repo-patrol.RepoPatrolProps.Initializer"></a>
@@ -867,7 +806,6 @@ const repoPatrolProps: RepoPatrolProps = { ... }
 | <code><a href="#repo-patrol.RepoPatrolProps.property.maxToolCalls">maxToolCalls</a></code> | <code>number</code> | Maximum tool calls per agent invocation. |
 | <code><a href="#repo-patrol.RepoPatrolProps.property.mfaRequired">mfaRequired</a></code> | <code>boolean</code> | Whether to require MFA (TOTP) for dashboard login. |
 | <code><a href="#repo-patrol.RepoPatrolProps.property.modelId">modelId</a></code> | <code>string</code> | Default Bedrock model ID. |
-| <code><a href="#repo-patrol.RepoPatrolProps.property.repositories">repositories</a></code> | <code><a href="#repo-patrol.RepositoryConfig">RepositoryConfig</a>[]</code> | Repositories to monitor. |
 
 ---
 
@@ -957,21 +895,6 @@ public readonly modelId: string;
 - *Type:* string
 
 Default Bedrock model ID.
-
----
-
-##### `repositories`<sup>Optional</sup> <a name="repositories" id="repo-patrol.RepoPatrolProps.property.repositories"></a>
-
-```typescript
-public readonly repositories: RepositoryConfig[];
-```
-
-- *Type:* <a href="#repo-patrol.RepositoryConfig">RepositoryConfig</a>[]
-
-Repositories to monitor.
-
-Each repository gets independent EventBridge Schedules per job type.
-Additional repositories can be added dynamically via the Registry API.
 
 ---
 
@@ -1106,94 +1029,6 @@ public readonly registryFunctionUrl: string;
 ```
 
 - *Type:* string
-
----
-
-### RepositoryConfig <a name="RepositoryConfig" id="repo-patrol.RepositoryConfig"></a>
-
-Configuration for a monitored GitHub repository.
-
-#### Initializer <a name="Initializer" id="repo-patrol.RepositoryConfig.Initializer"></a>
-
-```typescript
-import { RepositoryConfig } from 'repo-patrol'
-
-const repositoryConfig: RepositoryConfig = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#repo-patrol.RepositoryConfig.property.githubAppInstallationId">githubAppInstallationId</a></code> | <code>number</code> | GitHub App installation ID for this repository. |
-| <code><a href="#repo-patrol.RepositoryConfig.property.owner">owner</a></code> | <code>string</code> | GitHub repository owner (user or organization). |
-| <code><a href="#repo-patrol.RepositoryConfig.property.repo">repo</a></code> | <code>string</code> | GitHub repository name. |
-| <code><a href="#repo-patrol.RepositoryConfig.property.jobs">jobs</a></code> | <code>{[ key: string ]: <a href="#repo-patrol.JobConfig">JobConfig</a>}</code> | Per-job-type configuration. |
-| <code><a href="#repo-patrol.RepositoryConfig.property.modelId">modelId</a></code> | <code>string</code> | Override the Bedrock model ID for this repository. |
-
----
-
-##### `githubAppInstallationId`<sup>Required</sup> <a name="githubAppInstallationId" id="repo-patrol.RepositoryConfig.property.githubAppInstallationId"></a>
-
-```typescript
-public readonly githubAppInstallationId: number;
-```
-
-- *Type:* number
-
-GitHub App installation ID for this repository.
-
----
-
-##### `owner`<sup>Required</sup> <a name="owner" id="repo-patrol.RepositoryConfig.property.owner"></a>
-
-```typescript
-public readonly owner: string;
-```
-
-- *Type:* string
-
-GitHub repository owner (user or organization).
-
----
-
-##### `repo`<sup>Required</sup> <a name="repo" id="repo-patrol.RepositoryConfig.property.repo"></a>
-
-```typescript
-public readonly repo: string;
-```
-
-- *Type:* string
-
-GitHub repository name.
-
----
-
-##### `jobs`<sup>Optional</sup> <a name="jobs" id="repo-patrol.RepositoryConfig.property.jobs"></a>
-
-```typescript
-public readonly jobs: {[ key: string ]: JobConfig};
-```
-
-- *Type:* {[ key: string ]: <a href="#repo-patrol.JobConfig">JobConfig</a>}
-
-Per-job-type configuration.
-
-Keys are JobType enum values (e.g. 'review_pull_requests').
-Omitted job types use the default schedule and are enabled.
-
----
-
-##### `modelId`<sup>Optional</sup> <a name="modelId" id="repo-patrol.RepositoryConfig.property.modelId"></a>
-
-```typescript
-public readonly modelId: string;
-```
-
-- *Type:* string
-- *Default:* Uses the construct-level model ID
-
-Override the Bedrock model ID for this repository.
 
 ---
 

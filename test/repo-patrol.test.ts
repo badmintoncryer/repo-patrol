@@ -1,9 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
-import { Duration, TimeZone } from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
-import { ScheduleExpression } from 'aws-cdk-lib/aws-scheduler';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
-import { JobType, RepoPatrol } from '../src';
+import { RepoPatrol } from '../src';
 
 function testSecret(stack: cdk.Stack, id = 'TestSecret') {
   return secretsmanager.Secret.fromSecretNameV2(stack, id, 'test-secret');
@@ -58,56 +56,6 @@ test('RepoPatrol creates expected resources', () => {
   });
 });
 
-test('RepoPatrol with repositories creates seeder custom resource', () => {
-  const app = new cdk.App();
-  const stack = new cdk.Stack(app, 'TestStack');
-
-  new RepoPatrol(stack, 'TestPatrol', {
-    githubAppSecret: testSecret(stack),
-    enableDashboard: false,
-    repositories: [
-      {
-        owner: 'my-org',
-        repo: 'my-app',
-        githubAppInstallationId: 12345,
-        jobs: {
-          [JobType.REVIEW_PULL_REQUESTS]: {
-            schedule: ScheduleExpression.cron({
-              hour: '0',
-              minute: '0',
-              timeZone: TimeZone.ASIA_TOKYO,
-            }),
-          },
-          [JobType.HANDLE_DEPENDABOT]: {
-            schedule: ScheduleExpression.rate(Duration.hours(6)),
-          },
-        },
-      },
-      {
-        owner: 'my-org',
-        repo: 'another-repo',
-        githubAppInstallationId: 67890,
-      },
-    ],
-  });
-
-  const template = Template.fromStack(stack);
-
-  // Repo seeder custom resource should exist
-  template.hasResource('AWS::CloudFormation::CustomResource', {
-    Properties: {
-      Repositories: Match.stringLikeRegexp('my-org'),
-    },
-  });
-
-  // 2 repos should be in the seeder payload
-  template.hasResource('AWS::CloudFormation::CustomResource', {
-    Properties: {
-      Repositories: Match.stringLikeRegexp('another-repo'),
-    },
-  });
-});
-
 test('RepoPatrol uses daily UTC 00:00 as fallback schedule', () => {
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'TestStack');
@@ -129,37 +77,3 @@ test('RepoPatrol uses daily UTC 00:00 as fallback schedule', () => {
   });
 });
 
-test('RepoPatrol without per-job schedule uses fallback for all jobs', () => {
-  const app = new cdk.App();
-  const stack = new cdk.Stack(app, 'TestStack');
-
-  new RepoPatrol(stack, 'TestPatrol', {
-    githubAppSecret: testSecret(stack),
-    enableDashboard: false,
-    repositories: [
-      {
-        owner: 'my-org',
-        repo: 'my-app',
-        githubAppInstallationId: 12345,
-      },
-    ],
-  });
-
-  const template = Template.fromStack(stack);
-
-  // All jobs should use the fallback cron schedule (cron(0 0 * * ? *))
-  template.hasResource('AWS::CloudFormation::CustomResource', {
-    Properties: {
-      Repositories: Match.stringLikeRegexp('cron\\(0 0'),
-    },
-  });
-
-  // No rate() expressions should appear since no per-job schedules are set
-  const resources = template.findResources('AWS::CloudFormation::CustomResource');
-  for (const [, resource] of Object.entries(resources)) {
-    const repos = (resource as any).Properties?.Repositories;
-    if (repos && typeof repos === 'string' && repos.includes('my-org')) {
-      expect(repos).not.toContain('rate(');
-    }
-  }
-});

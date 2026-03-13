@@ -39,7 +39,7 @@ export default function RepoSettingsPage() {
   };
 
   const handleDelete = async () => {
-    if (!confirm(`Delete ${owner}/${repo}?`)) return;
+    if (!confirm(`Remove patrol configuration for ${owner}/${repo}?`)) return;
     setDeleting(true);
     try {
       await fetch(`/api/repos?repoId=${encodeURIComponent(repoId)}`, {
@@ -120,18 +120,18 @@ export default function RepoSettingsPage() {
       {/* Danger Zone */}
       <div className="mt-8 rounded-xl border border-rose-500/20 bg-rose-500/5 p-6">
         <h3 className="text-sm font-semibold text-rose-400 mb-3">
-          Danger Zone
+          Remove Patrol Configuration
         </h3>
         <p className="text-sm text-slate-400 mb-4">
-          This will permanently delete the repository and all associated
-          schedules.
+          This will remove the patrol configuration and all associated schedules
+          for this repository. The repository itself will not be affected.
         </p>
         <button
           onClick={handleDelete}
           disabled={deleting}
           className="bg-rose-600 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-rose-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {deleting ? "Deleting..." : "Delete Repository"}
+          {deleting ? "Removing..." : "Remove Patrol Config"}
         </button>
       </div>
     </div>
