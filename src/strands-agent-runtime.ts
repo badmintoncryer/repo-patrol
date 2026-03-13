@@ -3,7 +3,6 @@ import {
   Runtime,
   AgentRuntimeArtifact,
 } from '@aws-cdk/aws-bedrock-agentcore-alpha';
-import * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
@@ -11,7 +10,7 @@ import { Construct } from 'constructs';
 
 export interface StrandsAgentRuntimeProps {
   readonly reportBucket: s3.IBucket;
-  readonly githubAppSecret: secretsmanager.ISecretRef;
+  readonly githubAppSecret: secretsmanager.ISecret;
   readonly reposTableName: string;
   readonly jobHistoryTableName: string;
   readonly processedItemsTableName: string;
@@ -25,15 +24,7 @@ export class StrandsAgentRuntime extends Construct {
 
   constructor(scope: Construct, id: string, props: StrandsAgentRuntimeProps) {
     super(scope, id);
-    const secretId = props.githubAppSecret.secretRef.secretId;
-    const secretArn = cdk.Token.isUnresolved(secretId) || secretId.startsWith('arn:')
-      ? secretId
-      : cdk.Stack.of(this).formatArn({
-        service: 'secretsmanager',
-        resource: 'secret',
-        resourceName: secretId,
-        arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
-      });
+    const secretArn = props.githubAppSecret.secretArn;
 
     this.runtime = new Runtime(this, 'Runtime', {
       runtimeName: 'repo_patrol_agent',

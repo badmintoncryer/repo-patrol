@@ -65,7 +65,7 @@ export interface RepositoryConfig {
 
 export interface RepoPatrolProps {
   /** Secrets Manager secret containing GitHub App credentials (app_id, private_key) */
-  readonly githubAppSecret: secretsmanager.ISecretRef;
+  readonly githubAppSecret: secretsmanager.ISecret;
 
   /**
    * Repositories to monitor.

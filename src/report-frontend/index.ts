@@ -21,7 +21,7 @@ export interface ReportFrontendProps {
   readonly registryFunctionUrl?: string;
 
   /** Secrets Manager secret containing GitHub App credentials for installation_id auto-resolution */
-  readonly githubAppSecret: secretsmanager.ISecretRef;
+  readonly githubAppSecret: secretsmanager.ISecret;
 
   /**
    * Whether to require MFA (TOTP) for dashboard login.
@@ -102,15 +102,7 @@ export class ReportFrontend extends Construct {
 
     // Next.js Docker Lambda
     const cognitoDomain = `${domainPrefix}.auth.${cdk.Aws.REGION}.amazoncognito.com`;
-    const secretId = props.githubAppSecret.secretRef.secretId;
-    const secretArn = cdk.Token.isUnresolved(secretId) || secretId.startsWith('arn:')
-      ? secretId
-      : cdk.Stack.of(this).formatArn({
-        service: 'secretsmanager',
-        resource: 'secret',
-        resourceName: secretId,
-        arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
-      });
+    const secretArn = props.githubAppSecret.secretArn;
     const webappFunction = new lambda.DockerImageFunction(
       this,
       'WebappFunction',

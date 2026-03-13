@@ -6,9 +6,7 @@ import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import { JobType, RepoPatrol } from '../src';
 
 function testSecret(stack: cdk.Stack, id = 'TestSecret') {
-  return secretsmanager.CfnSecret.fromSecretId(
-    stack, id, 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
-  );
+  return secretsmanager.Secret.fromSecretNameV2(stack, id, 'test-secret');
 }
 
 test('RepoPatrol creates expected resources', () => {

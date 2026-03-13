@@ -15,7 +15,7 @@ class TestStack extends Stack {
     });
 
     new RepoPatrol(this, 'Patrol', {
-      githubAppSecret: secretsmanager.CfnSecret.fromSecretId(
+      githubAppSecret: secretsmanager.Secret.fromSecretNameV2(
         this, 'GhSecret', 'repo-patrol/github-app',
       ),
       enableDashboard: true,
