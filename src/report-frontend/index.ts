@@ -120,7 +120,7 @@ export class ReportFrontend extends Construct {
           USER_POOL_ID: this.userPool.userPoolId,
           USER_POOL_CLIENT_ID: this.userPoolClient.userPoolClientId,
           COGNITO_DOMAIN: cognitoDomain,
-          GITHUB_APP_SECRET_ARN: props.githubAppSecret.secretArn,
+          GITHUB_APP_SECRET_ARN: props.githubAppSecret.secretName,
           AWS_LWA_INVOKE_MODE: 'response_stream',
         },
       },

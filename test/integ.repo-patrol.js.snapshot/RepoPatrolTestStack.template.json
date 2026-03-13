@@ -440,7 +440,7 @@
      "REPORT_BUCKET_NAME": {
       "Ref": "PatrolReportBucket939016BB"
      },
-     "GITHUB_APP_SECRET_ARN": "arn:aws:secretsmanager:us-east-1:123456789012:secret:repo-patrol/github-app",
+     "GITHUB_APP_SECRET_ARN": "repo-patrol/github-app",
      "REPOS_TABLE_NAME": {
       "Ref": "PatrolRegistryReposTableCBB750FC"
      },
@@ -1230,7 +1230,7 @@
         ]
        ]
       },
-      "GITHUB_APP_SECRET_ARN": "arn:aws:secretsmanager:us-east-1:123456789012:secret:repo-patrol/github-app",
+      "GITHUB_APP_SECRET_ARN": "repo-patrol/github-app",
       "AWS_LWA_INVOKE_MODE": "response_stream",
       "AMPLIFY_APP_ORIGIN_SSM_PARAMETER": {
        "Ref": "PatrolFrontendOriginSourceParameterD1D1CE26"

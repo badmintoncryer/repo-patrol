@@ -31,7 +31,7 @@ export class StrandsAgentRuntime extends Construct {
       ),
       environmentVariables: {
         REPORT_BUCKET_NAME: props.reportBucket.bucketName,
-        GITHUB_APP_SECRET_ARN: props.githubAppSecret.secretArn,
+        GITHUB_APP_SECRET_ARN: props.githubAppSecret.secretName,
         REPOS_TABLE_NAME: props.reposTableName,
         JOB_HISTORY_TABLE_NAME: props.jobHistoryTableName,
         PROCESSED_ITEMS_TABLE_NAME: props.processedItemsTableName,
