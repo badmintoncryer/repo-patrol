@@ -141,7 +141,7 @@ export class ReportFrontend extends Construct {
     iam.Grant.addToPrincipal({
       grantee: webappFunction,
       actions: ['secretsmanager:GetSecretValue'],
-      resourceArns: [secretArn],
+      resourceArns: [`${secretArn}*`],
     });
 
     // Function URL with IAM authentication.

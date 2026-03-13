@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "artifacts": {
     "RepoPatrolTestStack.assets": {
       "type": "cdk:asset-manifest",
@@ -11,21 +11,21 @@
     },
     "RepoPatrolTestStack": {
       "type": "aws:cloudformation:stack",
-      "environment": "aws://214794239830/us-east-1",
+      "environment": "aws://123456789012/us-east-1",
       "properties": {
         "templateFile": "RepoPatrolTestStack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::214794239830:role/cdk-hnb659fds-deploy-role-214794239830-us-east-1",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::214794239830:role/cdk-hnb659fds-cfn-exec-role-214794239830-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-214794239830-us-east-1/89da00842a8089947c0f5d88a908e90f6260b3f36e076c742dd29ab3737440ba.json",
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-deploy-role-123456789012-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-cfn-exec-role-123456789012-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-123456789012-us-east-1/71c7e3619f3a9a93e0b7a69ff5c1a25a916c460ab7b7de6b4318e6652d6050bf.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
           "RepoPatrolTestStack.assets"
         ],
         "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::214794239830:role/cdk-hnb659fds-lookup-role-214794239830-us-east-1",
+          "arn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-lookup-role-123456789012-us-east-1",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         }
@@ -34,10 +34,34 @@
         "RepoPatrolTestStack.assets"
       ],
       "metadata": {
+        "/RepoPatrolTestStack/Patrol/ReportBucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "blockPublicAccess": "*",
+              "encryption": "S3_MANAGED",
+              "removalPolicy": "retain",
+              "autoDeleteObjects": false
+            }
+          }
+        ],
         "/RepoPatrolTestStack/Patrol/ReportBucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PatrolReportBucket939016BB"
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Registry/ReposTable": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "partitionKey": {
+                "name": "*",
+                "type": "S"
+              },
+              "billingMode": "PAY_PER_REQUEST",
+              "removalPolicy": "retain"
+            }
           }
         ],
         "/RepoPatrolTestStack/Patrol/Registry/ReposTable/Resource": [
@@ -46,10 +70,58 @@
             "data": "PatrolRegistryReposTableCBB750FC"
           }
         ],
+        "/RepoPatrolTestStack/Patrol/Registry/ReposTable/ScalingRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Registry/JobHistoryTable": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "partitionKey": {
+                "name": "*",
+                "type": "S"
+              },
+              "sortKey": {
+                "name": "*",
+                "type": "S"
+              },
+              "billingMode": "PAY_PER_REQUEST",
+              "timeToLiveAttribute": "*",
+              "removalPolicy": "retain"
+            }
+          }
+        ],
         "/RepoPatrolTestStack/Patrol/Registry/JobHistoryTable/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PatrolRegistryJobHistoryTable8B2E96BC"
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Registry/JobHistoryTable/ScalingRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Registry/ProcessedItemsTable": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "partitionKey": {
+                "name": "*",
+                "type": "S"
+              },
+              "sortKey": {
+                "name": "*",
+                "type": "S"
+              },
+              "billingMode": "PAY_PER_REQUEST",
+              "timeToLiveAttribute": "*",
+              "removalPolicy": "destroy"
+            }
           }
         ],
         "/RepoPatrolTestStack/Patrol/Registry/ProcessedItemsTable/Resource": [
@@ -58,10 +130,181 @@
             "data": "PatrolRegistryProcessedItemsTable167B64E3"
           }
         ],
+        "/RepoPatrolTestStack/Patrol/Registry/ProcessedItemsTable/ScalingRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Registry/RegistryApiFunction": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "architecture": "*",
+              "handler": "*",
+              "entry": "*",
+              "timeout": "*",
+              "memorySize": "*",
+              "environment": "*",
+              "bundling": {
+                "minify": true,
+                "sourceMap": true
+              },
+              "code": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "architecture": "*",
+              "handler": "*",
+              "entry": "*",
+              "timeout": "*",
+              "memorySize": "*",
+              "environment": "*",
+              "bundling": {
+                "minify": true,
+                "sourceMap": true
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Registry/RegistryApiFunction/ServiceRole": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "Failed to add construct metadata for node [ServiceRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Registry/RegistryApiFunction/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/RepoPatrolTestStack/Patrol/Registry/RegistryApiFunction/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PatrolRegistryRegistryApiFunctionServiceRole458F71E5"
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Registry/RegistryApiFunction/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/RepoPatrolTestStack/Patrol/Registry/RegistryApiFunction/ServiceRole/DefaultPolicy/Resource": [
@@ -76,55 +319,283 @@
             "data": "PatrolRegistryRegistryApiFunction8F717C0A"
           }
         ],
+        "/RepoPatrolTestStack/Patrol/Registry/RegistryApiFunction/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Registry/RegistryApiFunction/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PatrolRegistryRegistryApiFunctionLogGroup4FAF4CA8"
+          }
+        ],
         "/RepoPatrolTestStack/Patrol/AgentRuntime/Runtime": [
           {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
             "type": "aws:cdk:info",
-            "data": "Container URI validation skipped as it contains unresolved CDK tokens. The URI will be validated at deployment time.",
-            "trace": [
-              "Annotations.addMessage (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/aws-cdk-lib@2.233.0_constructs@10.4.4/node_modules/aws-cdk-lib/core/lib/annotations.js:1:2066)",
-              "Annotations.addInfo (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/aws-cdk-lib@2.233.0_constructs@10.4.4/node_modules/aws-cdk-lib/core/lib/annotations.js:1:1443)",
-              "WrappedClass.validateContainerUri (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/@aws-cdk+aws-bedrock-agentcore-alpha@2.224.0-alpha.0_@aws-cdk+aws-bedrock-alpha@2.224.0-alpha_fgev2zubuttprlxz5lvsztezwy/node_modules/@aws-cdk/aws-bedrock-agentcore-alpha/agentcore/runtime/runtime.ts:596:28)",
-              "WrappedClass.renderAgentRuntimeArtifact (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/@aws-cdk+aws-bedrock-agentcore-alpha@2.224.0-alpha.0_@aws-cdk+aws-bedrock-alpha@2.224.0-alpha_fgev2zubuttprlxz5lvsztezwy/node_modules/@aws-cdk/aws-bedrock-agentcore-alpha/agentcore/runtime/runtime.ts:403:12)",
-              "Object.produce (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/@aws-cdk+aws-bedrock-agentcore-alpha@2.224.0-alpha.0_@aws-cdk+aws-bedrock-alpha@2.224.0-alpha_fgev2zubuttprlxz5lvsztezwy/node_modules/@aws-cdk/aws-bedrock-agentcore-alpha/agentcore/runtime/runtime.ts:282:29)",
-              "LazyAny.resolve (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/aws-cdk-lib@2.233.0_constructs@10.4.4/node_modules/aws-cdk-lib/core/lib/lazy.js:1:4170)",
-              "LazyAny.resolve (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/aws-cdk-lib@2.233.0_constructs@10.4.4/node_modules/aws-cdk-lib/core/lib/lazy.js:1:4778)",
-              "RememberingTokenResolver.resolveToken (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/aws-cdk-lib@2.233.0_constructs@10.4.4/node_modules/aws-cdk-lib/core/lib/resolvable.js:1:1543)",
-              "RememberingTokenResolver.resolveToken (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/aws-cdk-lib@2.233.0_constructs@10.4.4/node_modules/aws-cdk-lib/core/lib/private/resolve.js:1:4299)",
-              "resolve (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/aws-cdk-lib@2.233.0_constructs@10.4.4/node_modules/aws-cdk-lib/core/lib/private/resolve.js:1:2909)",
-              "Object.resolve (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/aws-cdk-lib@2.233.0_constructs@10.4.4/node_modules/aws-cdk-lib/core/lib/private/resolve.js:1:1187)",
-              "resolve (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/aws-cdk-lib@2.233.0_constructs@10.4.4/node_modules/aws-cdk-lib/core/lib/private/resolve.js:1:3218)",
-              "Object.resolve (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/aws-cdk-lib@2.233.0_constructs@10.4.4/node_modules/aws-cdk-lib/core/lib/private/resolve.js:1:1187)",
-              "RememberingTokenResolver.resolveToken (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/aws-cdk-lib@2.233.0_constructs@10.4.4/node_modules/aws-cdk-lib/core/lib/resolvable.js:1:1584)",
-              "RememberingTokenResolver.resolveToken (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/aws-cdk-lib@2.233.0_constructs@10.4.4/node_modules/aws-cdk-lib/core/lib/private/resolve.js:1:4299)",
-              "resolve (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/aws-cdk-lib@2.233.0_constructs@10.4.4/node_modules/aws-cdk-lib/core/lib/private/resolve.js:1:2909)",
-              "Object.resolve (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/aws-cdk-lib@2.233.0_constructs@10.4.4/node_modules/aws-cdk-lib/core/lib/private/resolve.js:1:1187)",
-              "resolve (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/aws-cdk-lib@2.233.0_constructs@10.4.4/node_modules/aws-cdk-lib/core/lib/private/resolve.js:1:3218)",
-              "Object.resolve (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/aws-cdk-lib@2.233.0_constructs@10.4.4/node_modules/aws-cdk-lib/core/lib/private/resolve.js:1:1187)",
-              "RememberingTokenResolver.resolveToken (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/aws-cdk-lib@2.233.0_constructs@10.4.4/node_modules/aws-cdk-lib/core/lib/resolvable.js:1:1584)",
-              "RememberingTokenResolver.resolveToken (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/aws-cdk-lib@2.233.0_constructs@10.4.4/node_modules/aws-cdk-lib/core/lib/private/resolve.js:1:4299)",
-              "resolve (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/aws-cdk-lib@2.233.0_constructs@10.4.4/node_modules/aws-cdk-lib/core/lib/private/resolve.js:1:2909)",
-              "Object.resolve (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/aws-cdk-lib@2.233.0_constructs@10.4.4/node_modules/aws-cdk-lib/core/lib/private/resolve.js:1:1187)",
-              "resolve (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/aws-cdk-lib@2.233.0_constructs@10.4.4/node_modules/aws-cdk-lib/core/lib/private/resolve.js:1:3218)",
-              "Object.resolve (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/aws-cdk-lib@2.233.0_constructs@10.4.4/node_modules/aws-cdk-lib/core/lib/private/resolve.js:1:1187)",
-              "resolve (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/aws-cdk-lib@2.233.0_constructs@10.4.4/node_modules/aws-cdk-lib/core/lib/private/resolve.js:1:3218)",
-              "findTokens (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/aws-cdk-lib@2.233.0_constructs@10.4.4/node_modules/aws-cdk-lib/core/lib/private/resolve.js:1:4061)",
-              "findAllReferences (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/aws-cdk-lib@2.233.0_constructs@10.4.4/node_modules/aws-cdk-lib/core/lib/private/refs.js:1:4841)",
-              "resolveReferences (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/aws-cdk-lib@2.233.0_constructs@10.4.4/node_modules/aws-cdk-lib/core/lib/private/refs.js:1:1556)",
-              "prepareApp (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/aws-cdk-lib@2.233.0_constructs@10.4.4/node_modules/aws-cdk-lib/core/lib/private/prepare-app.js:1:806)",
-              "synthesize (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/aws-cdk-lib@2.233.0_constructs@10.4.4/node_modules/aws-cdk-lib/core/lib/private/synthesis.js:1:1862)",
-              "App.synth (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/aws-cdk-lib@2.233.0_constructs@10.4.4/node_modules/aws-cdk-lib/core/lib/stage.js:1:2912)",
-              "process.<anonymous> (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/aws-cdk-lib@2.233.0_constructs@10.4.4/node_modules/aws-cdk-lib/core/lib/app.js:1:2041)",
-              "Object.onceWrapper (node:events:639:26)",
-              "process.emit (node:events:524:28)",
-              "process.emit (node:domain:489:12)",
-              "process.emit.sharedData.processEmitHook.installedValue [as emit] (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/@cspotcode+source-map-support@0.8.1/node_modules/@cspotcode/source-map-support/source-map-support.js:745:40)"
-            ]
+            "data": "Container URI validation skipped as it contains unresolved CDK tokens. The URI will be validated at deployment time."
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/AgentRuntime/Runtime/ExecutionRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "description": "*",
+              "maxSessionDuration": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/AgentRuntime/Runtime/ExecutionRole/ImportExecutionRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/RepoPatrolTestStack/Patrol/AgentRuntime/Runtime/ExecutionRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PatrolAgentRuntimeExecutionRoleABFC2A2C"
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/AgentRuntime/Runtime/ExecutionRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/RepoPatrolTestStack/Patrol/AgentRuntime/Runtime/ExecutionRole/DefaultPolicy/Resource": [
@@ -139,10 +610,151 @@
             "data": "PatrolAgentRuntime2CCE02DD"
           }
         ],
+        "/RepoPatrolTestStack/Patrol/Scheduler/Dispatcher": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "architecture": "*",
+              "handler": "*",
+              "entry": "*",
+              "timeout": "*",
+              "memorySize": "*",
+              "environment": "*",
+              "bundling": {
+                "minify": true,
+                "sourceMap": true
+              },
+              "code": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "architecture": "*",
+              "handler": "*",
+              "entry": "*",
+              "timeout": "*",
+              "memorySize": "*",
+              "environment": "*",
+              "bundling": {
+                "minify": true,
+                "sourceMap": true
+              }
+            }
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Scheduler/Dispatcher/ServiceRole": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "Failed to add construct metadata for node [ServiceRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Scheduler/Dispatcher/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/RepoPatrolTestStack/Patrol/Scheduler/Dispatcher/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PatrolSchedulerDispatcherServiceRoleA975916D"
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Scheduler/Dispatcher/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/RepoPatrolTestStack/Patrol/Scheduler/Dispatcher/ServiceRole/DefaultPolicy/Resource": [
@@ -157,10 +769,95 @@
             "data": "PatrolSchedulerDispatcher76326CDF"
           }
         ],
+        "/RepoPatrolTestStack/Patrol/Scheduler/Dispatcher/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Scheduler/Dispatcher/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PatrolSchedulerDispatcherLogGroup504A3743"
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Scheduler/SchedulerRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Scheduler/SchedulerRole/ImportSchedulerRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/RepoPatrolTestStack/Patrol/Scheduler/SchedulerRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PatrolSchedulerSchedulerRoleF583FF4D"
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Scheduler/SchedulerRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/RepoPatrolTestStack/Patrol/Scheduler/SchedulerRole/DefaultPolicy/Resource": [
@@ -169,10 +866,109 @@
             "data": "PatrolSchedulerSchedulerRoleDefaultPolicy06A77364"
           }
         ],
+        "/RepoPatrolTestStack/Patrol/ScheduleCleanupFunction": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "architecture": "*",
+              "handler": "*",
+              "entry": "*",
+              "timeout": "*",
+              "memorySize": "*",
+              "bundling": {
+                "minify": true,
+                "sourceMap": true
+              },
+              "code": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "architecture": "*",
+              "handler": "*",
+              "entry": "*",
+              "timeout": "*",
+              "memorySize": "*",
+              "bundling": {
+                "minify": true,
+                "sourceMap": true
+              }
+            }
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/ScheduleCleanupFunction/ServiceRole": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "Failed to add construct metadata for node [ServiceRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/ScheduleCleanupFunction/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/RepoPatrolTestStack/Patrol/ScheduleCleanupFunction/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PatrolScheduleCleanupFunctionServiceRole06503D28"
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/ScheduleCleanupFunction/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/RepoPatrolTestStack/Patrol/ScheduleCleanupFunction/ServiceRole/DefaultPolicy/Resource": [
@@ -187,10 +983,136 @@
             "data": "PatrolScheduleCleanupFunctionA8E7EA93"
           }
         ],
+        "/RepoPatrolTestStack/Patrol/ScheduleCleanupFunction/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/ScheduleCleanupFunction/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PatrolScheduleCleanupFunctionLogGroup9AD91D35"
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/ScheduleCleanupProvider/framework-onEvent": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "description": "*",
+              "runtime": "*",
+              "handler": "*",
+              "timeout": "*",
+              "loggingFormat": "JSON",
+              "applicationLogLevelV2": "FATAL",
+              "logGroup": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "securityGroups": "*",
+              "role": "*",
+              "functionName": "*",
+              "environmentEncryption": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEnvironment": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/ScheduleCleanupProvider/framework-onEvent/ServiceRole": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "Failed to add construct metadata for node [ServiceRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/ScheduleCleanupProvider/framework-onEvent/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/RepoPatrolTestStack/Patrol/ScheduleCleanupProvider/framework-onEvent/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PatrolScheduleCleanupProviderframeworkonEventServiceRoleAEBBF59B"
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/ScheduleCleanupProvider/framework-onEvent/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/RepoPatrolTestStack/Patrol/ScheduleCleanupProvider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
@@ -205,10 +1127,56 @@
             "data": "PatrolScheduleCleanupProviderframeworkonEvent595A9B6E"
           }
         ],
+        "/RepoPatrolTestStack/Patrol/ScheduleCleanupProvider/framework-onEvent/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/ScheduleCleanupProvider/framework-onEvent/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PatrolScheduleCleanupProviderframeworkonEventLogGroup587E7DB3"
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/ScheduleCleanup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/RepoPatrolTestStack/Patrol/ScheduleCleanup/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PatrolScheduleCleanupC8713768"
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/UserPool": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "selfSignUpEnabled": false,
+              "signInAliases": {
+                "email": true
+              },
+              "passwordPolicy": {
+                "minLength": "*",
+                "requireLowercase": true,
+                "requireUppercase": true,
+                "requireDigits": true,
+                "requireSymbols": true
+              },
+              "mfa": "ON",
+              "mfaSecondFactor": {
+                "sms": false,
+                "otp": true
+              },
+              "accountRecovery": 2,
+              "featurePlan": "ESSENTIALS",
+              "removalPolicy": "retain"
+            }
           }
         ],
         "/RepoPatrolTestStack/Patrol/Frontend/UserPool/Resource": [
@@ -217,10 +1185,39 @@
             "data": "PatrolFrontendUserPool39743415"
           }
         ],
+        "/RepoPatrolTestStack/Patrol/Frontend/UserPool/Domain": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "userPool": "*",
+              "cognitoDomain": {
+                "domainPrefix": "*"
+              },
+              "managedLoginVersion": 2
+            }
+          }
+        ],
         "/RepoPatrolTestStack/Patrol/Frontend/UserPool/Domain/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PatrolFrontendUserPoolDomain6074427B"
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/UserPool/WebappClient": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "userPool": "*",
+              "generateSecret": false,
+              "oAuth": {
+                "flows": {
+                  "authorizationCodeGrant": true
+                },
+                "scopes": "*",
+                "callbackUrls": "*",
+                "logoutUrls": "*"
+              }
+            }
           }
         ],
         "/RepoPatrolTestStack/Patrol/Frontend/UserPool/WebappClient/Resource": [
@@ -235,10 +1232,230 @@
             "data": "PatrolFrontendManagedLoginBrandingFB2D97F8"
           }
         ],
+        "/RepoPatrolTestStack/Patrol/Frontend/WebappFunction": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "architecture": "*",
+              "memorySize": "*",
+              "timeout": "*",
+              "environment": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "architecture": "*",
+              "memorySize": "*",
+              "timeout": "*",
+              "environment": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/WebappFunction/ServiceRole": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "Failed to add construct metadata for node [ServiceRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/WebappFunction/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/RepoPatrolTestStack/Patrol/Frontend/WebappFunction/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PatrolFrontendWebappFunctionServiceRoleC5682C29"
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/WebappFunction/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/RepoPatrolTestStack/Patrol/Frontend/WebappFunction/ServiceRole/DefaultPolicy/Resource": [
@@ -253,10 +1470,62 @@
             "data": "PatrolFrontendWebappFunction85D9F760"
           }
         ],
+        "/RepoPatrolTestStack/Patrol/Frontend/WebappFunction/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/WebappFunction/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PatrolFrontendWebappFunctionLogGroup0167D785"
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/WebappFunction/FunctionUrl": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "function": "*",
+              "authType": "AWS_IAM",
+              "invokeMode": "RESPONSE_STREAM"
+            }
+          }
+        ],
         "/RepoPatrolTestStack/Patrol/Frontend/WebappFunction/FunctionUrl/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PatrolFrontendWebappFunctionFunctionUrlB6AEF066"
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/SignPayloadFn": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/SignPayloadFn/Fn": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "handler": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/SignPayloadFn/Fn/ServiceRole": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "Failed to add construct metadata for node [ServiceRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/SignPayloadFn/Fn/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/RepoPatrolTestStack/Patrol/Frontend/SignPayloadFn/Fn/ServiceRole/Resource": [
@@ -271,10 +1540,59 @@
             "data": "PatrolFrontendSignPayloadFn910F7C7A"
           }
         ],
+        "/RepoPatrolTestStack/Patrol/Frontend/SignPayloadFn/Fn/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/SignPayloadFn/Fn/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PatrolFrontendSignPayloadFnLogGroupBC27072E"
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/SignPayloadFn/Fn/CurrentVersion": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "lambda": "*"
+            }
+          }
+        ],
         "/RepoPatrolTestStack/Patrol/Frontend/SignPayloadFn/Fn/CurrentVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PatrolFrontendSignPayloadFnCurrentVersionB3E27C31928d1e106af2c7e954741ab61b1b7868"
+            "data": "PatrolFrontendSignPayloadFnCurrentVersionB3E27C318cbf91ffee61ff5b7e2d9f5bc70c9ed2"
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/Distribution": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "defaultBehavior": {
+                "origin": "*",
+                "viewerProtocolPolicy": "redirect-to-https",
+                "cachePolicy": "*",
+                "originRequestPolicy": "*",
+                "allowedMethods": "*",
+                "edgeLambdas": [
+                  {
+                    "functionVersion": "*",
+                    "eventType": "origin-request",
+                    "includeBody": true
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/Distribution/Origin1/FunctionUrlOriginAccessControl": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/RepoPatrolTestStack/Patrol/Frontend/Distribution/Origin1/FunctionUrlOriginAccessControl/Resource": [
@@ -295,43 +1613,61 @@
             "data": "PatrolFrontendDistribution980A8ABC"
           }
         ],
+        "/RepoPatrolTestStack/Patrol/Frontend/OriginSourceParameter": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "stringValue": "*"
+            }
+          }
+        ],
         "/RepoPatrolTestStack/Patrol/Frontend/OriginSourceParameter/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PatrolFrontendOriginSourceParameterD1D1CE26"
           }
         ],
-        "/RepoPatrolTestStack/Patrol/Frontend/UpdateOriginSourceParameter": [
+        "/RepoPatrolTestStack/Patrol/Frontend/UpdateOriginSourceParameter/Provider": [
           {
-            "type": "aws:cdk:warning",
-            "data": "installLatestAwsSdk was not specified, and defaults to true. You probably do not want this. Set the global context flag '@aws-cdk/customresources:installLatestAwsSdkDefault' to false to switch this behavior off project-wide, or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version. [ack: @aws-cdk/custom-resources:installLatestAwsSdkNotSpecified]",
-            "trace": [
-              "Annotations.addMessage (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/aws-cdk-lib@2.233.0_constructs@10.4.4/node_modules/aws-cdk-lib/core/lib/annotations.js:1:2066)",
-              "Annotations.addWarningV2 (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/aws-cdk-lib@2.233.0_constructs@10.4.4/node_modules/aws-cdk-lib/core/lib/annotations.js:1:984)",
-              "new AwsCustomResource2 (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/aws-cdk-lib@2.233.0_constructs@10.4.4/node_modules/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:1:8150)",
-              "new AwsCustomResource2 (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/aws-cdk-lib@2.233.0_constructs@10.4.4/node_modules/aws-cdk-lib/core/lib/prop-injectable.js:1:681)",
-              "new ReportFrontend (/Users/kazuhoshinozuka/git/repo-patrol/src/report-frontend/index.ts:206:5)",
-              "new RepoPatrol (/Users/kazuhoshinozuka/git/repo-patrol/src/repo-patrol.ts:175:23)",
-              "new TestStack (/Users/kazuhoshinozuka/git/repo-patrol/test/integ.repo-patrol.ts:17:5)",
-              "Object.<anonymous> (/Users/kazuhoshinozuka/git/repo-patrol/test/integ.repo-patrol.ts:27:15)",
-              "Module._compile (node:internal/modules/cjs/loader:1529:14)",
-              "Module.m._compile (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/ts-node@10.9.2_@types+node@25.4.0_typescript@5.9.3/node_modules/ts-node/src/index.ts:1618:23)",
-              "Module._extensions..js (node:internal/modules/cjs/loader:1613:10)",
-              "Object.require.extensions.<computed> [as .ts] (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/ts-node@10.9.2_@types+node@25.4.0_typescript@5.9.3/node_modules/ts-node/src/index.ts:1621:12)",
-              "Module.load (node:internal/modules/cjs/loader:1275:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:1096:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)",
-              "phase4 (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/ts-node@10.9.2_@types+node@25.4.0_typescript@5.9.3/node_modules/ts-node/src/bin.ts:649:14)",
-              "bootstrap (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/ts-node@10.9.2_@types+node@25.4.0_typescript@5.9.3/node_modules/ts-node/src/bin.ts:95:10)",
-              "main (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/ts-node@10.9.2_@types+node@25.4.0_typescript@5.9.3/node_modules/ts-node/src/bin.ts:55:10)",
-              "Object.<anonymous> (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/ts-node@10.9.2_@types+node@25.4.0_typescript@5.9.3/node_modules/ts-node/src/bin.ts:800:3)",
-              "Module._compile (node:internal/modules/cjs/loader:1529:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1613:10)",
-              "Module.load (node:internal/modules/cjs/loader:1275:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:1096:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)",
-              "node:internal/main/run_main_module:28:49"
-            ]
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "uuid": "*",
+              "lambdaPurpose": "*",
+              "memorySize": "*",
+              "timeout": "*",
+              "role": "*",
+              "logGroup": "*",
+              "functionName": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/UpdateOriginSourceParameter/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/RepoPatrolTestStack/Patrol/Frontend/UpdateOriginSourceParameter/Resource/Default": [
@@ -340,49 +1676,123 @@
             "data": "PatrolFrontendUpdateOriginSourceParameter04E96B7A"
           }
         ],
+        "/RepoPatrolTestStack/Patrol/Frontend/UpdateOriginSourceParameter/CustomResourcePolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
         "/RepoPatrolTestStack/Patrol/Frontend/UpdateOriginSourceParameter/CustomResourcePolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PatrolFrontendUpdateOriginSourceParameterCustomResourcePolicyA81A8B69"
           }
         ],
-        "/RepoPatrolTestStack/Patrol/Frontend/UpdateCallbackUrls": [
+        "/RepoPatrolTestStack/Patrol/Frontend/UpdateCallbackUrls/Provider": [
           {
-            "type": "aws:cdk:warning",
-            "data": "installLatestAwsSdk was not specified, and defaults to true. You probably do not want this. Set the global context flag '@aws-cdk/customresources:installLatestAwsSdkDefault' to false to switch this behavior off project-wide, or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version. [ack: @aws-cdk/custom-resources:installLatestAwsSdkNotSpecified]",
-            "trace": [
-              "Annotations.addMessage (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/aws-cdk-lib@2.233.0_constructs@10.4.4/node_modules/aws-cdk-lib/core/lib/annotations.js:1:2066)",
-              "Annotations.addWarningV2 (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/aws-cdk-lib@2.233.0_constructs@10.4.4/node_modules/aws-cdk-lib/core/lib/annotations.js:1:984)",
-              "new AwsCustomResource2 (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/aws-cdk-lib@2.233.0_constructs@10.4.4/node_modules/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:1:8150)",
-              "new AwsCustomResource2 (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/aws-cdk-lib@2.233.0_constructs@10.4.4/node_modules/aws-cdk-lib/core/lib/prop-injectable.js:1:681)",
-              "new ReportFrontend (/Users/kazuhoshinozuka/git/repo-patrol/src/report-frontend/index.ts:224:5)",
-              "new RepoPatrol (/Users/kazuhoshinozuka/git/repo-patrol/src/repo-patrol.ts:175:23)",
-              "new TestStack (/Users/kazuhoshinozuka/git/repo-patrol/test/integ.repo-patrol.ts:17:5)",
-              "Object.<anonymous> (/Users/kazuhoshinozuka/git/repo-patrol/test/integ.repo-patrol.ts:27:15)",
-              "Module._compile (node:internal/modules/cjs/loader:1529:14)",
-              "Module.m._compile (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/ts-node@10.9.2_@types+node@25.4.0_typescript@5.9.3/node_modules/ts-node/src/index.ts:1618:23)",
-              "Module._extensions..js (node:internal/modules/cjs/loader:1613:10)",
-              "Object.require.extensions.<computed> [as .ts] (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/ts-node@10.9.2_@types+node@25.4.0_typescript@5.9.3/node_modules/ts-node/src/index.ts:1621:12)",
-              "Module.load (node:internal/modules/cjs/loader:1275:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:1096:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)",
-              "phase4 (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/ts-node@10.9.2_@types+node@25.4.0_typescript@5.9.3/node_modules/ts-node/src/bin.ts:649:14)",
-              "bootstrap (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/ts-node@10.9.2_@types+node@25.4.0_typescript@5.9.3/node_modules/ts-node/src/bin.ts:95:10)",
-              "main (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/ts-node@10.9.2_@types+node@25.4.0_typescript@5.9.3/node_modules/ts-node/src/bin.ts:55:10)",
-              "Object.<anonymous> (/Users/kazuhoshinozuka/git/repo-patrol/node_modules/.pnpm/ts-node@10.9.2_@types+node@25.4.0_typescript@5.9.3/node_modules/ts-node/src/bin.ts:800:3)",
-              "Module._compile (node:internal/modules/cjs/loader:1529:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1613:10)",
-              "Module.load (node:internal/modules/cjs/loader:1275:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:1096:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)",
-              "node:internal/main/run_main_module:28:49"
-            ]
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "uuid": "*",
+              "lambdaPurpose": "*",
+              "memorySize": "*",
+              "timeout": "*",
+              "role": "*",
+              "logGroup": "*",
+              "functionName": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/UpdateCallbackUrls/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/RepoPatrolTestStack/Patrol/Frontend/UpdateCallbackUrls/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PatrolFrontendUpdateCallbackUrls00F4F424"
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/UpdateCallbackUrls/CustomResourcePolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
           }
         ],
         "/RepoPatrolTestStack/Patrol/Frontend/UpdateCallbackUrls/CustomResourcePolicy/Resource": [
@@ -409,10 +1819,109 @@
             "data": "PatrolFrontendCognitoDomain68829331"
           }
         ],
+        "/RepoPatrolTestStack/Patrol/Frontend/AdminUserSeederFunction": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "architecture": "*",
+              "handler": "*",
+              "entry": "*",
+              "timeout": "*",
+              "memorySize": "*",
+              "bundling": {
+                "minify": true,
+                "sourceMap": true
+              },
+              "code": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "architecture": "*",
+              "handler": "*",
+              "entry": "*",
+              "timeout": "*",
+              "memorySize": "*",
+              "bundling": {
+                "minify": true,
+                "sourceMap": true
+              }
+            }
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/AdminUserSeederFunction/ServiceRole": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "Failed to add construct metadata for node [ServiceRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/AdminUserSeederFunction/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/RepoPatrolTestStack/Patrol/Frontend/AdminUserSeederFunction/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PatrolFrontendAdminUserSeederFunctionServiceRoleA507ACEA"
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/AdminUserSeederFunction/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/RepoPatrolTestStack/Patrol/Frontend/AdminUserSeederFunction/ServiceRole/DefaultPolicy/Resource": [
@@ -427,10 +1936,136 @@
             "data": "PatrolFrontendAdminUserSeederFunction5F9CE513"
           }
         ],
+        "/RepoPatrolTestStack/Patrol/Frontend/AdminUserSeederFunction/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/AdminUserSeederFunction/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PatrolFrontendAdminUserSeederFunctionLogGroup15FE276A"
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/AdminUserSeederProvider/framework-onEvent": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "description": "*",
+              "runtime": "*",
+              "handler": "*",
+              "timeout": "*",
+              "loggingFormat": "JSON",
+              "applicationLogLevelV2": "FATAL",
+              "logGroup": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "securityGroups": "*",
+              "role": "*",
+              "functionName": "*",
+              "environmentEncryption": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEnvironment": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/AdminUserSeederProvider/framework-onEvent/ServiceRole": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "Failed to add construct metadata for node [ServiceRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/AdminUserSeederProvider/framework-onEvent/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/RepoPatrolTestStack/Patrol/Frontend/AdminUserSeederProvider/framework-onEvent/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PatrolFrontendAdminUserSeederProviderframeworkonEventServiceRole5A15FA9E"
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/AdminUserSeederProvider/framework-onEvent/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/RepoPatrolTestStack/Patrol/Frontend/AdminUserSeederProvider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
@@ -443,6 +2078,26 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "PatrolFrontendAdminUserSeederProviderframeworkonEventB8DE2B58"
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/AdminUserSeederProvider/framework-onEvent/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/AdminUserSeederProvider/framework-onEvent/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PatrolFrontendAdminUserSeederProviderframeworkonEventLogGroupC02BBA08"
+          }
+        ],
+        "/RepoPatrolTestStack/Patrol/Frontend/AdminUserSeeder": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/RepoPatrolTestStack/Patrol/Frontend/AdminUserSeeder/Default": [
@@ -459,6 +2114,21 @@
         ],
         "/RepoPatrolTestStack/AWS679f53fac002430cb0da5b7982bd2287": [
           {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "memorySize": "*",
+              "timeout": "*",
+              "role": "*",
+              "logGroup": "*",
+              "functionName": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
             "type": "aws:cdk:is-custom-resource-handler-singleton",
             "data": true
           },
@@ -473,6 +2143,34 @@
           {
             "type": "aws:cdk:is-custom-resource-handler-runtime-family",
             "data": 0
+          }
+        ],
+        "/RepoPatrolTestStack/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "Failed to add construct metadata for node [ServiceRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/RepoPatrolTestStack/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/RepoPatrolTestStack/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
@@ -487,10 +2185,18 @@
             "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
           }
         ],
-        "/RepoPatrolTestStack/CDKMetadata/Default": [
+        "/RepoPatrolTestStack/AWS679f53fac002430cb0da5b7982bd2287/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/RepoPatrolTestStack/AWS679f53fac002430cb0da5b7982bd2287/LogGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CDKMetadata"
+            "data": "AWS679f53fac002430cb0da5b7982bd2287LogGroup449FB7C2"
           }
         ],
         "/RepoPatrolTestStack/BootstrapVersion": [
@@ -525,7 +2231,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c8e1bdf75cc45eb715ba54242f2543e97287cd9ab4b7a4522dcc87e5b90e32a4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -541,18 +2247,6 @@
         "RepoPatrolIntegTestDefaultTestDeployAssert546CCF56.assets"
       ],
       "metadata": {
-        "/RepoPatrolIntegTest/DefaultTest/DeployAssert/CDKMetadata/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CDKMetadata"
-          }
-        ],
-        "/RepoPatrolIntegTest/DefaultTest/DeployAssert/CDKMetadata/Condition": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CDKMetadataAvailable"
-          }
-        ],
         "/RepoPatrolIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -580,6 +2274,7 @@
         "module": "aws-cdk-lib",
         "flags": {
           "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Pass signingProfileName to CfnSigningProfile"
           },
@@ -598,6 +2293,7 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Disable implicit openListener when custom security groups are provided"
           },
@@ -623,6 +2319,7 @@
             }
           },
           "@aws-cdk/aws-lambda:recognizeLayerVersion": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Enable this feature flag to opt in to the updated logical id calculation for Lambda Version created using the `fn.currentVersion`."
           },
@@ -634,6 +2331,7 @@
             }
           },
           "@aws-cdk/core:checkSecretUsage": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Enable this flag to make it impossible to accidentally use SecretValues in unsafe locations"
           },
@@ -645,166 +2343,207 @@
             "explanation": "What regions to include in lookup tables of environment agnostic stacks"
           },
           "@aws-cdk-containers/ecs-service-extensions:enableDefaultLogDriver": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "ECS extensions will automatically add an `awslogs` driver if no logging is specified"
           },
           "@aws-cdk/aws-ec2:uniqueImdsv2TemplateName": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Enable this feature flag to have Launch Templates generated by the `InstanceRequireImdsv2Aspect` use unique names."
           },
           "@aws-cdk/aws-ecs:arnFormatIncludesClusterName": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "ARN format used by ECS. In the new ARN format, the cluster name is part of the resource ID."
           },
           "@aws-cdk/aws-iam:minimizePolicies": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Minimize IAM policies by combining Statements"
           },
           "@aws-cdk/core:validateSnapshotRemovalPolicy": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Error on snapshot removal policies on resources that do not support it."
           },
           "@aws-cdk/aws-codepipeline:crossAccountKeyAliasStackSafeResourceName": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Generate key aliases that include the stack name"
           },
           "@aws-cdk/aws-s3:createDefaultLoggingPolicy": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Enable this feature flag to create an S3 bucket policy by default in cases where an AWS service would automatically create the Policy if one does not exist."
           },
           "@aws-cdk/aws-sns-subscriptions:restrictSqsDescryption": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Restrict KMS key policy for encrypted Queues a bit more"
           },
           "@aws-cdk/aws-apigateway:disableCloudWatchRole": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Make default CloudWatch Role behavior safe for multiple API Gateways in one environment"
           },
           "@aws-cdk/core:enablePartitionLiterals": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Make ARNs concrete if AWS partition is known"
           },
           "@aws-cdk/aws-events:eventsTargetQueueSameAccount": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Event Rules may only push to encrypted SQS queues in the same account"
           },
           "@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Avoid setting the \"ECS\" deployment controller when adding a circuit breaker"
           },
           "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Enable this feature to create default policy names for imported roles that depend on the stack the role is in."
           },
           "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Use S3 Bucket Policy instead of ACLs for Server Access Logging"
           },
           "@aws-cdk/aws-route53-patters:useCertificate": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Use the official `Certificate` resource instead of `DnsValidatedCertificate`"
           },
           "@aws-cdk/customresources:installLatestAwsSdkDefault": {
+            "userValue": false,
             "recommendedValue": false,
             "explanation": "Whether to install the latest SDK by default in AwsCustomResource"
           },
           "@aws-cdk/aws-rds:databaseProxyUniqueResourceName": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Use unique resource name for Database Proxy"
           },
           "@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Remove CloudWatch alarms from deployment group"
           },
           "@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Include authorizer configuration in the calculation of the API deployment logical ID."
           },
           "@aws-cdk/aws-ec2:launchTemplateDefaultUserData": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Define user data for a launch template by default when a machine image is provided."
           },
           "@aws-cdk/aws-secretsmanager:useAttachedSecretResourcePolicyForSecretTargetAttachments": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "SecretTargetAttachments uses the ResourcePolicy of the attached Secret."
           },
           "@aws-cdk/aws-redshift:columnId": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Whether to use an ID to track Redshift column changes"
           },
           "@aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Enable AmazonEMRServicePolicy_v2 managed policies"
           },
           "@aws-cdk/aws-ec2:restrictDefaultSecurityGroup": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Restrict access to the VPC default security group"
           },
           "@aws-cdk/aws-apigateway:requestValidatorUniqueId": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Generate a unique id for each RequestValidator added to a method"
           },
           "@aws-cdk/aws-kms:aliasNameRef": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "KMS Alias name and keyArn will have implicit reference to KMS Key"
           },
           "@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Enable grant methods on Aliases imported by name to use kms:ResourceAliases condition"
           },
           "@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Generate a launch template when creating an AutoScalingGroup"
           },
           "@aws-cdk/core:includePrefixInUniqueNameGeneration": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Include the stack prefix in the stack name generation process"
           },
           "@aws-cdk/aws-efs:denyAnonymousAccess": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "EFS denies anonymous clients accesses"
           },
           "@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Enables support for Multi-AZ with Standby deployment for opensearch domains"
           },
           "@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Enables aws-lambda-nodejs.Function to use the latest available NodeJs runtime as the default"
           },
           "@aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, mount targets will have a stable logicalId that is linked to the associated subnet."
           },
           "@aws-cdk/aws-rds:auroraClusterChangeScopeOfInstanceParameterGroupWithEachParameters": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, a scope of InstanceParameterGroup for AuroraClusterInstance with each parameters will change."
           },
           "@aws-cdk/aws-appsync:useArnForSourceApiAssociationIdentifier": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, will always use the arn for identifiers for CfnSourceApiAssociation in the GraphqlApi construct rather than id."
           },
           "@aws-cdk/aws-rds:preventRenderingDeprecatedCredentials": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, creating an RDS database cluster from a snapshot will only render credentials for snapshot credentials."
           },
           "@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, the CodeCommit source action is using the default branch name 'main'."
           },
           "@aws-cdk/aws-cloudwatch-actions:changeLambdaPermissionLogicalIdForLambdaAction": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, the logical ID of a Lambda permission for a Lambda action includes an alarm ID."
           },
           "@aws-cdk/aws-codepipeline:crossAccountKeysDefaultValueToFalse": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Enables Pipeline to set the default value for crossAccountKeys to false."
           },
           "@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Enables Pipeline to set the default pipeline type to V2."
           },
           "@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, IAM Policy created from KMS key grant will reduce the resource scope to this key only."
           },
@@ -816,22 +2555,27 @@
             }
           },
           "@aws-cdk/aws-eks:nodegroupNameAttribute": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, the default volume type of the EBS volume will be GP3"
           },
           "@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, remove default deployment alarm settings"
           },
           "@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault": {
+            "userValue": false,
             "recommendedValue": false,
             "explanation": "When enabled, the custom resource used for `AwsCustomResource` will configure the `logApiResponseData` property as true by default"
           },
           "@aws-cdk/aws-s3:keepNotificationInImportedBucket": {
+            "userValue": false,
             "recommendedValue": false,
             "explanation": "When enabled, Adding notifications to a bucket in the current stack will not remove notification from imported stack."
           },
@@ -843,42 +2587,52 @@
             }
           },
           "@aws-cdk/core:explicitStackTags": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
           },
           "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, we will only grant the necessary permissions when users specify cloudwatch log group through logConfiguration"
           },
           "@aws-cdk/aws-dynamodb:resourcePolicyPerReplica": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled will allow you to specify a resource policy per replica, and not copy the source table policy to all replicas"
           },
           "@aws-cdk/aws-ec2:ec2SumTImeoutEnabled": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, initOptions.timeout and resourceSignalTimeout values will be summed together."
           },
           "@aws-cdk/aws-appsync:appSyncGraphQLAPIScopeLambdaPermission": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, a Lambda authorizer Permission created when using GraphqlApi will be properly scoped with a SourceArn."
           },
           "@aws-cdk/aws-rds:setCorrectValueForDatabaseInstanceReadReplicaInstanceResourceId": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, the value of property `instanceResourceId` in construct `DatabaseInstanceReadReplica` will be set to the correct value which is `DbiResourceId` instead of currently `DbInstanceArn`"
           },
           "@aws-cdk/core:cfnIncludeRejectComplexResourceUpdateCreatePolicyIntrinsics": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, CFN templates added with `cfn-include` will error if the template contains Resource Update or Create policies with CFN Intrinsics that include non-primitive values."
           },
           "@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, both `@aws-sdk` and `@smithy` packages will be excluded from the Lambda Node.js 18.x runtime to prevent version mismatches in bundled applications."
           },
           "@aws-cdk/aws-stepfunctions-tasks:fixRunEcsTaskPolicy": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, the resource of IAM Run Ecs policy generated by SFN EcsRunTask will reference the definition, instead of constructing ARN."
           },
           "@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, the BastionHost construct will use the latest Amazon Linux 2023 AMI, instead of Amazon Linux 2."
           },
@@ -890,26 +2644,32 @@
             }
           },
           "@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, use a new method for DNS Name of user pool domain target without creating a custom resource."
           },
           "@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, the default security group ingress rules will allow IPv6 ingress from anywhere"
           },
           "@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, the default behaviour of OIDC provider will reject unauthorized connections"
           },
           "@aws-cdk/core:enableAdditionalMetadataCollection": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, CDK will expand the scope of usage data collected to better inform CDK development and improve communication for security concerns and emerging issues."
           },
           "@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy": {
+            "userValue": false,
             "recommendedValue": false,
             "explanation": "[Deprecated] When enabled, Lambda will create new inline policies with AddToRolePolicy instead of adding to the Default Policy Statement"
           },
           "@aws-cdk/aws-s3:setUniqueReplicationRoleName": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, CDK will automatically generate a unique role name that is used for s3 object replication."
           },
@@ -921,14 +2681,17 @@
             }
           },
           "@aws-cdk/aws-events:requireEventBusPolicySid": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, grantPutEventsTo() will use resource policies with Statement IDs for service principals."
           },
           "@aws-cdk/core:aspectPrioritiesMutating": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When set to true, Aspects added by the construct library on your behalf will be given a priority of MUTATING."
           },
           "@aws-cdk/aws-dynamodb:retainTableReplica": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, table replica will be default to the removal policy of source table unless specified otherwise."
           },
@@ -944,14 +2707,17 @@
             }
           },
           "@aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, the resultWriterV2 property of DistributedMap will be used insted of resultWriter"
           },
           "@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Add an S3 trust policy to a KMS key resource policy for SNS subscriptions."
           },
           "@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, the EgressOnlyGateway resource is only created if private subnets are defined in the dual-stack VPC."
           },
@@ -960,14 +2726,17 @@
             "explanation": "When enabled, use resource IDs for VPC V2 migration"
           },
           "@aws-cdk/aws-s3:publicAccessBlockedByDefault": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, setting any combination of options for BlockPublicAccess will automatically set true for any options not defined."
           },
           "@aws-cdk/aws-lambda:useCdkManagedLogGroup": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
           },
           "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
           },
@@ -979,10 +2748,12 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           },
           "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
           }
@@ -990,5 +2761,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1033.0"
+  "minimumCliVersion": "2.1110.0"
 }

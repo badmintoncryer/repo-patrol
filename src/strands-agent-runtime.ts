@@ -67,7 +67,7 @@ export class StrandsAgentRuntime extends Construct {
     iam.Grant.addToPrincipal({
       grantee: this.runtime,
       actions: ['secretsmanager:GetSecretValue'],
-      resourceArns: [secretArn],
+      resourceArns: [`${secretArn}*`],
     });
 
     // DynamoDB access for job history and processed items

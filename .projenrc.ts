@@ -16,6 +16,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
 
   stability: 'experimental',
   npmAccess: javascript.NpmAccess.PUBLIC,
+  npmTrustedPublishing: true,
   license: 'Apache-2.0',
 
   // Alpha CDK module — exposed to consumers as peer dependency
