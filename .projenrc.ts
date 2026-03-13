@@ -73,6 +73,10 @@ project.projectBuild.testTask.exec(
 project.addPackageIgnore('!/agent/');
 project.addPackageIgnore('!/webapp/');
 
+// Exclude build artifacts and dependencies from webapp/ in npm package
+project.addPackageIgnore('/webapp/.next/');
+project.addPackageIgnore('/webapp/node_modules/');
+
 // Copy handler .ts files to lib/ so NodejsFunction can find them at CDK synth time
 project.postCompileTask.exec(
   'find src -name "*.ts" -path "*/handlers/*" | while read f; do dest="lib/${f#src/}"; mkdir -p "$(dirname "$dest")"; cp "$f" "$dest"; done',
