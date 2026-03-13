@@ -102,12 +102,15 @@ export class ReportFrontend extends Construct {
 
     // Next.js Docker Lambda
     const cognitoDomain = `${domainPrefix}.auth.${cdk.Aws.REGION}.amazoncognito.com`;
-    const secretArn = cdk.Stack.of(this).formatArn({
-      service: 'secretsmanager',
-      resource: 'secret',
-      resourceName: props.githubAppSecret.secretRef.secretId,
-      arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
-    });
+    const secretId = props.githubAppSecret.secretRef.secretId;
+    const secretArn = cdk.Token.isUnresolved(secretId) || secretId.startsWith('arn:')
+      ? secretId
+      : cdk.Stack.of(this).formatArn({
+        service: 'secretsmanager',
+        resource: 'secret',
+        resourceName: secretId,
+        arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
+      });
     const webappFunction = new lambda.DockerImageFunction(
       this,
       'WebappFunction',

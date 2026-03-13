@@ -25,12 +25,15 @@ export class StrandsAgentRuntime extends Construct {
 
   constructor(scope: Construct, id: string, props: StrandsAgentRuntimeProps) {
     super(scope, id);
-    const secretArn = cdk.Stack.of(this).formatArn({
-      service: 'secretsmanager',
-      resource: 'secret',
-      resourceName: props.githubAppSecret.secretRef.secretId,
-      arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
-    });
+    const secretId = props.githubAppSecret.secretRef.secretId;
+    const secretArn = cdk.Token.isUnresolved(secretId) || secretId.startsWith('arn:')
+      ? secretId
+      : cdk.Stack.of(this).formatArn({
+        service: 'secretsmanager',
+        resource: 'secret',
+        resourceName: secretId,
+        arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
+      });
 
     this.runtime = new Runtime(this, 'Runtime', {
       runtimeName: 'repo_patrol_agent',
