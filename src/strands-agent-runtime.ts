@@ -46,7 +46,10 @@ export class StrandsAgentRuntime extends Construct {
           'bedrock:InvokeModel',
           'bedrock:InvokeModelWithResponseStream',
         ],
-        resources: ['arn:aws:bedrock:*::foundation-model/*'],
+        resources: [
+          'arn:aws:bedrock:*::foundation-model/*',
+          'arn:aws:bedrock:*:*:inference-profile/*',
+        ],
       }),
     );
 
