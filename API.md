@@ -803,7 +803,6 @@ const repoPatrolProps: RepoPatrolProps = { ... }
 | <code><a href="#repo-patrol.RepoPatrolProps.property.adminEmails">adminEmails</a></code> | <code>string[]</code> | Email addresses for admin users to create in the Cognito User Pool. |
 | <code><a href="#repo-patrol.RepoPatrolProps.property.dryRun">dryRun</a></code> | <code>boolean</code> | Run in dry-run mode (no GitHub write operations). |
 | <code><a href="#repo-patrol.RepoPatrolProps.property.enableDashboard">enableDashboard</a></code> | <code>boolean</code> | Enable the Next.js dashboard with Cognito authentication. |
-| <code><a href="#repo-patrol.RepoPatrolProps.property.maxToolCalls">maxToolCalls</a></code> | <code>number</code> | Maximum tool calls per agent invocation. |
 | <code><a href="#repo-patrol.RepoPatrolProps.property.mfaRequired">mfaRequired</a></code> | <code>boolean</code> | Whether to require MFA (TOTP) for dashboard login. |
 | <code><a href="#repo-patrol.RepoPatrolProps.property.modelId">modelId</a></code> | <code>string</code> | Default Bedrock model ID. |
 
@@ -858,18 +857,6 @@ public readonly enableDashboard: boolean;
 - *Type:* boolean
 
 Enable the Next.js dashboard with Cognito authentication.
-
----
-
-##### `maxToolCalls`<sup>Optional</sup> <a name="maxToolCalls" id="repo-patrol.RepoPatrolProps.property.maxToolCalls"></a>
-
-```typescript
-public readonly maxToolCalls: number;
-```
-
-- *Type:* number
-
-Maximum tool calls per agent invocation.
 
 ---
 
@@ -1054,7 +1041,6 @@ const strandsAgentRuntimeProps: StrandsAgentRuntimeProps = { ... }
 | <code><a href="#repo-patrol.StrandsAgentRuntimeProps.property.reportBucket">reportBucket</a></code> | <code>aws-cdk-lib.aws_s3.IBucket</code> | *No description.* |
 | <code><a href="#repo-patrol.StrandsAgentRuntimeProps.property.reposTableName">reposTableName</a></code> | <code>string</code> | *No description.* |
 | <code><a href="#repo-patrol.StrandsAgentRuntimeProps.property.dryRun">dryRun</a></code> | <code>boolean</code> | *No description.* |
-| <code><a href="#repo-patrol.StrandsAgentRuntimeProps.property.maxToolCalls">maxToolCalls</a></code> | <code>number</code> | *No description.* |
 | <code><a href="#repo-patrol.StrandsAgentRuntimeProps.property.modelId">modelId</a></code> | <code>string</code> | *No description.* |
 
 ---
@@ -1116,16 +1102,6 @@ public readonly dryRun: boolean;
 ```
 
 - *Type:* boolean
-
----
-
-##### `maxToolCalls`<sup>Optional</sup> <a name="maxToolCalls" id="repo-patrol.StrandsAgentRuntimeProps.property.maxToolCalls"></a>
-
-```typescript
-public readonly maxToolCalls: number;
-```
-
-- *Type:* number
 
 ---
 

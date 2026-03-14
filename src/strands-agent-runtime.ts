@@ -15,7 +15,6 @@ export interface StrandsAgentRuntimeProps {
   readonly jobHistoryTableName: string;
   readonly processedItemsTableName: string;
   readonly modelId?: string;
-  readonly maxToolCalls?: number;
   readonly dryRun?: boolean;
 }
 
@@ -36,7 +35,6 @@ export class StrandsAgentRuntime extends Construct {
         JOB_HISTORY_TABLE_NAME: props.jobHistoryTableName,
         PROCESSED_ITEMS_TABLE_NAME: props.processedItemsTableName,
         MODEL_ID: props.modelId ?? 'us.anthropic.claude-haiku-4-5-20251001-v1:0',
-        MAX_TOOL_CALLS: (props.maxToolCalls ?? 100).toString(),
         DRY_RUN: (props.dryRun ?? false).toString(),
       },
     });

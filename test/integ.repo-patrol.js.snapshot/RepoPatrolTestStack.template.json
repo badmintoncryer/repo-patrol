@@ -451,7 +451,6 @@
       "Ref": "PatrolRegistryProcessedItemsTable167B64E3"
      },
      "MODEL_ID": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
-     "MAX_TOOL_CALLS": "100",
      "DRY_RUN": "false"
     },
     "NetworkConfiguration": {

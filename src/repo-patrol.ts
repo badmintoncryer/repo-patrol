@@ -20,9 +20,6 @@ export interface RepoPatrolProps {
   /** Default Bedrock model ID */
   readonly modelId?: string;
 
-  /** Maximum tool calls per agent invocation */
-  readonly maxToolCalls?: number;
-
   /** Enable the Next.js dashboard with Cognito authentication */
   readonly enableDashboard?: boolean;
 
@@ -82,7 +79,6 @@ export class RepoPatrol extends Construct {
       jobHistoryTableName: this.registry.jobHistoryTable.tableName,
       processedItemsTableName: this.registry.processedItemsTable.tableName,
       modelId: props.modelId,
-      maxToolCalls: props.maxToolCalls,
       dryRun: props.dryRun,
     });
 
