@@ -1156,6 +1156,32 @@
        "Resource": "arn:aws:secretsmanager:us-east-1:123456789012:secret:repo-patrol/github-app-??????"
       },
       {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "PatrolRegistryRegistryApiFunction8F717C0A",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "PatrolRegistryRegistryApiFunction8F717C0A",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
        "Action": [
         "ssm:DescribeParameters",
         "ssm:GetParameter",
@@ -1231,6 +1257,9 @@
        ]
       },
       "GITHUB_APP_SECRET_ARN": "repo-patrol/github-app",
+      "REGISTRY_FUNCTION_NAME": {
+       "Ref": "PatrolRegistryRegistryApiFunction8F717C0A"
+      },
       "AWS_LWA_INVOKE_MODE": "response_stream",
       "AMPLIFY_APP_ORIGIN_SSM_PARAMETER": {
        "Ref": "PatrolFrontendOriginSourceParameterD1D1CE26"

@@ -18,7 +18,8 @@ export interface ReportFrontendProps {
   readonly reportBucket: s3.IBucket;
   readonly reposTable: dynamodb.ITable;
   readonly jobHistoryTable: dynamodb.ITable;
-  readonly registryFunctionUrl?: string;
+  /** Registry Lambda function for managing repos and EventBridge schedules */
+  readonly registryFunction: lambda.IFunction;
 
   /** Secrets Manager secret containing GitHub App credentials for installation_id auto-resolution */
   readonly githubAppSecret: secretsmanager.ISecret;
@@ -121,6 +122,7 @@ export class ReportFrontend extends Construct {
           USER_POOL_CLIENT_ID: this.userPoolClient.userPoolClientId,
           COGNITO_DOMAIN: cognitoDomain,
           GITHUB_APP_SECRET_ARN: props.githubAppSecret.secretName,
+          REGISTRY_FUNCTION_NAME: props.registryFunction.functionName,
           AWS_LWA_INVOKE_MODE: 'response_stream',
         },
       },
@@ -133,6 +135,9 @@ export class ReportFrontend extends Construct {
 
     // Secrets Manager read for GitHub App installation auto-resolution
     props.githubAppSecret.grantRead(webappFunction);
+
+    // Grant invoke on Registry Lambda for schedule management
+    props.registryFunction.grantInvoke(webappFunction);
 
     // Function URL with IAM authentication.
     // CloudFront OAC signs requests with SigV4, and Lambda@Edge adds

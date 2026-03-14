@@ -114,6 +114,7 @@ export class RepoPatrol extends Construct {
         reportBucket: this.reportBucket,
         reposTable: this.registry.reposTable,
         jobHistoryTable: this.registry.jobHistoryTable,
+        registryFunction: this.registry.registryFunction,
         githubAppSecret: props.githubAppSecret,
         mfaRequired: props.mfaRequired,
         adminEmails: props.adminEmails,
