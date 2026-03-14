@@ -944,11 +944,11 @@ const reportFrontendProps: ReportFrontendProps = { ... }
 | --- | --- | --- |
 | <code><a href="#repo-patrol.ReportFrontendProps.property.githubAppSecret">githubAppSecret</a></code> | <code>aws-cdk-lib.aws_secretsmanager.ISecret</code> | Secrets Manager secret containing GitHub App credentials for installation_id auto-resolution. |
 | <code><a href="#repo-patrol.ReportFrontendProps.property.jobHistoryTable">jobHistoryTable</a></code> | <code>aws-cdk-lib.aws_dynamodb.ITable</code> | *No description.* |
+| <code><a href="#repo-patrol.ReportFrontendProps.property.registryFunction">registryFunction</a></code> | <code>aws-cdk-lib.aws_lambda.IFunction</code> | Registry Lambda function for managing repos and EventBridge schedules. |
 | <code><a href="#repo-patrol.ReportFrontendProps.property.reportBucket">reportBucket</a></code> | <code>aws-cdk-lib.aws_s3.IBucket</code> | *No description.* |
 | <code><a href="#repo-patrol.ReportFrontendProps.property.reposTable">reposTable</a></code> | <code>aws-cdk-lib.aws_dynamodb.ITable</code> | *No description.* |
 | <code><a href="#repo-patrol.ReportFrontendProps.property.adminEmails">adminEmails</a></code> | <code>string[]</code> | Email addresses for admin users to create in the Cognito User Pool. |
 | <code><a href="#repo-patrol.ReportFrontendProps.property.mfaRequired">mfaRequired</a></code> | <code>boolean</code> | Whether to require MFA (TOTP) for dashboard login. |
-| <code><a href="#repo-patrol.ReportFrontendProps.property.registryFunctionUrl">registryFunctionUrl</a></code> | <code>string</code> | *No description.* |
 
 ---
 
@@ -971,6 +971,18 @@ public readonly jobHistoryTable: ITable;
 ```
 
 - *Type:* aws-cdk-lib.aws_dynamodb.ITable
+
+---
+
+##### `registryFunction`<sup>Required</sup> <a name="registryFunction" id="repo-patrol.ReportFrontendProps.property.registryFunction"></a>
+
+```typescript
+public readonly registryFunction: IFunction;
+```
+
+- *Type:* aws-cdk-lib.aws_lambda.IFunction
+
+Registry Lambda function for managing repos and EventBridge schedules.
 
 ---
 
@@ -1019,16 +1031,6 @@ public readonly mfaRequired: boolean;
 - *Default:* true
 
 Whether to require MFA (TOTP) for dashboard login.
-
----
-
-##### `registryFunctionUrl`<sup>Optional</sup> <a name="registryFunctionUrl" id="repo-patrol.ReportFrontendProps.property.registryFunctionUrl"></a>
-
-```typescript
-public readonly registryFunctionUrl: string;
-```
-
-- *Type:* string
 
 ---
 
