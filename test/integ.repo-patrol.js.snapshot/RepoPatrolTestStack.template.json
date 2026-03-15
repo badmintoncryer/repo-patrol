@@ -19,8 +19,8 @@
      "RestrictPublicBuckets": true
     }
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "PatrolRegistryReposTableCBB750FC": {
    "Type": "AWS::DynamoDB::Table",
@@ -39,8 +39,8 @@
      }
     ]
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "PatrolRegistryJobHistoryTable8B2E96BC": {
    "Type": "AWS::DynamoDB::Table",
@@ -71,8 +71,8 @@
      "Enabled": true
     }
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "PatrolRegistryProcessedItemsTable167B64E3": {
    "Type": "AWS::DynamoDB::Table",
@@ -135,7 +135,9 @@
       ]
      }
     ]
-   }
+   },
+   "DeletionPolicy": "Delete",
+   "UpdateReplacePolicy": "Delete"
   },
   "PatrolRegistryRegistryApiFunctionServiceRoleDefaultPolicy41207709": {
    "Type": "AWS::IAM::Policy",
@@ -194,7 +196,9 @@
       "Ref": "PatrolRegistryRegistryApiFunctionServiceRole458F71E5"
      }
     ]
-   }
+   },
+   "DeletionPolicy": "Delete",
+   "UpdateReplacePolicy": "Delete"
   },
   "PatrolRegistryRegistryApiFunction8F717C0A": {
    "Type": "AWS::Lambda::Function",
@@ -240,7 +244,9 @@
    "DependsOn": [
     "PatrolRegistryRegistryApiFunctionServiceRoleDefaultPolicy41207709",
     "PatrolRegistryRegistryApiFunctionServiceRole458F71E5"
-   ]
+   ],
+   "DeletionPolicy": "Delete",
+   "UpdateReplacePolicy": "Delete"
   },
   "PatrolRegistryRegistryApiFunctionLogGroup4FAF4CA8": {
    "Type": "AWS::Logs::LogGroup",
@@ -258,8 +264,8 @@
     },
     "RetentionInDays": 731
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "PatrolAgentRuntimeExecutionRoleABFC2A2C": {
    "Type": "AWS::IAM::Role",
@@ -278,7 +284,9 @@
     },
     "Description": "Execution role for Bedrock Agent Core Runtime",
     "MaxSessionDuration": 28800
-   }
+   },
+   "DeletionPolicy": "Delete",
+   "UpdateReplacePolicy": "Delete"
   },
   "PatrolAgentRuntimeExecutionRoleDefaultPolicyFBEFF744": {
    "Type": "AWS::IAM::Policy",
@@ -470,7 +478,9 @@
       "Ref": "PatrolAgentRuntimeExecutionRoleABFC2A2C"
      }
     ]
-   }
+   },
+   "DeletionPolicy": "Delete",
+   "UpdateReplacePolicy": "Delete"
   },
   "PatrolAgentRuntime2CCE02DD": {
    "Type": "AWS::BedrockAgentCore::Runtime",
@@ -514,7 +524,9 @@
    "DependsOn": [
     "PatrolAgentRuntimeExecutionRoleDefaultPolicyFBEFF744",
     "PatrolAgentRuntimeExecutionRoleABFC2A2C"
-   ]
+   ],
+   "DeletionPolicy": "Delete",
+   "UpdateReplacePolicy": "Delete"
   },
   "PatrolSchedulerDispatcherServiceRoleA975916D": {
    "Type": "AWS::IAM::Role",
@@ -545,7 +557,9 @@
       ]
      }
     ]
-   }
+   },
+   "DeletionPolicy": "Delete",
+   "UpdateReplacePolicy": "Delete"
   },
   "PatrolSchedulerDispatcherServiceRoleDefaultPolicy5F55FF1C": {
    "Type": "AWS::IAM::Policy",
@@ -606,7 +620,9 @@
       "Ref": "PatrolSchedulerDispatcherServiceRoleA975916D"
      }
     ]
-   }
+   },
+   "DeletionPolicy": "Delete",
+   "UpdateReplacePolicy": "Delete"
   },
   "PatrolSchedulerDispatcher76326CDF": {
    "Type": "AWS::Lambda::Function",
@@ -645,7 +661,9 @@
    "DependsOn": [
     "PatrolSchedulerDispatcherServiceRoleDefaultPolicy5F55FF1C",
     "PatrolSchedulerDispatcherServiceRoleA975916D"
-   ]
+   ],
+   "DeletionPolicy": "Delete",
+   "UpdateReplacePolicy": "Delete"
   },
   "PatrolSchedulerDispatcherLogGroup504A3743": {
    "Type": "AWS::Logs::LogGroup",
@@ -663,8 +681,8 @@
     },
     "RetentionInDays": 731
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "PatrolSchedulerSchedulerRoleF583FF4D": {
    "Type": "AWS::IAM::Role",
@@ -681,7 +699,9 @@
      ],
      "Version": "2012-10-17"
     }
-   }
+   },
+   "DeletionPolicy": "Delete",
+   "UpdateReplacePolicy": "Delete"
   },
   "PatrolSchedulerSchedulerRoleDefaultPolicy06A77364": {
    "Type": "AWS::IAM::Policy",
@@ -723,7 +743,9 @@
       "Ref": "PatrolSchedulerSchedulerRoleF583FF4D"
      }
     ]
-   }
+   },
+   "DeletionPolicy": "Delete",
+   "UpdateReplacePolicy": "Delete"
   },
   "PatrolScheduleCleanupFunctionServiceRole06503D28": {
    "Type": "AWS::IAM::Role",
@@ -754,7 +776,9 @@
       ]
      }
     ]
-   }
+   },
+   "DeletionPolicy": "Delete",
+   "UpdateReplacePolicy": "Delete"
   },
   "PatrolScheduleCleanupFunctionServiceRoleDefaultPolicyB0CEBFF5": {
    "Type": "AWS::IAM::Policy",
@@ -780,7 +804,9 @@
       "Ref": "PatrolScheduleCleanupFunctionServiceRole06503D28"
      }
     ]
-   }
+   },
+   "DeletionPolicy": "Delete",
+   "UpdateReplacePolicy": "Delete"
   },
   "PatrolScheduleCleanupFunctionA8E7EA93": {
    "Type": "AWS::Lambda::Function",
@@ -806,7 +832,9 @@
    "DependsOn": [
     "PatrolScheduleCleanupFunctionServiceRoleDefaultPolicyB0CEBFF5",
     "PatrolScheduleCleanupFunctionServiceRole06503D28"
-   ]
+   ],
+   "DeletionPolicy": "Delete",
+   "UpdateReplacePolicy": "Delete"
   },
   "PatrolScheduleCleanupFunctionLogGroup9AD91D35": {
    "Type": "AWS::Logs::LogGroup",
@@ -824,8 +852,8 @@
     },
     "RetentionInDays": 731
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "PatrolScheduleCleanupProviderframeworkonEventServiceRoleAEBBF59B": {
    "Type": "AWS::IAM::Role",
@@ -856,7 +884,9 @@
       ]
      }
     ]
-   }
+   },
+   "DeletionPolicy": "Delete",
+   "UpdateReplacePolicy": "Delete"
   },
   "PatrolScheduleCleanupProviderframeworkonEventServiceRoleDefaultPolicy38106DB0": {
    "Type": "AWS::IAM::Policy",
@@ -908,7 +938,9 @@
       "Ref": "PatrolScheduleCleanupProviderframeworkonEventServiceRoleAEBBF59B"
      }
     ]
-   }
+   },
+   "DeletionPolicy": "Delete",
+   "UpdateReplacePolicy": "Delete"
   },
   "PatrolScheduleCleanupProviderframeworkonEvent595A9B6E": {
    "Type": "AWS::Lambda::Function",
@@ -945,7 +977,9 @@
    "DependsOn": [
     "PatrolScheduleCleanupProviderframeworkonEventServiceRoleDefaultPolicy38106DB0",
     "PatrolScheduleCleanupProviderframeworkonEventServiceRoleAEBBF59B"
-   ]
+   ],
+   "DeletionPolicy": "Delete",
+   "UpdateReplacePolicy": "Delete"
   },
   "PatrolScheduleCleanupProviderframeworkonEventLogGroup587E7DB3": {
    "Type": "AWS::Logs::LogGroup",
@@ -963,8 +997,8 @@
     },
     "RetentionInDays": 731
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "PatrolScheduleCleanupC8713768": {
    "Type": "AWS::CloudFormation::CustomResource",
@@ -1024,8 +1058,8 @@
      "SmsMessage": "The verification code to your new account is {####}"
     }
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "PatrolFrontendUserPoolDomain6074427B": {
    "Type": "AWS::Cognito::UserPoolDomain",
@@ -1045,7 +1079,9 @@
     "UserPoolId": {
      "Ref": "PatrolFrontendUserPool39743415"
     }
-   }
+   },
+   "DeletionPolicy": "Delete",
+   "UpdateReplacePolicy": "Delete"
   },
   "PatrolFrontendUserPoolWebappClient408541CD": {
    "Type": "AWS::Cognito::UserPoolClient",
@@ -1072,7 +1108,9 @@
     "UserPoolId": {
      "Ref": "PatrolFrontendUserPool39743415"
     }
-   }
+   },
+   "DeletionPolicy": "Delete",
+   "UpdateReplacePolicy": "Delete"
   },
   "PatrolFrontendManagedLoginBrandingFB2D97F8": {
    "Type": "AWS::Cognito::ManagedLoginBranding",
@@ -1084,7 +1122,9 @@
     "UserPoolId": {
      "Ref": "PatrolFrontendUserPool39743415"
     }
-   }
+   },
+   "DeletionPolicy": "Delete",
+   "UpdateReplacePolicy": "Delete"
   },
   "PatrolFrontendWebappFunctionServiceRoleC5682C29": {
    "Type": "AWS::IAM::Role",
@@ -1115,7 +1155,9 @@
       ]
      }
     ]
-   }
+   },
+   "DeletionPolicy": "Delete",
+   "UpdateReplacePolicy": "Delete"
   },
   "PatrolFrontendWebappFunctionServiceRoleDefaultPolicy4B1622CF": {
    "Type": "AWS::IAM::Policy",
@@ -1242,7 +1284,9 @@
       "Ref": "PatrolFrontendWebappFunctionServiceRoleC5682C29"
      }
     ]
-   }
+   },
+   "DeletionPolicy": "Delete",
+   "UpdateReplacePolicy": "Delete"
   },
   "PatrolFrontendWebappFunction85D9F760": {
    "Type": "AWS::Lambda::Function",
@@ -1311,7 +1355,9 @@
    "DependsOn": [
     "PatrolFrontendWebappFunctionServiceRoleDefaultPolicy4B1622CF",
     "PatrolFrontendWebappFunctionServiceRoleC5682C29"
-   ]
+   ],
+   "DeletionPolicy": "Delete",
+   "UpdateReplacePolicy": "Delete"
   },
   "PatrolFrontendWebappFunctionLogGroup0167D785": {
    "Type": "AWS::Logs::LogGroup",
@@ -1329,8 +1375,8 @@
     },
     "RetentionInDays": 731
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "PatrolFrontendWebappFunctionFunctionUrlB6AEF066": {
    "Type": "AWS::Lambda::Url",
@@ -1343,7 +1389,9 @@
       "Arn"
      ]
     }
-   }
+   },
+   "DeletionPolicy": "Delete",
+   "UpdateReplacePolicy": "Delete"
   },
   "PatrolFrontendSignPayloadFnServiceRoleC1738EF0": {
    "Type": "AWS::IAM::Role",
@@ -1377,7 +1425,9 @@
       ]
      }
     ]
-   }
+   },
+   "DeletionPolicy": "Delete",
+   "UpdateReplacePolicy": "Delete"
   },
   "PatrolFrontendSignPayloadFn910F7C7A": {
    "Type": "AWS::Lambda::Function",
@@ -1396,7 +1446,9 @@
    },
    "DependsOn": [
     "PatrolFrontendSignPayloadFnServiceRoleC1738EF0"
-   ]
+   ],
+   "DeletionPolicy": "Delete",
+   "UpdateReplacePolicy": "Delete"
   },
   "PatrolFrontendSignPayloadFnLogGroupBC27072E": {
    "Type": "AWS::Logs::LogGroup",
@@ -1414,8 +1466,8 @@
     },
     "RetentionInDays": 731
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "PatrolFrontendSignPayloadFnCurrentVersionB3E27C318cbf91ffee61ff5b7e2d9f5bc70c9ed2": {
    "Type": "AWS::Lambda::Version",
@@ -1426,7 +1478,9 @@
    },
    "Metadata": {
     "aws:cdk:do-not-refactor": true
-   }
+   },
+   "DeletionPolicy": "Delete",
+   "UpdateReplacePolicy": "Delete"
   },
   "PatrolFrontendDistributionOrigin1FunctionUrlOriginAccessControlEB6FFBF5": {
    "Type": "AWS::CloudFront::OriginAccessControl",
@@ -1437,7 +1491,9 @@
      "SigningBehavior": "always",
      "SigningProtocol": "sigv4"
     }
-   }
+   },
+   "DeletionPolicy": "Delete",
+   "UpdateReplacePolicy": "Delete"
   },
   "PatrolFrontendDistributionOrigin1InvokeFromApiForRepoPatrolTestStackPatrolFrontendDistributionOrigin1D5004B3633E0883B": {
    "Type": "AWS::Lambda::Permission",
@@ -1469,7 +1525,9 @@
       ]
      ]
     }
-   }
+   },
+   "DeletionPolicy": "Delete",
+   "UpdateReplacePolicy": "Delete"
   },
   "PatrolFrontendDistribution980A8ABC": {
    "Type": "AWS::CloudFront::Distribution",
@@ -1537,14 +1595,18 @@
       }
      ]
     }
-   }
+   },
+   "DeletionPolicy": "Delete",
+   "UpdateReplacePolicy": "Delete"
   },
   "PatrolFrontendOriginSourceParameterD1D1CE26": {
    "Type": "AWS::SSM::Parameter",
    "Properties": {
     "Type": "String",
     "Value": "dummy"
-   }
+   },
+   "DeletionPolicy": "Delete",
+   "UpdateReplacePolicy": "Delete"
   },
   "PatrolFrontendUpdateOriginSourceParameter04E96B7A": {
    "Type": "Custom::AWS",
@@ -1638,7 +1700,9 @@
       "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
      }
     ]
-   }
+   },
+   "DeletionPolicy": "Delete",
+   "UpdateReplacePolicy": "Delete"
   },
   "PatrolFrontendUpdateCallbackUrls00F4F424": {
    "Type": "Custom::AWS",
@@ -1749,7 +1813,9 @@
       "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
      }
     ]
-   }
+   },
+   "DeletionPolicy": "Delete",
+   "UpdateReplacePolicy": "Delete"
   },
   "PatrolFrontendAdminUserSeederFunctionServiceRoleA507ACEA": {
    "Type": "AWS::IAM::Role",
@@ -1780,7 +1846,9 @@
       ]
      }
     ]
-   }
+   },
+   "DeletionPolicy": "Delete",
+   "UpdateReplacePolicy": "Delete"
   },
   "PatrolFrontendAdminUserSeederFunctionServiceRoleDefaultPolicy1760400A": {
    "Type": "AWS::IAM::Policy",
@@ -1809,7 +1877,9 @@
       "Ref": "PatrolFrontendAdminUserSeederFunctionServiceRoleA507ACEA"
      }
     ]
-   }
+   },
+   "DeletionPolicy": "Delete",
+   "UpdateReplacePolicy": "Delete"
   },
   "PatrolFrontendAdminUserSeederFunction5F9CE513": {
    "Type": "AWS::Lambda::Function",
@@ -1835,7 +1905,9 @@
    "DependsOn": [
     "PatrolFrontendAdminUserSeederFunctionServiceRoleDefaultPolicy1760400A",
     "PatrolFrontendAdminUserSeederFunctionServiceRoleA507ACEA"
-   ]
+   ],
+   "DeletionPolicy": "Delete",
+   "UpdateReplacePolicy": "Delete"
   },
   "PatrolFrontendAdminUserSeederFunctionLogGroup15FE276A": {
    "Type": "AWS::Logs::LogGroup",
@@ -1853,8 +1925,8 @@
     },
     "RetentionInDays": 731
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "PatrolFrontendAdminUserSeederProviderframeworkonEventServiceRole5A15FA9E": {
    "Type": "AWS::IAM::Role",
@@ -1885,7 +1957,9 @@
       ]
      }
     ]
-   }
+   },
+   "DeletionPolicy": "Delete",
+   "UpdateReplacePolicy": "Delete"
   },
   "PatrolFrontendAdminUserSeederProviderframeworkonEventServiceRoleDefaultPolicy55E95D08": {
    "Type": "AWS::IAM::Policy",
@@ -1937,7 +2011,9 @@
       "Ref": "PatrolFrontendAdminUserSeederProviderframeworkonEventServiceRole5A15FA9E"
      }
     ]
-   }
+   },
+   "DeletionPolicy": "Delete",
+   "UpdateReplacePolicy": "Delete"
   },
   "PatrolFrontendAdminUserSeederProviderframeworkonEventB8DE2B58": {
    "Type": "AWS::Lambda::Function",
@@ -1974,7 +2050,9 @@
    "DependsOn": [
     "PatrolFrontendAdminUserSeederProviderframeworkonEventServiceRoleDefaultPolicy55E95D08",
     "PatrolFrontendAdminUserSeederProviderframeworkonEventServiceRole5A15FA9E"
-   ]
+   ],
+   "DeletionPolicy": "Delete",
+   "UpdateReplacePolicy": "Delete"
   },
   "PatrolFrontendAdminUserSeederProviderframeworkonEventLogGroupC02BBA08": {
    "Type": "AWS::Logs::LogGroup",
@@ -1992,8 +2070,8 @@
     },
     "RetentionInDays": 731
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "PatrolFrontendAdminUserSeeder73488258": {
    "Type": "AWS::CloudFormation::CustomResource",
@@ -2041,7 +2119,9 @@
       ]
      }
     ]
-   }
+   },
+   "DeletionPolicy": "Delete",
+   "UpdateReplacePolicy": "Delete"
   },
   "AWS679f53fac002430cb0da5b7982bd22872D164C4C": {
    "Type": "AWS::Lambda::Function",
@@ -2062,7 +2142,9 @@
    },
    "DependsOn": [
     "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
-   ]
+   ],
+   "DeletionPolicy": "Delete",
+   "UpdateReplacePolicy": "Delete"
   },
   "AWS679f53fac002430cb0da5b7982bd2287LogGroup449FB7C2": {
    "Type": "AWS::Logs::LogGroup",
@@ -2080,8 +2162,8 @@
     },
     "RetentionInDays": 731
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
