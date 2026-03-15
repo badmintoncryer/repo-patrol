@@ -8,6 +8,7 @@ import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
+import { ReportList } from "./report-list";
 
 const dynamodb = new DynamoDBClient({});
 const s3 = new S3Client({});
@@ -228,25 +229,12 @@ export default async function RepoDetailPage({
         <h3 className="text-lg font-semibold text-white mb-3">
           Recent Reports
         </h3>
-        {reports.length === 0 ? (
-          <p className="text-slate-500 text-sm">No reports yet.</p>
-        ) : (
-          <div className="space-y-2">
-            {reports.map((report) => (
-              <div
-                key={report.Key}
-                className="rounded-xl border border-slate-700/50 bg-slate-800/50 px-4 py-3 flex items-center justify-between hover:border-indigo-500/30 transition-colors"
-              >
-                <span className="text-sm font-mono text-slate-300">
-                  {report.Key?.split("/").slice(-2).join("/")}
-                </span>
-                <span className="text-xs text-slate-500">
-                  {report.LastModified?.toLocaleString("ja-JP")}
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
+        <ReportList
+          reports={reports.map((r) => ({
+            key: r.Key || "",
+            lastModified: r.LastModified?.toISOString() || "",
+          }))}
+        />
       </section>
     </div>
   );
