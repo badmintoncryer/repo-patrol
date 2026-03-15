@@ -76,7 +76,15 @@
   },
   "pnpm": {},
   "keywords": [
-    "cdk"
+    "ai",
+    "automation",
+    "aws",
+    "aws-cdk",
+    "awscdk",
+    "bedrock",
+    "cdk",
+    "github",
+    "patrol"
   ],
   "main": "lib/index.js",
   "license": "Apache-2.0",

@@ -14,6 +14,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
   pnpmVersion: '9',
   jsiiVersion: '~5.9.0',
 
+  keywords: ['awscdk', 'aws-cdk', 'aws', 'bedrock', 'ai', 'github', 'patrol', 'automation'],
   stability: 'experimental',
   npmAccess: javascript.NpmAccess.PUBLIC,
   npmTrustedPublishing: true,
