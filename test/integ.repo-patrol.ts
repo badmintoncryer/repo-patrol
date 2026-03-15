@@ -1,5 +1,5 @@
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { App, Stack } from 'aws-cdk-lib';
+import { App, RemovalPolicies, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import { RepoPatrol } from '../src';
 
@@ -25,7 +25,10 @@ class TestStack extends Stack {
 }
 
 const stack = new TestStack(app, 'RepoPatrolTestStack');
+RemovalPolicies.of(stack).apply(RemovalPolicy.DESTROY);
 
 new IntegTest(app, 'RepoPatrolIntegTest', {
   testCases: [stack],
+  // Lambda@Edge versioned functions are replaced on every code change
+  allowDestroy: ['AWS::Lambda::Version', 'AWS::CDK::Metadata'],
 });
