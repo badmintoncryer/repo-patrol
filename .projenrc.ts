@@ -31,11 +31,19 @@ const project = new awscdk.AwsCdkConstructLibrary({
     '@aws-sdk/client-bedrock-agentcore',
     '@aws-sdk/client-cognito-identity-provider',
     '@aws-sdk/client-dynamodb',
+    '@aws-sdk/client-lambda',
     '@aws-sdk/client-scheduler',
+    '@aws-sdk/client-secrets-manager',
     '@aws-sdk/util-dynamodb',
     'esbuild',
   ],
 
+  tsconfigDevFile: 'tsconfig.dev.json',
+  tsconfigDev: {
+    compilerOptions: {
+      skipLibCheck: true,
+    },
+  },
   sampleCode: false,
   githubOptions: {
     mergify: false,

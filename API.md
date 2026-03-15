@@ -785,6 +785,67 @@ Repos table name (string to avoid circular dependency with RepoRegistry).
 
 ---
 
+### JobScheduleConfig <a name="JobScheduleConfig" id="repo-patrol.JobScheduleConfig"></a>
+
+Per-job schedule configuration.
+
+#### Initializer <a name="Initializer" id="repo-patrol.JobScheduleConfig.Initializer"></a>
+
+```typescript
+import { JobScheduleConfig } from 'repo-patrol'
+
+const jobScheduleConfig: JobScheduleConfig = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#repo-patrol.JobScheduleConfig.property.enabled">enabled</a></code> | <code>boolean</code> | Whether this job is enabled. |
+| <code><a href="#repo-patrol.JobScheduleConfig.property.modelId">modelId</a></code> | <code>string</code> | Override model ID for this specific job. |
+| <code><a href="#repo-patrol.JobScheduleConfig.property.schedule">schedule</a></code> | <code>aws-cdk-lib.aws_scheduler.ScheduleExpression</code> | EventBridge schedule expression for this job. |
+
+---
+
+##### `enabled`<sup>Optional</sup> <a name="enabled" id="repo-patrol.JobScheduleConfig.property.enabled"></a>
+
+```typescript
+public readonly enabled: boolean;
+```
+
+- *Type:* boolean
+- *Default:* true
+
+Whether this job is enabled.
+
+---
+
+##### `modelId`<sup>Optional</sup> <a name="modelId" id="repo-patrol.JobScheduleConfig.property.modelId"></a>
+
+```typescript
+public readonly modelId: string;
+```
+
+- *Type:* string
+- *Default:* Uses the repository-level or construct-level modelId
+
+Override model ID for this specific job.
+
+---
+
+##### `schedule`<sup>Optional</sup> <a name="schedule" id="repo-patrol.JobScheduleConfig.property.schedule"></a>
+
+```typescript
+public readonly schedule: ScheduleExpression;
+```
+
+- *Type:* aws-cdk-lib.aws_scheduler.ScheduleExpression
+- *Default:* Daily at UTC 00:00
+
+EventBridge schedule expression for this job.
+
+---
+
 ### RepoPatrolProps <a name="RepoPatrolProps" id="repo-patrol.RepoPatrolProps"></a>
 
 #### Initializer <a name="Initializer" id="repo-patrol.RepoPatrolProps.Initializer"></a>
@@ -805,6 +866,7 @@ const repoPatrolProps: RepoPatrolProps = { ... }
 | <code><a href="#repo-patrol.RepoPatrolProps.property.enableDashboard">enableDashboard</a></code> | <code>boolean</code> | Enable the Next.js dashboard with Cognito authentication. |
 | <code><a href="#repo-patrol.RepoPatrolProps.property.mfaRequired">mfaRequired</a></code> | <code>boolean</code> | Whether to require MFA (TOTP) for dashboard login. |
 | <code><a href="#repo-patrol.RepoPatrolProps.property.modelId">modelId</a></code> | <code>string</code> | Default Bedrock model ID. |
+| <code><a href="#repo-patrol.RepoPatrolProps.property.repositories">repositories</a></code> | <code><a href="#repo-patrol.RepositoryConfig">RepositoryConfig</a>[]</code> | Repositories to register on deployment. |
 
 ---
 
@@ -882,6 +944,22 @@ public readonly modelId: string;
 - *Type:* string
 
 Default Bedrock model ID.
+
+---
+
+##### `repositories`<sup>Optional</sup> <a name="repositories" id="repo-patrol.RepoPatrolProps.property.repositories"></a>
+
+```typescript
+public readonly repositories: RepositoryConfig[];
+```
+
+- *Type:* <a href="#repo-patrol.RepositoryConfig">RepositoryConfig</a>[]
+- *Default:* No repositories are registered via IaC
+
+Repositories to register on deployment.
+
+GitHub App installation ID is resolved automatically.
+UI changes to these repositories will cause drift but are acceptable.
 
 ---
 
@@ -1018,6 +1096,91 @@ public readonly mfaRequired: boolean;
 - *Default:* true
 
 Whether to require MFA (TOTP) for dashboard login.
+
+---
+
+### RepositoryConfig <a name="RepositoryConfig" id="repo-patrol.RepositoryConfig"></a>
+
+Repository configuration for IaC-managed repositories.
+
+#### Initializer <a name="Initializer" id="repo-patrol.RepositoryConfig.Initializer"></a>
+
+```typescript
+import { RepositoryConfig } from 'repo-patrol'
+
+const repositoryConfig: RepositoryConfig = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#repo-patrol.RepositoryConfig.property.jobs">jobs</a></code> | <code>{[ key: string ]: <a href="#repo-patrol.JobScheduleConfig">JobScheduleConfig</a>}</code> | Job type configurations. |
+| <code><a href="#repo-patrol.RepositoryConfig.property.owner">owner</a></code> | <code>string</code> | GitHub repository owner (organization or user). |
+| <code><a href="#repo-patrol.RepositoryConfig.property.repo">repo</a></code> | <code>string</code> | GitHub repository name. |
+| <code><a href="#repo-patrol.RepositoryConfig.property.modelId">modelId</a></code> | <code>string</code> | Default model ID for this repository. |
+
+---
+
+##### `jobs`<sup>Required</sup> <a name="jobs" id="repo-patrol.RepositoryConfig.property.jobs"></a>
+
+```typescript
+public readonly jobs: {[ key: string ]: JobScheduleConfig};
+```
+
+- *Type:* {[ key: string ]: <a href="#repo-patrol.JobScheduleConfig">JobScheduleConfig</a>}
+
+Job type configurations.
+
+Only specified jobs are enabled; unspecified jobs are not registered.
+Use `JobType` enum values as keys.
+
+---
+
+*Example*
+
+```typescript
+{
+  [JobType.REVIEW_PULL_REQUESTS]: { schedule: ScheduleExpression.cron({ hour: '1', minute: '0' }) },
+  [JobType.HANDLE_DEPENDABOT]: { schedule: ScheduleExpression.rate(Duration.hours(6)) },
+}
+```
+
+
+##### `owner`<sup>Required</sup> <a name="owner" id="repo-patrol.RepositoryConfig.property.owner"></a>
+
+```typescript
+public readonly owner: string;
+```
+
+- *Type:* string
+
+GitHub repository owner (organization or user).
+
+---
+
+##### `repo`<sup>Required</sup> <a name="repo" id="repo-patrol.RepositoryConfig.property.repo"></a>
+
+```typescript
+public readonly repo: string;
+```
+
+- *Type:* string
+
+GitHub repository name.
+
+---
+
+##### `modelId`<sup>Optional</sup> <a name="modelId" id="repo-patrol.RepositoryConfig.property.modelId"></a>
+
+```typescript
+public readonly modelId: string;
+```
+
+- *Type:* string
+- *Default:* Uses the construct-level modelId
+
+Default model ID for this repository.
 
 ---
 

@@ -13,6 +13,59 @@ import { RepoRegistry } from './repo-registry';
 import { ReportFrontend } from './report-frontend';
 import { StrandsAgentRuntime } from './strands-agent-runtime';
 
+/**
+ * Per-job schedule configuration.
+ */
+export interface JobScheduleConfig {
+  /**
+   * Whether this job is enabled.
+   * @default true
+   */
+  readonly enabled?: boolean;
+
+  /**
+   * EventBridge schedule expression for this job.
+   * @default - Daily at UTC 00:00
+   */
+  readonly schedule?: ScheduleExpression;
+
+  /**
+   * Override model ID for this specific job.
+   * @default - Uses the repository-level or construct-level modelId
+   */
+  readonly modelId?: string;
+}
+
+/**
+ * Repository configuration for IaC-managed repositories.
+ */
+export interface RepositoryConfig {
+  /** GitHub repository owner (organization or user) */
+  readonly owner: string;
+
+  /** GitHub repository name */
+  readonly repo: string;
+
+  /**
+   * Default model ID for this repository.
+   * @default - Uses the construct-level modelId
+   */
+  readonly modelId?: string;
+
+  /**
+   * Job type configurations.
+   * Only specified jobs are enabled; unspecified jobs are not registered.
+   * Use `JobType` enum values as keys.
+   *
+   * @example
+   * {
+   *   [JobType.REVIEW_PULL_REQUESTS]: { schedule: ScheduleExpression.cron({ hour: '1', minute: '0' }) },
+   *   [JobType.HANDLE_DEPENDABOT]: { schedule: ScheduleExpression.rate(Duration.hours(6)) },
+   * }
+   */
+  readonly jobs: { [key: string]: JobScheduleConfig };
+}
+
 export interface RepoPatrolProps {
   /** Secrets Manager secret containing GitHub App credentials (app_id, private_key) */
   readonly githubAppSecret: secretsmanager.ISecret;
@@ -39,6 +92,14 @@ export interface RepoPatrolProps {
    * @default - No admin users are created
    */
   readonly adminEmails?: string[];
+
+  /**
+   * Repositories to register on deployment.
+   * GitHub App installation ID is resolved automatically.
+   * UI changes to these repositories will cause drift but are acceptable.
+   * @default - No repositories are registered via IaC
+   */
+  readonly repositories?: RepositoryConfig[];
 }
 
 /**
@@ -104,6 +165,11 @@ export class RepoPatrol extends Construct {
     // Custom Resource: clean up all dynamic repo-patrol-* EventBridge Schedules on stack deletion
     this.addScheduleCleanup();
 
+    // IaC-managed repositories
+    if (props.repositories && props.repositories.length > 0) {
+      this.addRepoSeeder(props.repositories, props.githubAppSecret);
+    }
+
     // Optional: Next.js Dashboard with Cognito auth
     if (props.enableDashboard !== false) {
       this.frontend = new ReportFrontend(this, 'Frontend', {
@@ -114,6 +180,76 @@ export class RepoPatrol extends Construct {
         githubAppSecret: props.githubAppSecret,
         mfaRequired: props.mfaRequired,
         adminEmails: props.adminEmails,
+      });
+    }
+  }
+
+  /**
+   * Add Custom Resources to register IaC-managed repositories.
+   * One Custom Resource per repository for proper lifecycle management.
+   */
+  private addRepoSeeder(
+    repositories: RepositoryConfig[],
+    githubAppSecret: secretsmanager.ISecret,
+  ) {
+    const seederFunction = new nodejs.NodejsFunction(
+      this,
+      'RepoSeederFunction',
+      {
+        runtime: lambda.Runtime.NODEJS_22_X,
+        architecture: lambda.Architecture.ARM_64,
+        handler: 'handler',
+        entry: path.join(__dirname, 'handlers/repo-seeder.ts'),
+        timeout: cdk.Duration.minutes(5),
+        memorySize: 256,
+        environment: {
+          REGISTRY_FUNCTION_NAME:
+            this.registry.registryFunction.functionName,
+          GITHUB_APP_SECRET_NAME: githubAppSecret.secretName,
+        },
+        bundling: {
+          minify: true,
+          sourceMap: true,
+        },
+      },
+    );
+
+    // Grant invoke on Registry Lambda and read on GitHub App secret
+    this.registry.registryFunction.grantInvoke(seederFunction);
+    githubAppSecret.grantRead(seederFunction);
+
+    const provider = new cr.Provider(this, 'RepoSeederProvider', {
+      onEventHandler: seederFunction,
+    });
+
+    for (const repoConfig of repositories) {
+      // Convert JobScheduleConfig to serializable form
+      const jobsPayload: Record<
+        string,
+        { enabled: boolean; schedule: string; model_id?: string }
+      > = {};
+      for (const [jobType, config] of Object.entries(repoConfig.jobs)) {
+        jobsPayload[jobType] = {
+          enabled: config.enabled ?? true,
+          schedule:
+            config.schedule?.expressionString ?? FALLBACK_SCHEDULE_STRING,
+          ...(config.modelId && { model_id: config.modelId }),
+        };
+      }
+
+      const sanitizedId = `${repoConfig.owner}${repoConfig.repo}`.replace(
+        /[^a-zA-Z0-9]/g,
+        '',
+      );
+
+      new cdk.CustomResource(this, `RepoSeed${sanitizedId}`, {
+        serviceToken: provider.serviceToken,
+        properties: {
+          Owner: repoConfig.owner,
+          Repo: repoConfig.repo,
+          Jobs: JSON.stringify(jobsPayload),
+          ModelId: repoConfig.modelId ?? '',
+        },
       });
     }
   }

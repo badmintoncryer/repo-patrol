@@ -23,7 +23,15 @@
       "type": "build"
     },
     {
+      "name": "@aws-sdk/client-lambda",
+      "type": "build"
+    },
+    {
       "name": "@aws-sdk/client-scheduler",
+      "type": "build"
+    },
+    {
+      "name": "@aws-sdk/client-secrets-manager",
       "type": "build"
     },
     {
