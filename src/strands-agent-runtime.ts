@@ -3,6 +3,7 @@ import {
   Runtime,
   AgentRuntimeArtifact,
 } from '@aws-cdk/aws-bedrock-agentcore-alpha';
+import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
@@ -11,9 +12,9 @@ import { Construct } from 'constructs';
 export interface StrandsAgentRuntimeProps {
   readonly reportBucket: s3.IBucket;
   readonly githubAppSecret: secretsmanager.ISecret;
-  readonly reposTableName: string;
-  readonly jobHistoryTableName: string;
-  readonly processedItemsTableName: string;
+  readonly reposTable: dynamodb.ITable;
+  readonly jobHistoryTable: dynamodb.ITable;
+  readonly processedItemsTable: dynamodb.ITable;
   readonly modelId?: string;
   readonly dryRun?: boolean;
 }
@@ -31,9 +32,9 @@ export class StrandsAgentRuntime extends Construct {
       environmentVariables: {
         REPORT_BUCKET_NAME: props.reportBucket.bucketName,
         GITHUB_APP_SECRET_ARN: props.githubAppSecret.secretName,
-        REPOS_TABLE_NAME: props.reposTableName,
-        JOB_HISTORY_TABLE_NAME: props.jobHistoryTableName,
-        PROCESSED_ITEMS_TABLE_NAME: props.processedItemsTableName,
+        REPOS_TABLE_NAME: props.reposTable.tableName,
+        JOB_HISTORY_TABLE_NAME: props.jobHistoryTable.tableName,
+        PROCESSED_ITEMS_TABLE_NAME: props.processedItemsTable.tableName,
         MODEL_ID: props.modelId ?? 'us.anthropic.claude-haiku-4-5-20251001-v1:0',
         DRY_RUN: (props.dryRun ?? false).toString(),
       },
@@ -59,17 +60,9 @@ export class StrandsAgentRuntime extends Construct {
     // Secrets Manager read for GitHub App credentials
     props.githubAppSecret.grantRead(this.runtime);
 
-    // DynamoDB access for job history and processed items
-    this.runtime.addToRolePolicy(
-      new iam.PolicyStatement({
-        actions: [
-          'dynamodb:PutItem',
-          'dynamodb:GetItem',
-          'dynamodb:Query',
-          'dynamodb:Scan',
-        ],
-        resources: ['*'], // Scoped by table name in agent config
-      }),
-    );
+    // DynamoDB access scoped to specific tables
+    props.reposTable.grantReadData(this.runtime);
+    props.jobHistoryTable.grantReadWriteData(this.runtime);
+    props.processedItemsTable.grantReadWriteData(this.runtime);
   }
 }

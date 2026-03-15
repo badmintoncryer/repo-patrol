@@ -65,7 +65,7 @@ def get_pull_request_details(installation_id: int, owner: str, repo: str, pr_num
     return {
         "number": pr.number,
         "title": pr.title,
-        "body": (pr.body or "")[:5000],
+        "body": f"<untrusted-content>{(pr.body or '')[:5000]}</untrusted-content>",
         "author": pr.user.login,
         "state": pr.state,
         "mergeable": pr.mergeable,
@@ -170,14 +170,14 @@ def get_issue_details(installation_id: int, owner: str, repo: str, issue_number:
     return {
         "number": issue.number,
         "title": issue.title,
-        "body": (issue.body or "")[:5000],
+        "body": f"<untrusted-content>{(issue.body or '')[:5000]}</untrusted-content>",
         "author": issue.user.login,
         "state": issue.state,
         "labels": [label.name for label in issue.labels],
         "created_at": issue.created_at.isoformat(),
         "comments_count": issue.comments,
         "recent_comments": [
-            {"author": c.user.login, "body": c.body[:1000], "created_at": c.created_at.isoformat()}
+            {"author": c.user.login, "body": f"<untrusted-content>{c.body[:1000]}</untrusted-content>", "created_at": c.created_at.isoformat()}
             for c in list(comments)[-5:]
         ],
     }

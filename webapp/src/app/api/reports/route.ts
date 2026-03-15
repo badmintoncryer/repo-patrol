@@ -21,6 +21,13 @@ export async function GET(request: NextRequest) {
 
   // Get specific report by S3 key
   if (key) {
+    // Validate key to prevent path traversal — must start with "reports/" and contain no ".."
+    if (!key.startsWith("reports/") || key.includes("..")) {
+      return NextResponse.json(
+        { error: "Invalid key" },
+        { status: 400 }
+      );
+    }
     try {
       const result = await s3.send(
         new GetObjectCommand({ Bucket: BUCKET, Key: key })

@@ -136,9 +136,9 @@ export class RepoPatrol extends Construct {
     this.agentRuntime = new StrandsAgentRuntime(this, 'AgentRuntime', {
       reportBucket: this.reportBucket,
       githubAppSecret: props.githubAppSecret,
-      reposTableName: this.registry.reposTable.tableName,
-      jobHistoryTableName: this.registry.jobHistoryTable.tableName,
-      processedItemsTableName: this.registry.processedItemsTable.tableName,
+      reposTable: this.registry.reposTable,
+      jobHistoryTable: this.registry.jobHistoryTable,
+      processedItemsTable: this.registry.processedItemsTable,
       modelId: props.modelId,
       dryRun: props.dryRun,
     });
