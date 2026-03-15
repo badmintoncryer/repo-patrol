@@ -203,7 +203,7 @@
      "arm64"
     ],
     "Code": {
-     "S3Bucket": "cdk-hnb659fds-assets-214794239830-us-east-1",
+     "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
      "S3Key": "dec0ec1a7e75648902dabb30ad15b8edf061add190bb155c504073b85775edee.zip"
     },
     "Environment": {
@@ -291,13 +291,13 @@
         "logs:DescribeLogStreams"
        ],
        "Effect": "Allow",
-       "Resource": "arn:aws:logs:us-east-1:214794239830:log-group:/aws/bedrock-agentcore/runtimes/*",
+       "Resource": "arn:aws:logs:us-east-1:123456789012:log-group:/aws/bedrock-agentcore/runtimes/*",
        "Sid": "LogGroupAccess"
       },
       {
        "Action": "logs:DescribeLogGroups",
        "Effect": "Allow",
-       "Resource": "arn:aws:logs:us-east-1:214794239830:log-group:*",
+       "Resource": "arn:aws:logs:us-east-1:123456789012:log-group:*",
        "Sid": "DescribeLogGroups"
       },
       {
@@ -306,7 +306,7 @@
         "logs:PutLogEvents"
        ],
        "Effect": "Allow",
-       "Resource": "arn:aws:logs:us-east-1:214794239830:log-group:/aws/bedrock-agentcore/runtimes/*:log-stream:*",
+       "Resource": "arn:aws:logs:us-east-1:123456789012:log-group:/aws/bedrock-agentcore/runtimes/*:log-stream:*",
        "Sid": "LogStreamAccess"
       },
       {
@@ -339,8 +339,8 @@
        ],
        "Effect": "Allow",
        "Resource": [
-        "arn:aws:bedrock-agentcore:us-east-1:214794239830:workload-identity-directory/default",
-        "arn:aws:bedrock-agentcore:us-east-1:214794239830:workload-identity-directory/default/workload-identity/*"
+        "arn:aws:bedrock-agentcore:us-east-1:123456789012:workload-identity-directory/default",
+        "arn:aws:bedrock-agentcore:us-east-1:123456789012:workload-identity-directory/default/workload-identity/*"
        ],
        "Sid": "GetAgentAccessToken"
       },
@@ -395,7 +395,7 @@
         "secretsmanager:GetSecretValue"
        ],
        "Effect": "Allow",
-       "Resource": "arn:aws:secretsmanager:us-east-1:214794239830:secret:repo-patrol/github-app-??????"
+       "Resource": "arn:aws:secretsmanager:us-east-1:123456789012:secret:repo-patrol/github-app-??????"
       },
       {
        "Action": [
@@ -454,7 +454,7 @@
         "ecr:GetDownloadUrlForLayer"
        ],
        "Effect": "Allow",
-       "Resource": "arn:aws:ecr:us-east-1:214794239830:repository/cdk-hnb659fds-container-assets-214794239830-us-east-1"
+       "Resource": "arn:aws:ecr:us-east-1:123456789012:repository/cdk-hnb659fds-container-assets-123456789012-us-east-1"
       },
       {
        "Action": "ecr:GetAuthorizationToken",
@@ -478,7 +478,7 @@
     "AgentRuntimeArtifact": {
      "ContainerConfiguration": {
       "ContainerUri": {
-       "Fn::Sub": "214794239830.dkr.ecr.us-east-1.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-214794239830-us-east-1:d51e899843a5ebb7e830deff0f1fe221ee4ab4bd0e6dade2eab1391e25cd11a5"
+       "Fn::Sub": "123456789012.dkr.ecr.us-east-1.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-123456789012-us-east-1:d51e899843a5ebb7e830deff0f1fe221ee4ab4bd0e6dade2eab1391e25cd11a5"
       }
      }
     },
@@ -615,7 +615,7 @@
      "arm64"
     ],
     "Code": {
-     "S3Bucket": "cdk-hnb659fds-assets-214794239830-us-east-1",
+     "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
      "S3Key": "af98e197725569b919429cfa53544fd57e82eaa10953450888a13799c7ac3bf8.zip"
     },
     "Environment": {
@@ -789,7 +789,7 @@
      "arm64"
     ],
     "Code": {
-     "S3Bucket": "cdk-hnb659fds-assets-214794239830-us-east-1",
+     "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
      "S3Key": "83ce14d48b96db450dbb3b46c94d6a434b461649e71bda044c7f7ad213563464.zip"
     },
     "Handler": "index.handler",
@@ -914,7 +914,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "S3Bucket": "cdk-hnb659fds-assets-214794239830-us-east-1",
+     "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
      "S3Key": "07a90cc3efdfc34da22208dcd9d211f06f5b0e01b21e778edc7c3966b1f61d57.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (RepoPatrolTestStack/Patrol/ScheduleCleanupProvider)",
@@ -1185,7 +1185,7 @@
         "secretsmanager:GetSecretValue"
        ],
        "Effect": "Allow",
-       "Resource": "arn:aws:secretsmanager:us-east-1:214794239830:secret:repo-patrol/github-app-??????"
+       "Resource": "arn:aws:secretsmanager:us-east-1:123456789012:secret:repo-patrol/github-app-??????"
       },
       {
        "Action": "lambda:InvokeFunction",
@@ -1225,7 +1225,7 @@
         "Fn::Join": [
          "",
          [
-          "arn:aws:ssm:us-east-1:214794239830:parameter/",
+          "arn:aws:ssm:us-east-1:123456789012:parameter/",
           {
            "Ref": "PatrolFrontendOriginSourceParameterD1D1CE26"
           }
@@ -1252,7 +1252,7 @@
     ],
     "Code": {
      "ImageUri": {
-      "Fn::Sub": "214794239830.dkr.ecr.us-east-1.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-214794239830-us-east-1:4780d75b94441bf163f68be20f14388f37e2977a458e5e4890e52ae8a233dcd2"
+      "Fn::Sub": "123456789012.dkr.ecr.us-east-1.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-123456789012-us-east-1:4780d75b94441bf163f68be20f14388f37e2977a458e5e4890e52ae8a233dcd2"
      }
     },
     "Environment": {
@@ -1621,7 +1621,7 @@
         "Fn::Join": [
          "",
          [
-          "arn:aws:ssm:us-east-1:214794239830:parameter/",
+          "arn:aws:ssm:us-east-1:123456789012:parameter/",
           {
            "Ref": "PatrolFrontendOriginSourceParameterD1D1CE26"
           }
@@ -1818,7 +1818,7 @@
      "arm64"
     ],
     "Code": {
-     "S3Bucket": "cdk-hnb659fds-assets-214794239830-us-east-1",
+     "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
      "S3Key": "c19825f3ddbb80216b9c4e21dadab035c1873ab641f27701aaa60e652dabddc2.zip"
     },
     "Handler": "index.handler",
@@ -1943,7 +1943,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "S3Bucket": "cdk-hnb659fds-assets-214794239830-us-east-1",
+     "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
      "S3Key": "07a90cc3efdfc34da22208dcd9d211f06f5b0e01b21e778edc7c3966b1f61d57.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (RepoPatrolTestStack/Patrol/Frontend/AdminUserSeederProvider)",
@@ -2047,7 +2047,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "S3Bucket": "cdk-hnb659fds-assets-214794239830-us-east-1",
+     "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
      "S3Key": "bc8ef58951f4c88e641dd23090e9d2e2e61c7530a07960e767522941e959b625.zip"
     },
     "Handler": "index.handler",

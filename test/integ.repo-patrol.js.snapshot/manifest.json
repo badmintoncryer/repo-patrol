@@ -11,21 +11,21 @@
     },
     "RepoPatrolTestStack": {
       "type": "aws:cloudformation:stack",
-      "environment": "aws://214794239830/us-east-1",
+      "environment": "aws://123456789012/us-east-1",
       "properties": {
         "templateFile": "RepoPatrolTestStack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::214794239830:role/cdk-hnb659fds-deploy-role-214794239830-us-east-1",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::214794239830:role/cdk-hnb659fds-cfn-exec-role-214794239830-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-214794239830-us-east-1/c0cbb0d1288a26a7f484533c4628652e6d3d91198df1abac1d4159169a50040f.json",
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-deploy-role-123456789012-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-cfn-exec-role-123456789012-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-123456789012-us-east-1/c0cbb0d1288a26a7f484533c4628652e6d3d91198df1abac1d4159169a50040f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
           "RepoPatrolTestStack.assets"
         ],
         "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::214794239830:role/cdk-hnb659fds-lookup-role-214794239830-us-east-1",
+          "arn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-lookup-role-123456789012-us-east-1",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         }
