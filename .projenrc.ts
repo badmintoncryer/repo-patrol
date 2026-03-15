@@ -62,6 +62,8 @@ const project = new awscdk.AwsCdkConstructLibrary({
     'test/**/*.d.ts',
     '.projenrc.js',
     '.projenrc.d.ts',
+    'webapp/.next/',
+    'webapp/next-env.d.ts',
   ],
 
   excludeTypescript: [

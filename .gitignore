@@ -41,6 +41,8 @@ test/**/*.js
 test/**/*.d.ts
 .projenrc.js
 .projenrc.d.ts
+webapp/.next/
+webapp/next-env.d.ts
 /test-reports/
 junit.xml
 /coverage/
@@ -61,7 +63,3 @@ junit.xml
 tsconfig.json
 !/API.md
 !/.projenrc.ts
-
-# Webapp build artifacts
-webapp/.next/
-webapp/next-env.d.ts
