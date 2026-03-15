@@ -278,11 +278,14 @@ export class RepoPatrol extends Construct {
 
     cleanupFunction.addToRolePolicy(
       new iam.PolicyStatement({
-        actions: [
-          'scheduler:ListSchedules',
-          'scheduler:DeleteSchedule',
-        ],
+        actions: ['scheduler:ListSchedules'],
         resources: ['*'],
+      }),
+    );
+    cleanupFunction.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: ['scheduler:DeleteSchedule'],
+        resources: ['arn:aws:scheduler:*:*:schedule/default/repo-patrol-*'],
       }),
     );
 

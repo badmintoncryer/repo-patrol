@@ -6,6 +6,8 @@ import {
 import { S3Client, ListObjectsV2Command } from "@aws-sdk/client-s3";
 import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { getSession } from "@/lib/auth";
 
 const dynamodb = new DynamoDBClient({});
 const s3 = new S3Client({});
@@ -68,6 +70,11 @@ export default async function RepoDetailPage({
 }: {
   params: Promise<{ owner: string; repo: string }>;
 }) {
+  try {
+    await getSession();
+  } catch {
+    redirect("/sign-in");
+  }
   const { owner, repo } = await params;
   const [config, history, reports] = await Promise.all([
     getRepoConfig(owner, repo),

@@ -87,7 +87,6 @@ export class ReportFrontend extends Construct {
           cognito.OAuthScope.OPENID,
           cognito.OAuthScope.EMAIL,
           cognito.OAuthScope.PROFILE,
-          cognito.OAuthScope.custom('aws.cognito.signin.user.admin'),
         ],
         callbackUrls: ['http://localhost/dummy'],
         logoutUrls: ['http://localhost/dummy'],
@@ -130,7 +129,7 @@ export class ReportFrontend extends Construct {
 
     // Grant permissions
     props.reportBucket.grantRead(webappFunction);
-    props.reposTable.grantReadWriteData(webappFunction);
+    props.reposTable.grantReadData(webappFunction);
     props.jobHistoryTable.grantReadData(webappFunction);
 
     // Secrets Manager read for GitHub App installation auto-resolution
@@ -225,7 +224,7 @@ export class ReportFrontend extends Construct {
           UserPoolId: this.userPool.userPoolId,
           AllowedOAuthFlows: ['code'],
           AllowedOAuthFlowsUserPoolClient: true,
-          AllowedOAuthScopes: ['profile', 'email', 'openid', 'aws.cognito.signin.user.admin'],
+          AllowedOAuthScopes: ['profile', 'email', 'openid'],
           ExplicitAuthFlows: ['ALLOW_USER_SRP_AUTH', 'ALLOW_REFRESH_TOKEN_AUTH'],
           CallbackURLs: [`${cloudFrontUrl}/api/auth/sign-in-callback`],
           LogoutURLs: [`${cloudFrontUrl}/api/auth/sign-out-callback`],

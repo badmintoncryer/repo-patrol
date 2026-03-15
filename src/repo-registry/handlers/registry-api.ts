@@ -37,7 +37,6 @@ function response(statusCode: number, body: unknown) {
     statusCode,
     headers: {
       'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
     },
     body: JSON.stringify(body),
   };
@@ -239,6 +238,9 @@ export const handler = async (event: APIGatewayEvent) => {
       const body = JSON.parse(event.body || '{}');
       const now = new Date().toISOString();
 
+      // Whitelist updatable fields to prevent mass-assignment
+      const ALLOWED_FIELDS = new Set(['enabled', 'jobs', 'model_id', 'dry_run']);
+
       const updateExpressions: string[] = ['#updated_at = :updated_at'];
       const expressionNames: Record<string, string> = {
         '#updated_at': 'updated_at',
@@ -248,7 +250,7 @@ export const handler = async (event: APIGatewayEvent) => {
       };
 
       for (const [key, value] of Object.entries(body)) {
-        if (key === 'repo_id') continue;
+        if (!ALLOWED_FIELDS.has(key)) continue;
         const attrName = `#${key}`;
         const attrValue = `:${key}`;
         updateExpressions.push(`${attrName} = ${attrValue}`);
@@ -327,6 +329,6 @@ export const handler = async (event: APIGatewayEvent) => {
     return response(405, { error: 'Method not allowed' });
   } catch (error) {
     console.error('Registry API error:', error);
-    return response(500, { error: String(error) });
+    return response(500, { error: 'Internal server error' });
   }
 };

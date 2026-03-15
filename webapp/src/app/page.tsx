@@ -1,6 +1,8 @@
 import { DynamoDBClient, ScanCommand } from "@aws-sdk/client-dynamodb";
 import { unmarshall } from "@aws-sdk/util-dynamodb";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { getSession } from "@/lib/auth";
 
 const dynamodb = new DynamoDBClient({});
 
@@ -27,6 +29,11 @@ async function getRepos(): Promise<Repo[]> {
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
+  try {
+    await getSession();
+  } catch {
+    redirect("/sign-in");
+  }
   const repos = await getRepos();
 
   return (
