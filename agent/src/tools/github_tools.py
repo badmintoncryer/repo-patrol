@@ -306,25 +306,28 @@ def add_issue_labels(installation_id: int, owner: str, repo: str, issue_number: 
 
 
 @tool
-def approve_pull_request(installation_id: int, owner: str, repo: str, pr_number: int) -> dict:
-    """Approve a pull request.
+def approve_pull_request(installation_id: int, owner: str, repo: str, pr_number: int, body: str = "") -> dict:
+    """Approve a pull request with a review comment explaining the decision.
 
     Args:
         installation_id: GitHub App installation ID
         owner: Repository owner
         repo: Repository name
         pr_number: Pull request number
+        body: Review body explaining the approval decision (analysis summary, key changes, risks assessed)
 
     Returns:
         Result with review ID or dry_run status.
     """
+    review_body = f"[repo-patrol] {body}" if body else "[repo-patrol] Approved."
+
     if DRY_RUN:
         logger.info("[DRY_RUN] Would approve PR %s/%s#%d", owner, repo, pr_number)
-        return {"dry_run": True, "pr_number": pr_number, "action": "approve"}
+        return {"dry_run": True, "pr_number": pr_number, "action": "approve", "body_preview": review_body[:200]}
 
     repository = _get_repo(installation_id, owner, repo)
     pr = repository.get_pull(pr_number)
-    review = pr.create_review(event="APPROVE", body="[repo-patrol] Approved automatically.")
+    review = pr.create_review(event="APPROVE", body=review_body)
     return {"review_id": review.id, "pr_number": pr_number, "action": "approved"}
 
 

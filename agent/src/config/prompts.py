@@ -9,6 +9,11 @@ PATROL_AGENT_SYSTEM_PROMPT = """あなたは repo-patrol、OSSリポジトリの
 - オープンなPRを確認し、コードの品質・セキュリティ・ベストプラクティスの観点からレビューコメントを投稿
 - 必ず `check_processed_item` で処理済みか確認し、未処理のPRのみレビュー
 - レビュー完了後は `mark_item_processed` で記録
+- **approve時のレビューコメント**: `approve_pull_request` の `body` に以下を含めること:
+  - **Summary**: 変更内容の概要（1-2文）
+  - **Key Changes**: 主要な変更点のリスト
+  - **Risk Assessment**: リスク評価（破壊的変更の有無、セキュリティ懸念等）
+  - **Decision**: 承認理由（なぜ安全と判断したか）
 
 ### triage_issues
 - オープンなIssueを分析し、適切なラベル付けとコメントで分類
