@@ -1199,10 +1199,10 @@ const strandsAgentRuntimeProps: StrandsAgentRuntimeProps = { ... }
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#repo-patrol.StrandsAgentRuntimeProps.property.githubAppSecret">githubAppSecret</a></code> | <code>aws-cdk-lib.aws_secretsmanager.ISecret</code> | *No description.* |
-| <code><a href="#repo-patrol.StrandsAgentRuntimeProps.property.jobHistoryTableName">jobHistoryTableName</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#repo-patrol.StrandsAgentRuntimeProps.property.processedItemsTableName">processedItemsTableName</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#repo-patrol.StrandsAgentRuntimeProps.property.jobHistoryTable">jobHistoryTable</a></code> | <code>aws-cdk-lib.aws_dynamodb.ITable</code> | *No description.* |
+| <code><a href="#repo-patrol.StrandsAgentRuntimeProps.property.processedItemsTable">processedItemsTable</a></code> | <code>aws-cdk-lib.aws_dynamodb.ITable</code> | *No description.* |
 | <code><a href="#repo-patrol.StrandsAgentRuntimeProps.property.reportBucket">reportBucket</a></code> | <code>aws-cdk-lib.aws_s3.IBucket</code> | *No description.* |
-| <code><a href="#repo-patrol.StrandsAgentRuntimeProps.property.reposTableName">reposTableName</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#repo-patrol.StrandsAgentRuntimeProps.property.reposTable">reposTable</a></code> | <code>aws-cdk-lib.aws_dynamodb.ITable</code> | *No description.* |
 | <code><a href="#repo-patrol.StrandsAgentRuntimeProps.property.dryRun">dryRun</a></code> | <code>boolean</code> | *No description.* |
 | <code><a href="#repo-patrol.StrandsAgentRuntimeProps.property.modelId">modelId</a></code> | <code>string</code> | *No description.* |
 
@@ -1218,23 +1218,23 @@ public readonly githubAppSecret: ISecret;
 
 ---
 
-##### `jobHistoryTableName`<sup>Required</sup> <a name="jobHistoryTableName" id="repo-patrol.StrandsAgentRuntimeProps.property.jobHistoryTableName"></a>
+##### `jobHistoryTable`<sup>Required</sup> <a name="jobHistoryTable" id="repo-patrol.StrandsAgentRuntimeProps.property.jobHistoryTable"></a>
 
 ```typescript
-public readonly jobHistoryTableName: string;
+public readonly jobHistoryTable: ITable;
 ```
 
-- *Type:* string
+- *Type:* aws-cdk-lib.aws_dynamodb.ITable
 
 ---
 
-##### `processedItemsTableName`<sup>Required</sup> <a name="processedItemsTableName" id="repo-patrol.StrandsAgentRuntimeProps.property.processedItemsTableName"></a>
+##### `processedItemsTable`<sup>Required</sup> <a name="processedItemsTable" id="repo-patrol.StrandsAgentRuntimeProps.property.processedItemsTable"></a>
 
 ```typescript
-public readonly processedItemsTableName: string;
+public readonly processedItemsTable: ITable;
 ```
 
-- *Type:* string
+- *Type:* aws-cdk-lib.aws_dynamodb.ITable
 
 ---
 
@@ -1248,13 +1248,13 @@ public readonly reportBucket: IBucket;
 
 ---
 
-##### `reposTableName`<sup>Required</sup> <a name="reposTableName" id="repo-patrol.StrandsAgentRuntimeProps.property.reposTableName"></a>
+##### `reposTable`<sup>Required</sup> <a name="reposTable" id="repo-patrol.StrandsAgentRuntimeProps.property.reposTable"></a>
 
 ```typescript
-public readonly reposTableName: string;
+public readonly reposTable: ITable;
 ```
 
-- *Type:* string
+- *Type:* aws-cdk-lib.aws_dynamodb.ITable
 
 ---
 
