@@ -61,3 +61,7 @@ junit.xml
 tsconfig.json
 !/API.md
 !/.projenrc.ts
+
+# Webapp build artifacts
+webapp/.next/
+webapp/next-env.d.ts
