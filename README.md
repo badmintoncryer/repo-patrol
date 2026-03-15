@@ -47,21 +47,61 @@ npm install aws-cdk-lib constructs @aws-cdk/aws-bedrock-agentcore-alpha
 ## Usage
 
 ```typescript
-import { RepoPatrol } from 'repo-patrol';
+import { Duration } from 'aws-cdk-lib';
+import { ScheduleExpression } from 'aws-cdk-lib/aws-scheduler';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
+import { RepoPatrol, JobType } from 'repo-patrol';
+
+const secret = secretsmanager.Secret.fromSecretNameV2(this, 'Secret', 'repo-patrol/github-app');
 
 new RepoPatrol(this, 'Patrol', {
-  githubAppSecretArn: 'arn:aws:secretsmanager:us-west-2:123456789012:secret:github-app',
+  githubAppSecret: secret,
 
   // Optional
   modelId: 'us.anthropic.claude-sonnet-4-20250514-v1:0',
-  maxToolCalls: 100,
   dryRun: false,
   enableDashboard: true,
   mfaRequired: true, // TOTP MFA for dashboard login (default: true)
+  adminEmails: ['admin@example.com'],
+
+  // IaC-managed repositories (optional)
+  repositories: [
+    {
+      owner: 'my-org',
+      repo: 'my-app',
+      jobs: {
+        [JobType.REVIEW_PULL_REQUESTS]: {
+          schedule: ScheduleExpression.cron({ hour: '1', minute: '0' }),
+        },
+        [JobType.HANDLE_DEPENDABOT]: {
+          schedule: ScheduleExpression.rate(Duration.hours(6)),
+        },
+        [JobType.REPO_HEALTH_CHECK]: {
+          schedule: ScheduleExpression.cron({ minute: '0', hour: '0', weekDay: 'MON' }),
+        },
+      },
+    },
+  ],
 });
 ```
 
-Repositories are managed dynamically via the Dashboard UI or Registry API after deployment.
+### Repository Management
+
+Repositories can be managed in two ways:
+
+**1. IaC-managed (via `repositories` prop)**
+
+Repositories defined in the `repositories` prop are registered automatically at deploy time. A Custom Resource invokes the Registry Lambda to create DynamoDB records and EventBridge schedules. The GitHub App installation ID is resolved automatically.
+
+- **Add**: Include in `repositories` array -> deployed on `cdk deploy`
+- **Update**: Change schedule/config in code -> updated on next deploy
+- **Remove**: Remove from array -> DynamoDB record + EventBridge schedules are deleted
+
+**2. UI-managed (via Dashboard)**
+
+Repositories can also be registered and configured through the Dashboard UI after deployment. No CDK changes required.
+
+**Mixed mode**: Both approaches coexist independently. IaC-managed and UI-managed repositories do not interfere with each other. However, if a UI-managed repository is later added to the `repositories` prop, the CDK definition becomes the source of truth and UI changes will be overwritten on deploy (drift).
 
 ## Prerequisites
 
@@ -136,7 +176,6 @@ When `enableDashboard: true` (default), the construct deploys:
 ## Safety
 
 - `dryRun: true` disables all GitHub write operations
-- `maxToolCalls: 100` prevents agent infinite loops
 - Dependabot: auto-merge patch, auto-approve minor, report-only for major
 - Bot comments are prefixed with `[repo-patrol]`
 - GitHub App uses short-lived installation tokens (1-hour expiry)
@@ -151,7 +190,7 @@ When `enableDashboard: true` (default), the construct deploys:
 | Lambda Functions | 4 | Dispatcher, Registry API, Schedule Cleanup, Webapp |
 | IAM Roles | 1 + per-Lambda | Scheduler execution role + Lambda execution roles |
 | EventBridge Schedules | Dynamic | Per repo x jobType (e.g. 5 repos x 6 jobs = 30 schedules) |
-| Custom Resources | 1 | Schedule Cleanup on stack deletion |
+| Custom Resources | 1 + per IaC repo | Schedule Cleanup + Repo Seeder per IaC-managed repository |
 | Secrets Manager | 0 | Uses existing secret (user-provided ARN) |
 | CloudFront Distribution | 0-1 | Dashboard CDN (if `enableDashboard: true`) |
 | Cognito User Pool | 0-1 | Dashboard auth with MFA (if `enableDashboard: true`) |
@@ -196,7 +235,7 @@ Assumes each job runs ~2 min with 2 vCPU + 4 GB, processing ~15K tokens per run.
 > - Use Haiku 4.5 (default) instead of Sonnet (~12x cheaper per token)
 > - Reduce schedule frequency for less critical jobs
 > - Set `enableDashboard: false` to eliminate CloudFront + Cognito + Webapp Lambda
-> - Tune `maxToolCalls` to limit agent execution time
+> - Reduce the number of enabled job types per repository
 
 ## API Reference
 
