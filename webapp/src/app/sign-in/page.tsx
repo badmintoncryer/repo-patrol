@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 export default function SignInPage() {
   return (
     <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8 -mt-20">
@@ -19,13 +17,12 @@ export default function SignInPage() {
               Please sign in with your Cognito account to continue
             </p>
 
-            <Link
+            <a
               href="/api/auth/sign-in"
               className="w-full flex justify-center py-3 px-4 rounded-lg text-sm font-medium text-white bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 transition-all shadow-lg shadow-indigo-500/20 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
-              prefetch={false}
             >
               Sign in with Cognito
-            </Link>
+            </a>
           </div>
         </div>
       </div>
