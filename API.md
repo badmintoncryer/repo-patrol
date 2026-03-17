@@ -1295,7 +1295,6 @@ Supported patrol job types.
 | <code><a href="#repo-patrol.JobType.HANDLE_DEPENDABOT">HANDLE_DEPENDABOT</a></code> | Handle Dependabot PRs (auto-approve/merge). |
 | <code><a href="#repo-patrol.JobType.ANALYZE_CI_FAILURES">ANALYZE_CI_FAILURES</a></code> | Analyze CI failure logs and suggest fixes. |
 | <code><a href="#repo-patrol.JobType.CHECK_DEPENDENCIES">CHECK_DEPENDENCIES</a></code> | Check dependency updates. |
-| <code><a href="#repo-patrol.JobType.REPO_HEALTH_CHECK">REPO_HEALTH_CHECK</a></code> | Repository health check (README, LICENSE, CI config). |
 
 ---
 
@@ -1330,13 +1329,6 @@ Analyze CI failure logs and suggest fixes.
 ##### `CHECK_DEPENDENCIES` <a name="CHECK_DEPENDENCIES" id="repo-patrol.JobType.CHECK_DEPENDENCIES"></a>
 
 Check dependency updates.
-
----
-
-
-##### `REPO_HEALTH_CHECK` <a name="REPO_HEALTH_CHECK" id="repo-patrol.JobType.REPO_HEALTH_CHECK"></a>
-
-Repository health check (README, LICENSE, CI config).
 
 ---
 

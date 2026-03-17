@@ -26,12 +26,6 @@ from src.tools.report_tools import (
     check_processed_item,
     mark_item_processed,
 )
-from src.tools.health_tools import (
-    check_repo_metadata,
-    check_branch_protection,
-    check_ci_configuration,
-)
-
 ALL_TOOLS = [
     list_open_pull_requests,
     get_pull_request_details,
@@ -53,7 +47,4 @@ ALL_TOOLS = [
     save_job_history,
     check_processed_item,
     mark_item_processed,
-    check_repo_metadata,
-    check_branch_protection,
-    check_ci_configuration,
 ]

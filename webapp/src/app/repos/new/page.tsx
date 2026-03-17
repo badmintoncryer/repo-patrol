@@ -29,11 +29,6 @@ const JOB_TYPES = [
     label: "Dep Check",
     defaultSchedule: "cron(0 0 ? * MON *)",
   },
-  {
-    id: "repo_health_check",
-    label: "Health Check",
-    defaultSchedule: "cron(0 0 ? * MON *)",
-  },
 ];
 
 const inputClass =

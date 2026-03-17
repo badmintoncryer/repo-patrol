@@ -5,10 +5,6 @@
       "stacks": [
         "RepoPatrolTestStack"
       ],
-      "allowDestroy": [
-        "AWS::Lambda::Version",
-        "AWS::CDK::Metadata"
-      ],
       "assertionStack": "RepoPatrolIntegTest/DefaultTest/DeployAssert",
       "assertionStackName": "RepoPatrolIntegTestDefaultTestDeployAssert546CCF56"
     }

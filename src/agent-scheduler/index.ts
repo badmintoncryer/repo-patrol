@@ -20,8 +20,6 @@ export enum JobType {
   ANALYZE_CI_FAILURES = 'analyze_ci_failures',
   /** Check dependency updates */
   CHECK_DEPENDENCIES = 'check_dependencies',
-  /** Repository health check (README, LICENSE, CI config) */
-  REPO_HEALTH_CHECK = 'repo_health_check',
 }
 
 export interface AgentSchedulerProps {

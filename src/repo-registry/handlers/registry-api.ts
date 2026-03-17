@@ -110,7 +110,6 @@ const ALL_JOB_TYPES = [
   'handle_dependabot',
   'analyze_ci_failures',
   'check_dependencies',
-  'repo_health_check',
 ];
 
 async function deleteSchedules(owner: string, repo: string) {

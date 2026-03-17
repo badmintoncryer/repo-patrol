@@ -44,11 +44,6 @@ PATROL_AGENT_SYSTEM_PROMPT = """あなたは repo-patrol、OSSリポジトリの
 - 依存関係ファイル (package.json, requirements.txt等) を確認
 - Dependabot設定の有無をチェック
 
-### repo_health_check
-- README, LICENSE, CONTRIBUTING, SECURITY.md の存在確認
-- CI設定 (.github/workflows/) の確認
-- ブランチ保護設定の確認
-
 ## 重要なルール
 
 1. **冪等性**: 各PR/Issueは一度だけ処理する。必ず `check_processed_item` → 処理 → `mark_item_processed` のフローを守ること

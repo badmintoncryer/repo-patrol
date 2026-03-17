@@ -10,7 +10,6 @@ const JOB_TYPES = [
   { id: "handle_dependabot", label: "Dependabot", defaultSchedule: "rate(6 hours)" },
   { id: "analyze_ci_failures", label: "CI Analysis", defaultSchedule: "rate(3 hours)" },
   { id: "check_dependencies", label: "Dep Check", defaultSchedule: "cron(0 0 ? * MON *)" },
-  { id: "repo_health_check", label: "Health Check", defaultSchedule: "cron(0 0 ? * MON *)" },
 ];
 
 const selectClass =

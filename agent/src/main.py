@@ -48,7 +48,7 @@ def invoke(payload):
     # Validate required fields
     VALID_JOB_TYPES = {
         "review_pull_requests", "triage_issues", "handle_dependabot",
-        "analyze_ci_failures", "check_dependencies", "repo_health_check",
+        "analyze_ci_failures", "check_dependencies",
     }
     for field in ("owner", "repo", "job_type", "installation_id"):
         if not payload.get(field):
