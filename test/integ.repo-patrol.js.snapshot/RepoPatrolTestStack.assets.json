@@ -91,16 +91,16 @@
         }
       }
     },
-    "97aa97782813ab31219f049eec2278782e7258c8fb8cde7750bf006b6b425f4d": {
+    "6b1b5309957205b206a67b1c59b340e5e4b33b27db87bd20ecfbcdc660bd2087": {
       "displayName": "RepoPatrolTestStack Template",
       "source": {
         "path": "RepoPatrolTestStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "123456789012-us-east-1-fd70d38d": {
+        "123456789012-us-east-1-e748b414": {
           "bucketName": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "objectKey": "97aa97782813ab31219f049eec2278782e7258c8fb8cde7750bf006b6b425f4d.json",
+          "objectKey": "6b1b5309957205b206a67b1c59b340e5e4b33b27db87bd20ecfbcdc660bd2087.json",
           "region": "us-east-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-file-publishing-role-123456789012-us-east-1"
         }
