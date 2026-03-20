@@ -76,9 +76,6 @@ export interface RepoPatrolProps {
   /** Enable the Next.js dashboard with Cognito authentication */
   readonly enableDashboard?: boolean;
 
-  /** Run in dry-run mode (no GitHub write operations) */
-  readonly dryRun?: boolean;
-
   /**
    * Whether to require MFA (TOTP) for dashboard login.
    * @default true
@@ -140,7 +137,6 @@ export class RepoPatrol extends Construct {
       jobHistoryTable: this.registry.jobHistoryTable,
       processedItemsTable: this.registry.processedItemsTable,
       modelId: props.modelId,
-      dryRun: props.dryRun,
     });
 
     // EventBridge Dispatcher Lambda + Scheduler IAM Role

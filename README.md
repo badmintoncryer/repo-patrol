@@ -59,7 +59,6 @@ new RepoPatrol(this, 'Patrol', {
 
   // Optional
   modelId: 'us.anthropic.claude-sonnet-4-20250514-v1:0',
-  dryRun: false,
   enableDashboard: true,
   mfaRequired: true, // TOTP MFA for dashboard login (default: true)
   adminEmails: ['admin@example.com'],
@@ -75,9 +74,6 @@ new RepoPatrol(this, 'Patrol', {
         },
         [JobType.HANDLE_DEPENDABOT]: {
           schedule: ScheduleExpression.rate(Duration.hours(6)),
-        },
-        [JobType.REPO_HEALTH_CHECK]: {
-          schedule: ScheduleExpression.cron({ minute: '0', hour: '0', weekDay: 'MON' }),
         },
       },
     },
@@ -138,7 +134,6 @@ Enable the desired foundation model (default: `us.anthropic.claude-haiku-4-5-202
 | `handle_dependabot` | Auto-approve/merge Dependabot PRs |
 | `analyze_ci_failures` | Analyze CI failure logs, suggest fixes |
 | `check_dependencies` | Check for dependency updates |
-| `repo_health_check` | Audit README, LICENSE, CI config |
 
 All jobs default to **daily at UTC 00:00** (`cron(0 0 * * ? *)`). Override per job via the Dashboard UI or Registry API.
 
@@ -175,7 +170,6 @@ When `enableDashboard: true` (default), the construct deploys:
 
 ## Safety
 
-- `dryRun: true` disables all GitHub write operations
 - Dependabot: auto-merge patch, auto-approve minor, report-only for major
 - Bot comments are prefixed with `[repo-patrol]`
 - GitHub App uses short-lived installation tokens (1-hour expiry)

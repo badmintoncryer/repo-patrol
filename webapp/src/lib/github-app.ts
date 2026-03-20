@@ -19,7 +19,7 @@ async function getAppCredentials(): Promise<{
   }
   const res = await smClient.send(
     new GetSecretValueCommand({
-      SecretId: process.env.GITHUB_APP_SECRET_ARN!,
+      SecretId: process.env.GITHUB_APP_SECRET_NAME!,
     })
   );
   const secret = JSON.parse(res.SecretString!);

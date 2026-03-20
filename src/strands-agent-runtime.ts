@@ -16,7 +16,6 @@ export interface StrandsAgentRuntimeProps {
   readonly jobHistoryTable: dynamodb.ITable;
   readonly processedItemsTable: dynamodb.ITable;
   readonly modelId?: string;
-  readonly dryRun?: boolean;
 }
 
 export class StrandsAgentRuntime extends Construct {
@@ -31,12 +30,11 @@ export class StrandsAgentRuntime extends Construct {
       ),
       environmentVariables: {
         REPORT_BUCKET_NAME: props.reportBucket.bucketName,
-        GITHUB_APP_SECRET_ARN: props.githubAppSecret.secretName,
+        GITHUB_APP_SECRET_NAME: props.githubAppSecret.secretName,
         REPOS_TABLE_NAME: props.reposTable.tableName,
         JOB_HISTORY_TABLE_NAME: props.jobHistoryTable.tableName,
         PROCESSED_ITEMS_TABLE_NAME: props.processedItemsTable.tableName,
         MODEL_ID: props.modelId ?? 'us.anthropic.claude-haiku-4-5-20251001-v1:0',
-        DRY_RUN: (props.dryRun ?? false).toString(),
       },
     });
 

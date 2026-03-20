@@ -10,7 +10,7 @@ import logging
 import boto3
 from github import Auth, Github, GithubIntegration
 
-from src.config.settings import AWS_REGION, GITHUB_APP_SECRET_ARN
+from src.config.settings import AWS_REGION, GITHUB_APP_SECRET_NAME
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +24,7 @@ def _get_app_credentials() -> dict:
         return _cached_credentials
 
     client = boto3.client("secretsmanager", region_name=AWS_REGION)
-    response = client.get_secret_value(SecretId=GITHUB_APP_SECRET_ARN)
+    response = client.get_secret_value(SecretId=GITHUB_APP_SECRET_NAME)
     _cached_credentials = json.loads(response["SecretString"])
     return _cached_credentials
 

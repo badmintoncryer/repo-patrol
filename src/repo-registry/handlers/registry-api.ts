@@ -14,7 +14,7 @@ import {
   GetScheduleCommand,
   FlexibleTimeWindowMode,
 } from '@aws-sdk/client-scheduler';
-import { marshall, unmarshall } from '@aws-sdk/util-dynamodb';
+import { marshall, unmarshall, convertToAttr } from '@aws-sdk/util-dynamodb';
 
 const dynamoClient = new DynamoDBClient({});
 const schedulerClient = new SchedulerClient({});
@@ -238,7 +238,7 @@ export const handler = async (event: APIGatewayEvent) => {
       const now = new Date().toISOString();
 
       // Whitelist updatable fields to prevent mass-assignment
-      const ALLOWED_FIELDS = new Set(['enabled', 'jobs', 'model_id', 'dry_run']);
+      const ALLOWED_FIELDS = new Set(['enabled', 'jobs', 'model_id']);
 
       const updateExpressions: string[] = ['#updated_at = :updated_at'];
       const expressionNames: Record<string, string> = {
@@ -254,7 +254,7 @@ export const handler = async (event: APIGatewayEvent) => {
         const attrValue = `:${key}`;
         updateExpressions.push(`${attrName} = ${attrValue}`);
         expressionNames[attrName] = key;
-        expressionValues[attrValue] = marshall(value);
+        expressionValues[attrValue] = convertToAttr(value);
       }
 
       await dynamoClient.send(
