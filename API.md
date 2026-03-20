@@ -862,7 +862,6 @@ const repoPatrolProps: RepoPatrolProps = { ... }
 | --- | --- | --- |
 | <code><a href="#repo-patrol.RepoPatrolProps.property.githubAppSecret">githubAppSecret</a></code> | <code>aws-cdk-lib.aws_secretsmanager.ISecret</code> | Secrets Manager secret containing GitHub App credentials (app_id, private_key). |
 | <code><a href="#repo-patrol.RepoPatrolProps.property.adminEmails">adminEmails</a></code> | <code>string[]</code> | Email addresses for admin users to create in the Cognito User Pool. |
-| <code><a href="#repo-patrol.RepoPatrolProps.property.dryRun">dryRun</a></code> | <code>boolean</code> | Run in dry-run mode (no GitHub write operations). |
 | <code><a href="#repo-patrol.RepoPatrolProps.property.enableDashboard">enableDashboard</a></code> | <code>boolean</code> | Enable the Next.js dashboard with Cognito authentication. |
 | <code><a href="#repo-patrol.RepoPatrolProps.property.mfaRequired">mfaRequired</a></code> | <code>boolean</code> | Whether to require MFA (TOTP) for dashboard login. |
 | <code><a href="#repo-patrol.RepoPatrolProps.property.modelId">modelId</a></code> | <code>string</code> | Default Bedrock model ID. |
@@ -895,18 +894,6 @@ Email addresses for admin users to create in the Cognito User Pool.
 
 Each user receives an invitation email from Cognito with a temporary password.
 Requires enableDashboard to be true (default).
-
----
-
-##### `dryRun`<sup>Optional</sup> <a name="dryRun" id="repo-patrol.RepoPatrolProps.property.dryRun"></a>
-
-```typescript
-public readonly dryRun: boolean;
-```
-
-- *Type:* boolean
-
-Run in dry-run mode (no GitHub write operations).
 
 ---
 
@@ -1203,7 +1190,6 @@ const strandsAgentRuntimeProps: StrandsAgentRuntimeProps = { ... }
 | <code><a href="#repo-patrol.StrandsAgentRuntimeProps.property.processedItemsTable">processedItemsTable</a></code> | <code>aws-cdk-lib.aws_dynamodb.ITable</code> | *No description.* |
 | <code><a href="#repo-patrol.StrandsAgentRuntimeProps.property.reportBucket">reportBucket</a></code> | <code>aws-cdk-lib.aws_s3.IBucket</code> | *No description.* |
 | <code><a href="#repo-patrol.StrandsAgentRuntimeProps.property.reposTable">reposTable</a></code> | <code>aws-cdk-lib.aws_dynamodb.ITable</code> | *No description.* |
-| <code><a href="#repo-patrol.StrandsAgentRuntimeProps.property.dryRun">dryRun</a></code> | <code>boolean</code> | *No description.* |
 | <code><a href="#repo-patrol.StrandsAgentRuntimeProps.property.modelId">modelId</a></code> | <code>string</code> | *No description.* |
 
 ---
@@ -1255,16 +1241,6 @@ public readonly reposTable: ITable;
 ```
 
 - *Type:* aws-cdk-lib.aws_dynamodb.ITable
-
----
-
-##### `dryRun`<sup>Optional</sup> <a name="dryRun" id="repo-patrol.StrandsAgentRuntimeProps.property.dryRun"></a>
-
-```typescript
-public readonly dryRun: boolean;
-```
-
-- *Type:* boolean
 
 ---
 
