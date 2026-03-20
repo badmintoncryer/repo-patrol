@@ -130,10 +130,9 @@ repo-patrol is an AI-powered OSS repository maintenance agent deployed as a CDK 
 - **File:** `src/report-frontend/index.ts` L171-188
 - **Issue:** Default `TLSv1` allows older TLS versions. (Only applies with custom domain.)
 
-### CDK-I1: Misleading Environment Variable Name [INFO]
+### CDK-I1: Misleading Environment Variable Name [INFO] — RESOLVED
 
-- **File:** `src/strands-agent-runtime.ts` L33
-- **Issue:** `GITHUB_APP_SECRET_ARN` contains a secret name, not ARN.
+- **Status:** Renamed `GITHUB_APP_SECRET_ARN` to `GITHUB_APP_SECRET_NAME` across all CDK constructs, Python agent, and webapp.
 
 ### CDK-I2: Error Responses Leak Internal Details [INFO]
 
@@ -160,7 +159,7 @@ repo-patrol is an AI-powered OSS repository maintenance agent deployed as a CDK 
 
 ### AGT-H1: DRY_RUN Payload Field Ignored [HIGH] — RESOLVED
 
-- **Status:** DRY_RUN feature has been removed entirely. All dry_run code paths, environment variables, and configuration have been deleted from CDK constructs, Lambda handlers, Python agent, and documentation.
+- **Status:** DRY_RUN feature has been removed entirely. All dry_run code paths, environment variables, and configuration have been deleted from CDK constructs, Lambda handlers, Python agent, and documentation. The earlier finding **CDK-I1: Misleading Environment Variable Name** has also been resolved by renaming `GITHUB_APP_SECRET_ARN` to `GITHUB_APP_SECRET_NAME` throughout the CDK infrastructure.
 
 ### AGT-H2: No Input Validation on Payload [HIGH]
 
