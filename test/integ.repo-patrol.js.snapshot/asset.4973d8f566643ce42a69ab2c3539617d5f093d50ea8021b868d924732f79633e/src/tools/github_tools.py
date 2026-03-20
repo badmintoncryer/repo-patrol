@@ -4,7 +4,6 @@ import logging
 
 from strands import tool
 
-from src.config.settings import DRY_RUN
 from src.lib.github_auth import get_github_client
 
 logger = logging.getLogger(__name__)
@@ -241,13 +240,9 @@ def post_pr_review_comment(installation_id: int, owner: str, repo: str, pr_numbe
         body: Comment body (will be prefixed with [repo-patrol])
 
     Returns:
-        Result with comment URL or dry_run status.
+        Result with comment URL.
     """
     prefixed_body = f"[repo-patrol] {body}"
-
-    if DRY_RUN:
-        logger.info("[DRY_RUN] Would post PR comment on %s/%s#%d", owner, repo, pr_number)
-        return {"dry_run": True, "pr_number": pr_number, "body_preview": prefixed_body[:200]}
 
     repository = _get_repo(installation_id, owner, repo)
     pr = repository.get_pull(pr_number)
@@ -267,13 +262,9 @@ def post_issue_comment(installation_id: int, owner: str, repo: str, issue_number
         body: Comment body (will be prefixed with [repo-patrol])
 
     Returns:
-        Result with comment URL or dry_run status.
+        Result with comment URL.
     """
     prefixed_body = f"[repo-patrol] {body}"
-
-    if DRY_RUN:
-        logger.info("[DRY_RUN] Would post issue comment on %s/%s#%d", owner, repo, issue_number)
-        return {"dry_run": True, "issue_number": issue_number, "body_preview": prefixed_body[:200]}
 
     repository = _get_repo(installation_id, owner, repo)
     issue = repository.get_issue(issue_number)
@@ -293,12 +284,8 @@ def add_issue_labels(installation_id: int, owner: str, repo: str, issue_number: 
         labels: List of label names to add
 
     Returns:
-        Result with applied labels or dry_run status.
+        Result with applied labels.
     """
-    if DRY_RUN:
-        logger.info("[DRY_RUN] Would add labels %s to %s/%s#%d", labels, owner, repo, issue_number)
-        return {"dry_run": True, "issue_number": issue_number, "labels": labels}
-
     repository = _get_repo(installation_id, owner, repo)
     issue = repository.get_issue(issue_number)
     issue.add_to_labels(*labels)
@@ -317,13 +304,9 @@ def approve_pull_request(installation_id: int, owner: str, repo: str, pr_number:
         body: Review body explaining the approval decision (analysis summary, key changes, risks assessed)
 
     Returns:
-        Result with review ID or dry_run status.
+        Result with review ID.
     """
     review_body = f"[repo-patrol] {body}" if body else "[repo-patrol] Approved."
-
-    if DRY_RUN:
-        logger.info("[DRY_RUN] Would approve PR %s/%s#%d", owner, repo, pr_number)
-        return {"dry_run": True, "pr_number": pr_number, "action": "approve", "body_preview": review_body[:200]}
 
     repository = _get_repo(installation_id, owner, repo)
     pr = repository.get_pull(pr_number)
@@ -345,12 +328,8 @@ def merge_pull_request(
         merge_method: Merge method - 'merge', 'squash', or 'rebase'
 
     Returns:
-        Result with merge status or dry_run status.
+        Result with merge status.
     """
-    if DRY_RUN:
-        logger.info("[DRY_RUN] Would merge PR %s/%s#%d via %s", owner, repo, pr_number, merge_method)
-        return {"dry_run": True, "pr_number": pr_number, "action": "merge", "method": merge_method}
-
     repository = _get_repo(installation_id, owner, repo)
     pr = repository.get_pull(pr_number)
     result = pr.merge(merge_method=merge_method, commit_message=f"[repo-patrol] Auto-merge PR #{pr_number}")

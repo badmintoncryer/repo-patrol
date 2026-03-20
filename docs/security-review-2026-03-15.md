@@ -158,11 +158,9 @@ repo-patrol is an AI-powered OSS repository maintenance agent deployed as a CDK 
   - Present untrusted content in clearly delimited XML tags.
   - Require human-in-the-loop for approve/merge on non-Dependabot PRs.
 
-### AGT-H1: DRY_RUN Payload Field Ignored [HIGH]
+### AGT-H1: DRY_RUN Payload Field Ignored [HIGH] — RESOLVED
 
-- **Files:** `agent/src/config/settings.py` L10; `agent/src/main.py` L28-53
-- **Issue:** `DRY_RUN` is set at module load time from env var. Payload `dry_run` field is passed as prompt text but never enforced programmatically. Per-repo dry_run config is unreliable.
-- **Fix:** Parse `dry_run` from payload in `main.py` and pass as runtime parameter to tools.
+- **Status:** DRY_RUN feature has been removed entirely. All dry_run code paths, environment variables, and configuration have been deleted from CDK constructs, Lambda handlers, Python agent, and documentation.
 
 ### AGT-H2: No Input Validation on Payload [HIGH]
 
@@ -363,7 +361,7 @@ repo-patrol is an AI-powered OSS repository maintenance agent deployed as a CDK 
 | CDK-H2 | Bedrock model ARN scoping | Small |
 | CDK-H3 | Remove wildcard CORS | Small |
 | CDK-H4 | Cognito scope reduction | Small |
-| AGT-H1 | Enforce `dry_run` from payload | Medium |
+| AGT-H1 | ~~Enforce `dry_run` from payload~~ RESOLVED (feature removed) | — |
 | AGT-H2 | Payload input validation | Medium |
 | WEB-H1 | Add `getSession()` to Server Components | Small |
 | WEB-H2 | Authorization / tenant isolation design | Medium |

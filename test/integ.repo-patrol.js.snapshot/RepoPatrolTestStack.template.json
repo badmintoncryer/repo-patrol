@@ -208,7 +208,7 @@
     ],
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-     "S3Key": "2ae7d5507e5b80c1b75aa855b3f07f428b1a43f8286726e1aa086e63bc6df029.zip"
+     "S3Key": "9be7ab6139d192220d7266ab42f9a5517f4b46071ef4814b93dfde9cff4440d6.zip"
     },
     "Environment": {
      "Variables": {
@@ -488,7 +488,7 @@
     "AgentRuntimeArtifact": {
      "ContainerConfiguration": {
       "ContainerUri": {
-       "Fn::Sub": "123456789012.dkr.ecr.us-east-1.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-123456789012-us-east-1:77903abb5c3474e33fce151da52f32225b96694914f3e4abfcd10c28aa287d76"
+       "Fn::Sub": "123456789012.dkr.ecr.us-east-1.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-123456789012-us-east-1:4973d8f566643ce42a69ab2c3539617d5f093d50ea8021b868d924732f79633e"
       }
      }
     },
@@ -497,7 +497,7 @@
      "REPORT_BUCKET_NAME": {
       "Ref": "PatrolReportBucket939016BB"
      },
-     "GITHUB_APP_SECRET_ARN": "repo-patrol/github-app",
+     "GITHUB_APP_SECRET_NAME": "repo-patrol/github-app",
      "REPOS_TABLE_NAME": {
       "Ref": "PatrolRegistryReposTableCBB750FC"
      },
@@ -507,8 +507,7 @@
      "PROCESSED_ITEMS_TABLE_NAME": {
       "Ref": "PatrolRegistryProcessedItemsTable167B64E3"
      },
-     "MODEL_ID": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
-     "DRY_RUN": "false"
+     "MODEL_ID": "us.anthropic.claude-haiku-4-5-20251001-v1:0"
     },
     "NetworkConfiguration": {
      "NetworkMode": "PUBLIC"
@@ -632,7 +631,7 @@
     ],
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-     "S3Key": "af98e197725569b919429cfa53544fd57e82eaa10953450888a13799c7ac3bf8.zip"
+     "S3Key": "83251ba9b180baa7f4940f4af4bd28cf4f656d6339da301cee850f47ca1b4755.zip"
     },
     "Environment": {
      "Variables": {
@@ -1296,7 +1295,7 @@
     ],
     "Code": {
      "ImageUri": {
-      "Fn::Sub": "123456789012.dkr.ecr.us-east-1.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-123456789012-us-east-1:3b3b99cd95545611104518c2f24ca655ac028420a76d5868e10ab0af30d37de8"
+      "Fn::Sub": "123456789012.dkr.ecr.us-east-1.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-123456789012-us-east-1:0045d126e07bcc608665ac5002c96c24391a3121b7dd123d0bba5ab14b35766b"
      }
     },
     "Environment": {
@@ -1332,7 +1331,7 @@
         ]
        ]
       },
-      "GITHUB_APP_SECRET_ARN": "repo-patrol/github-app",
+      "GITHUB_APP_SECRET_NAME": "repo-patrol/github-app",
       "REGISTRY_FUNCTION_NAME": {
        "Ref": "PatrolRegistryRegistryApiFunction8F717C0A"
       },

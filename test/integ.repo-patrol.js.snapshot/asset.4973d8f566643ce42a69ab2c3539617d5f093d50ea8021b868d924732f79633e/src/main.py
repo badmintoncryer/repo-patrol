@@ -6,7 +6,7 @@ import logging
 from bedrock_agentcore import BedrockAgentCoreApp
 
 from src.agents.patrol_agent import create_patrol_agent
-from src.config.settings import LOG_LEVEL, set_dry_run
+from src.config.settings import LOG_LEVEL
 
 logging.basicConfig(level=getattr(logging, LOG_LEVEL), format="%(asctime)s %(name)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
@@ -35,14 +35,13 @@ def invoke(payload):
         "job_type": "review_pull_requests",
         "installation_id": 12345,
         "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0",  # optional override
-        "config": {},
-        "dry_run": false
+        "config": {}
     }
     """
     logger.info(
-        "Received payload: owner=%s repo=%s job_type=%s dry_run=%s",
+        "Received payload: owner=%s repo=%s job_type=%s",
         payload.get("owner"), payload.get("repo"),
-        payload.get("job_type"), payload.get("dry_run"),
+        payload.get("job_type"),
     )
 
     # Validate required fields
@@ -59,10 +58,6 @@ def invoke(payload):
 
     if payload["job_type"] not in VALID_JOB_TYPES:
         raise ValueError(f"Invalid job_type: {payload['job_type']}. Must be one of {VALID_JOB_TYPES}")
-
-    # Enforce dry_run from payload (overrides env var)
-    if "dry_run" in payload:
-        set_dry_run(bool(payload["dry_run"]))
 
     model_id = payload.get("model_id")
     agent = _get_agent(model_id=model_id)

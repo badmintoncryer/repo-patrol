@@ -59,7 +59,6 @@ export const handler = async (event: SchedulerEvent) => {
     installation_id: repo.github_app_installation_id,
     model_id: jobConfig.model_id || repo.model_id,
     config: jobConfig.config || {},
-    dry_run: repo.dry_run || false,
   };
 
   const sessionId = `patrol-${repo.owner}-${repo.repo}-${jobType}-${new Date().toISOString()}`;
