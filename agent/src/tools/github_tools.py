@@ -240,7 +240,7 @@ def post_pr_review_comment(installation_id: int, owner: str, repo: str, pr_numbe
         body: Comment body (will be prefixed with [repo-patrol])
 
     Returns:
-        Result with comment URL.
+        Result with comment URL, or {skipped, reason} if the PR is not open.
     """
     repository = _get_repo(installation_id, owner, repo)
     pr = repository.get_pull(pr_number)
@@ -265,7 +265,7 @@ def post_issue_comment(installation_id: int, owner: str, repo: str, issue_number
         body: Comment body (will be prefixed with [repo-patrol])
 
     Returns:
-        Result with comment URL.
+        Result with comment URL, or {skipped, reason} if the issue is not open.
     """
     repository = _get_repo(installation_id, owner, repo)
     issue = repository.get_issue(issue_number)
@@ -290,7 +290,7 @@ def add_issue_labels(installation_id: int, owner: str, repo: str, issue_number: 
         labels: List of label names to add
 
     Returns:
-        Result with applied labels.
+        Result with applied labels, or {skipped, reason} if the issue/PR is not open.
     """
     repository = _get_repo(installation_id, owner, repo)
     issue = repository.get_issue(issue_number)
@@ -314,7 +314,7 @@ def approve_pull_request(installation_id: int, owner: str, repo: str, pr_number:
         body: Review body explaining the approval decision (analysis summary, key changes, risks assessed)
 
     Returns:
-        Result with review ID.
+        Result with review ID, or {skipped, reason} if the PR is not open.
     """
     repository = _get_repo(installation_id, owner, repo)
     pr = repository.get_pull(pr_number)
@@ -341,7 +341,7 @@ def merge_pull_request(
         merge_method: Merge method - 'merge', 'squash', or 'rebase'
 
     Returns:
-        Result with merge status.
+        Result with merge status, or {skipped, reason} if the PR is not open.
     """
     repository = _get_repo(installation_id, owner, repo)
     pr = repository.get_pull(pr_number)
