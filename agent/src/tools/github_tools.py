@@ -242,10 +242,13 @@ def post_pr_review_comment(installation_id: int, owner: str, repo: str, pr_numbe
     Returns:
         Result with comment URL.
     """
-    prefixed_body = f"[repo-patrol] {body}"
-
     repository = _get_repo(installation_id, owner, repo)
     pr = repository.get_pull(pr_number)
+    if pr.state != "open":
+        logger.warning("Skipping comment on PR #%d: state is %s", pr_number, pr.state)
+        return {"skipped": True, "reason": f"PR #{pr_number} is {pr.state}"}
+
+    prefixed_body = f"[repo-patrol] {body}"
     comment = pr.create_issue_comment(prefixed_body)
     return {"comment_id": comment.id, "url": comment.html_url}
 
@@ -264,10 +267,13 @@ def post_issue_comment(installation_id: int, owner: str, repo: str, issue_number
     Returns:
         Result with comment URL.
     """
-    prefixed_body = f"[repo-patrol] {body}"
-
     repository = _get_repo(installation_id, owner, repo)
     issue = repository.get_issue(issue_number)
+    if issue.state != "open":
+        logger.warning("Skipping comment on issue #%d: state is %s", issue_number, issue.state)
+        return {"skipped": True, "reason": f"Issue #{issue_number} is {issue.state}"}
+
+    prefixed_body = f"[repo-patrol] {body}"
     comment = issue.create_comment(prefixed_body)
     return {"comment_id": comment.id, "url": comment.html_url}
 
@@ -288,6 +294,10 @@ def add_issue_labels(installation_id: int, owner: str, repo: str, issue_number: 
     """
     repository = _get_repo(installation_id, owner, repo)
     issue = repository.get_issue(issue_number)
+    if issue.state != "open":
+        logger.warning("Skipping label on issue #%d: state is %s", issue_number, issue.state)
+        return {"skipped": True, "reason": f"Issue/PR #{issue_number} is {issue.state}"}
+
     issue.add_to_labels(*labels)
     return {"issue_number": issue_number, "labels_added": labels}
 
@@ -306,10 +316,13 @@ def approve_pull_request(installation_id: int, owner: str, repo: str, pr_number:
     Returns:
         Result with review ID.
     """
-    review_body = f"[repo-patrol] {body}" if body else "[repo-patrol] Approved."
-
     repository = _get_repo(installation_id, owner, repo)
     pr = repository.get_pull(pr_number)
+    if pr.state != "open":
+        logger.warning("Skipping approve on PR #%d: state is %s", pr_number, pr.state)
+        return {"skipped": True, "reason": f"PR #{pr_number} is {pr.state}"}
+
+    review_body = f"[repo-patrol] {body}" if body else "[repo-patrol] Approved."
     review = pr.create_review(event="APPROVE", body=review_body)
     return {"review_id": review.id, "pr_number": pr_number, "action": "approved"}
 
@@ -332,5 +345,9 @@ def merge_pull_request(
     """
     repository = _get_repo(installation_id, owner, repo)
     pr = repository.get_pull(pr_number)
+    if pr.state != "open":
+        logger.warning("Skipping merge on PR #%d: state is %s", pr_number, pr.state)
+        return {"skipped": True, "reason": f"PR #{pr_number} is {pr.state}"}
+
     result = pr.merge(merge_method=merge_method, commit_message=f"[repo-patrol] Auto-merge PR #{pr_number}")
     return {"merged": result.merged, "sha": result.sha, "pr_number": pr_number}
