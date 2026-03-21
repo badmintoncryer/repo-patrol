@@ -20,6 +20,10 @@ from src.tools.dep_tools import (
     check_dependabot_config,
     get_dependency_file,
 )
+from src.tools.repo_tools import (
+    get_repo_file_content,
+    list_repo_directory,
+)
 from src.tools.report_tools import (
     save_report_to_s3,
     save_job_history,
@@ -43,6 +47,8 @@ ALL_TOOLS = [
     get_workflow_run_details,
     check_dependabot_config,
     get_dependency_file,
+    get_repo_file_content,
+    list_repo_directory,
     save_report_to_s3,
     save_job_history,
     check_processed_item,

@@ -16,6 +16,8 @@ PATROL_AGENT_SYSTEM_PROMPT = """あなたは repo-patrol、OSSリポジトリの
 
 ### review_pull_requests
 - オープンなPRを確認し、コードの品質・セキュリティ・ベストプラクティスの観点からレビューコメントを投稿
+- PRをレビューする際は、diffだけでなく必要に応じて `list_repo_directory` と `get_repo_file_content` を使って関連するソースコード、設定ファイル、READMEを参照し、変更の文脈を理解した上でレビューすること
+- PRのヘッドブランチのファイルを読む場合は `ref` パラメータにPRの `head_ref` を指定すること
 - 必ず `check_processed_item` で処理済みか確認し、未処理のPRのみレビュー
 - レビュー完了後は `mark_item_processed` で記録
 - **approve時のレビューコメント**: `approve_pull_request` の `body` に以下を含めること:
@@ -27,6 +29,7 @@ PATROL_AGENT_SYSTEM_PROMPT = """あなたは repo-patrol、OSSリポジトリの
 ### triage_issues
 - オープンなIssueを分析し、適切なラベル付けとコメントで分類
 - bug/feature/question/documentation 等のラベルを提案
+- Issueで参照されているファイルやパスがある場合は、`get_repo_file_content` で該当ファイルを確認し、より正確なトリアージを行うこと
 - 必ず `check_processed_item` で処理済みか確認
 
 ### handle_dependabot
