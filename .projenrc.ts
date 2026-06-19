@@ -7,11 +7,11 @@ const project = new awscdk.AwsCdkConstructLibrary({
   author: 'Kazuho Cryer-Shinozuka',
   authorAddress: 'malaysia.cryer@gmail.com',
   cdkVersion: '2.233.0',
-  constructsVersion: '10.4.4',
+  constructsVersion: '10.5.0',
   defaultReleaseBranch: 'main',
   projenrcTs: true,
   packageManager: javascript.NodePackageManager.PNPM,
-  pnpmVersion: '9',
+  pnpmVersion: '9.15.9',
   jsiiVersion: '~5.9.0',
 
   keywords: ['awscdk', 'aws-cdk', 'aws', 'bedrock', 'ai', 'github', 'patrol', 'automation'],
